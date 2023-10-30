@@ -13,6 +13,8 @@ let controls;
 let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' error
 
 
+
+
 // extend mvc view and add custom control
 var LayoutControls = mvc.View.extend({
   events: {
@@ -255,6 +257,10 @@ const cellNamespace = {
   UMLDecision,
 };
 
+
+
+
+
 function createAdjacencyList() {
   // add startNode to the list
   let index = rectDataArray.findIndex(function (rectData) {
@@ -300,7 +306,7 @@ function createPaper(holderId) {
       color: "white",
     },
     snapLabels: true,
-    defaultRouter: { name: "orthogonal" },
+    defaultRouter: { name: "manhattan" },
     linkPinning: false,
     interactive: function (cellView) {
       if (cellView.model.get("isLocked")) {
@@ -344,7 +350,7 @@ function createEndNode(elementsArray) {
 }
 
 // dataArray - an array that contains multiple rectData that will be wrapped with a rectangle
-// elementsArray - an array to store the generated rectangle
+// elementsArray - an array to store the generated rectangle model
 function createRectangles(dataArray, elementsArray) {
   dataArray.forEach((rectData) => {
     var stageType = rectData.stageType;
@@ -470,7 +476,7 @@ function createParallelRect(rectData) {
     branchCounter++;
     counter++;
   }
-
+  console.log(parallel.markup);
   return parallel;
 }
 
@@ -736,6 +742,10 @@ function createLinkTools() {
   //   magnet: 'body'
   // });
 
+  var sourceArrowheadTool = new joint.linkTools.SourceArrowhead({
+    focusOpacity: 0.5
+  });
+
   var verticesTool = new joint.linkTools.Vertices({
     focusOpacity: 0.5,
     redundancyRemoval: true,
@@ -745,7 +755,7 @@ function createLinkTools() {
 
   var targetArrowheadTool = new joint.linkTools.TargetArrowhead({
     focusOpacity: 1,
-    scale:1.2,
+    scale: 1.2,
   });
 
   var boundaryTool = new joint.linkTools.Boundary({
@@ -756,7 +766,7 @@ function createLinkTools() {
 
   var toolsView = new joint.dia.ToolsView({
     name: 'link-tools',
-    tools: [verticesTool, boundaryTool, targetArrowheadTool]
+    tools: [verticesTool, boundaryTool, targetArrowheadTool, sourceArrowheadTool]
   });
 
   return toolsView;
@@ -827,7 +837,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg2NTE4NzQsImV4cCI6MTY5ODY1NTQ3NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg2NDc5MzgsImlkcCI6IkZvcm1zIiwianRpIjoiMEI0MEExRERCNTI4MTAwNzk1QUMyN0I2OTg3RjFDNjkiLCJzaWQiOiIyQ0Q0QjA0RUZCNDQyQUI3OUQ5OTk3NjFCODU3RTY3OCIsImlhdCI6MTY5ODY0Nzk0Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EchVdzf5CE_oiOfoefRAr5U3vQJ_aN9r0KCM1GWnCtWiRsPQaB2dTKn6d7oV5p3Q1_5KmmQu_fGdePL-gF_WkdrErYCQkV3xZ5O125qoqaXn-aDSSKFzJkxzBXNPua1_Flm6TAqqicwVwzZ6s77FarUsskjs6YvZ2-Ar7P81NVuDU6Qy6uy0PDRc8MBLkkxaPdv9kmV89OUWKUsb08bN1zJRn8zruuFPbf6-PlVeaxHnb5petI-fdo0Io2xpJF1HTRxV9pjQf7X3wlI5YMlvlxuTkyNFmbdozwqF4omGvSP04o2Y5WA-PW-p3P29kwLAL0o7l3fFrY_3C16xfb_O3Q"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg2Nzg2OTEsImV4cCI6MTY5ODY4MjI5MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg2NzgzODksImlkcCI6IkZvcm1zIiwianRpIjoiQzdGNDJDNjIwRDkxMDk4MDI5OTIwOTU1MzkxQ0VBM0EiLCJzaWQiOiIxRTFGRUVBOTc5QUYxQUM2QTUyQzA4OTg0NzVDMEM5RSIsImlhdCI6MTY5ODY3ODM5Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.ZgVHDcgDg14bARYrILTjofu6G2QxIGWDdE66xxZkyduIhtK9fPV6AfPLEsxcfTgJ50_raJMHHkVSK9UMrfTEFx0IX0Mlaey1brjCOAg5EsHrSqjlxrr90nHZWlcnyAujP5MecShEwRuFH5gqdHtUNNppamhZ9b1hgS6fROGh_J1v_0atUFlNWlCnACcVne1YxrmF6IVyNzxU7huC-EU-a8df7IjBSWS9kVAAXd3yB79TZVfOVVtrahjt8vlkbqX6vRjy1muKoE33QE-dzyGnYCjzNmYkUR-62ug3MQf66beAfUEN1pD6MYlpvOsApCjjmNNtCu_DoToXN_i9Y5jqUw"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1048,6 +1058,7 @@ function resetAll() {
   resetModal();
 
 }
+
 
 
 
