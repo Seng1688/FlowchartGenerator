@@ -30,7 +30,6 @@ var LayoutControls = mvc.View.extend({
 
     // add eventlinstener to the paper's elements
     this.listenTo(options.paper.model, "change", function (_, opt) {
-      console.log('aa');
       if (opt.layout) {
         this.layout();
       }
@@ -675,88 +674,93 @@ function createElements(elementsArray, linksArray, rectDataArray) {
 
 function createLinkTools() {
 
-  var InfoButton = joint.linkTools.Button.extend({
-    name: 'info-button',
-    options: {
-        focusOpacity: 0.5,
-        distance: 60,
-        action: function(evt) {
-            alert('View id: ' + this.id + '\n' + 'Model id: ' + this.model.id);
-        },
-        markup: [{
-            tagName: 'circle',
-            selector: 'button',
-            attributes: {
-                'r': 7,
-                'fill': '#001DFF',
-                'cursor': 'pointer'
-            }
-        }, {
-            tagName: 'path',
-            selector: 'icon',
-            attributes: {
-                'd': 'M -2 4 2 4 M 0 3 0 0 M -2 -1 1 -1 M -1 -4 1 -4',
-                'fill': 'none',
-                'stroke': '#FFFFFF',
-                'stroke-width': 2,
-                'pointer-events': 'none'
-            }
-        }]
-    }
-});
+  // var InfoButton = joint.linkTools.Button.extend({
+  //   name: 'info-button',
+  //   options: {
+  //     focusOpacity: 0.5,
+  //     distance: 60,
+  //     action: function (evt) {
+  //       alert('View id: ' + this.id + '\n' + 'Model id: ' + this.model.id);
+  //     },
+  //     markup: [{
+  //       tagName: 'circle',
+  //       selector: 'button',
+  //       attributes: {
+  //         'r': 7,
+  //         'fill': '#001DFF',
+  //         'cursor': 'pointer'
+  //       }
+  //     }, {
+  //       tagName: 'path',
+  //       selector: 'icon',
+  //       attributes: {
+  //         'd': 'M -2 4 2 4 M 0 3 0 0 M -2 -1 1 -1 M -1 -4 1 -4',
+  //         'fill': 'none',
+  //         'stroke': '#FFFFFF',
+  //         'stroke-width': 2,
+  //         'pointer-events': 'none'
+  //       }
+  //     }]
+  //   }
+  // });
 
-var infoButton = new InfoButton();
+  // var infoButton = new InfoButton();
+
+  // var segmentsTool = new joint.linkTools.Segments();
+
+  // var removeButton = new joint.linkTools.Remove({
+  //   focusOpacity: 0.2,
+  //   rotate: true,
+  //   distance: -20,
+  //   offset: 0
+  // });
+
+  // var sourceAnchorTool = new joint.linkTools.SourceAnchor({
+  //   focusOpacity: 0.5,
+  //   redundancyRemoval: false,
+  //   restrictArea: false,
+  //   snapRadius: 20
+  // });
+
+  // var targetAnchorTool = new joint.linkTools.TargetAnchor({
+  //   focusOpacity: 0.5,
+  //   redundancyRemoval: false,
+  //   restrictArea: false,
+  //   snapRadius: 20
+  // });
+
+  // const connectButton = new joint.linkTools.Connect({
+  //   rotate: true,
+  //   distance: -20,
+  //   offset: 20,
+  //   magnet: 'body'
+  // });
 
   var verticesTool = new joint.linkTools.Vertices({
     focusOpacity: 0.5,
-    redundancyRemoval: false,
+    redundancyRemoval: true,
     snapRadius: 10,
-    vertexAdding: false,
-});
-var sourceAnchorTool = new joint.linkTools.SourceAnchor({
-  focusOpacity: 0.5,
-  redundancyRemoval: false,
-  restrictArea: false,
-  snapRadius: 20
-});
-  var segmentsTool = new joint.linkTools.Segments();
-  var boundaryTool = new joint.linkTools.Boundary();
-  var removeButton = new joint.linkTools.Remove({
-    focusOpacity: 0.2,
-    rotate: true,
-    distance: -20,
-    offset: 0
+    vertexAdding: true,
   });
-  var targetArrowheadTool = new joint.linkTools.TargetArrowhead({
-    focusOpacity: 0.5
-});
-var targetAnchorTool = new joint.linkTools.TargetAnchor({
-  focusOpacity: 0.5,
-  redundancyRemoval: false,
-  restrictArea: false,
-  snapRadius: 20
-});
-const connectButton = new joint.linkTools.Connect({
-  rotate: true,
-  distance: -20,
-  offset: 20,
-  magnet: 'body'
-});
 
-var boundaryTool = new joint.linkTools.Boundary({
-  focusOpacity: 0.5,
-  padding: 20,
-  useModelGeometry: true
-});
+  var targetArrowheadTool = new joint.linkTools.TargetArrowhead({
+    focusOpacity: 1,
+    scale:1.2,
+  });
+
+  var boundaryTool = new joint.linkTools.Boundary({
+    focusOpacity: 0.5,
+    padding: 20,
+    useModelGeometry: false
+  });
 
   var toolsView = new joint.dia.ToolsView({
     name: 'link-tools',
-    tools: [verticesTool, boundaryTool, removeButton]
+    tools: [verticesTool, boundaryTool, targetArrowheadTool]
   });
 
   return toolsView;
 }
-
 
 function checkIsReturnLink(sourcId, targetId) {
   let sourceSeqNo;
@@ -823,7 +827,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg2NDc5NDIsImV4cCI6MTY5ODY1MTU0MiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg2NDc5MzgsImlkcCI6IkZvcm1zIiwianRpIjoiMEI0MEExRERCNTI4MTAwNzk1QUMyN0I2OTg3RjFDNjkiLCJzaWQiOiIyQ0Q0QjA0RUZCNDQyQUI3OUQ5OTk3NjFCODU3RTY3OCIsImlhdCI6MTY5ODY0Nzk0Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.n7sBAmH-OVtXkiIfPsS2U8CFoK3owatkWG2bj3hoXh4qp6BbvqxB3aq18cDDZlRRb094TfJT1z_8ov_hQe0k2fqiM1Jd2WXUtkHypkt87MM_5hsD7OiZe8-zdex1v_1Z3QkKX6izXUw_5JYRGm00LmM8ubMOQ7u_r1BkpXybql53D7Vmxpn7odPGap6EaRzE5aO0st5ohyxeuPp15qaN9YxrJ01TCsCHTGYEWVPIEFXfjy4XcW2LX5cOEwIZrboImMfjyhfr1XqutbZf5Y9ikkhNU8Xa4frwV0eA5yja1jwPK1hPmy-miDqI63zHzW4nlYoX3J70ZuR9UJrvIQnz5Q"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg2NTE4NzQsImV4cCI6MTY5ODY1NTQ3NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg2NDc5MzgsImlkcCI6IkZvcm1zIiwianRpIjoiMEI0MEExRERCNTI4MTAwNzk1QUMyN0I2OTg3RjFDNjkiLCJzaWQiOiIyQ0Q0QjA0RUZCNDQyQUI3OUQ5OTk3NjFCODU3RTY3OCIsImlhdCI6MTY5ODY0Nzk0Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EchVdzf5CE_oiOfoefRAr5U3vQJ_aN9r0KCM1GWnCtWiRsPQaB2dTKn6d7oV5p3Q1_5KmmQu_fGdePL-gF_WkdrErYCQkV3xZ5O125qoqaXn-aDSSKFzJkxzBXNPua1_Flm6TAqqicwVwzZ6s77FarUsskjs6YvZ2-Ar7P81NVuDU6Qy6uy0PDRc8MBLkkxaPdv9kmV89OUWKUsb08bN1zJRn8zruuFPbf6-PlVeaxHnb5petI-fdo0Io2xpJF1HTRxV9pjQf7X3wlI5YMlvlxuTkyNFmbdozwqF4omGvSP04o2Y5WA-PW-p3P29kwLAL0o7l3fFrY_3C16xfb_O3Q"
 
   // Create headers with the bearer token
   const headers = new Headers({
