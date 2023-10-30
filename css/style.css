@@ -1,0 +1,92 @@
+body {
+  font-family: "Calibri", sans-serif;
+}
+
+/* controls */
+#layoutControl {
+  background: linear-gradient(to bottom, #ecebeb, #ffffff);
+  color: rgb(0, 0, 0);
+  border: 0.2px solid rgb(233, 233, 233);
+  border-bottom: none;
+}
+
+#layoutControl input {
+  width: 70%;
+}
+
+#layoutControl label {
+  font-weight: bolder;
+}
+
+/* canvas */
+#canvas{
+  height: 800px;
+  border: 0.2px solid rgb(233, 233, 233);
+}
+
+#modalCanvas{
+  height: 600px;
+  width: 100%;
+  border: 0.2px solid rgb(233, 233, 233);
+}
+
+/* reference board */
+#reference_board {
+  overflow: auto;
+  border: 0.2px solid rgb(233, 233, 233);
+  background: linear-gradient(to bottom, #f6f6f6, #e5e5e5);
+}
+
+#rects_table,
+#links_table,
+#others_table {
+  border: 0.5px solid #f6f6f6;
+  margin: 16px 0px;
+}
+
+#rects_table th,
+#links_table th,
+#others_table th {
+  background: linear-gradient(to bottom, #dcddde, #f6f5f5);
+  border: 0.5px solid #cbcbcb;
+  padding: 5px 16px;
+}
+
+#rects_table td,
+#links_table td,
+#others_table td {
+  background-color: #ffffff;
+  border: 0.5px solid #e5e4e4;
+  padding: 5px 16px;
+}
+
+td:nth-child(1) {
+  width: 70%;
+  font-size: 13px;
+}
+
+td:nth-child(2) {
+  text-align: center;
+  width: 30%;
+}
+
+/* others */
+.scrollable {
+  white-space: nowrap;
+  overflow: auto;
+  border: 1px solid #cbcbcb;
+}
+
+
+/* branch */
+.branchLabel:hover{
+  fill: rgb(0, 34, 255); 
+  font-weight:bolder;
+  text-decoration: underline;
+}
+
+
+/* modal */
+#modalTitleLabel {
+  font-weight: bolder;
+}
