@@ -106,7 +106,7 @@ var LayoutControls = mvc.View.extend({
 
 // custom shape element for 'parallel'
 var ParallelRect = dia.Element.define(
-  "custom.CustomElement",
+  "custom.ParallelRectangle",
   {
     attrs: {
       header: {
@@ -124,6 +124,15 @@ var ParallelRect = dia.Element.define(
         x: 0,
         y: 0,
         fill: "lightyellow",
+      },
+      button: {
+        width: 16,
+        height: 16, //always make header height 24
+        x: "calc(w-21)", //middle of header
+        y: 4, //middle of header
+        strokeWidth: 2,
+        stroke: "black",
+        fill: "lime",
       },
       titleLabel: {
         pointerEvents: "none",
@@ -143,6 +152,10 @@ var ParallelRect = dia.Element.define(
       {
         tagName: "rect",
         selector: "header",
+      },
+      {
+        tagName: "rect",
+        selector: "button",
       },
       {
         tagName: "text",
@@ -476,7 +489,11 @@ function createParallelRect(rectData) {
     branchCounter++;
     counter++;
   }
-  console.log(parallel.markup);
+
+  parallel.attr("button", {
+    id: rectData.currentStageId,
+  });
+
   return parallel;
 }
 
@@ -531,6 +548,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
           fontWeight: "bold",
           textAnchor: "middle",
           textVerticalAnchor: "middle",
+          class: "textLabel",
         },
         labelBody: {
           rx: 2,
@@ -542,6 +560,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
           height: "calc(h + 6)",
           fill: "white",
           stroke: "black",
+          class: "textLabelBody"
         },
       },
     },
@@ -617,6 +636,8 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
       },
     ]);
   }
+
+
   linksArray.push(link);
 }
 
@@ -837,7 +858,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg2Nzg2OTEsImV4cCI6MTY5ODY4MjI5MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg2NzgzODksImlkcCI6IkZvcm1zIiwianRpIjoiQzdGNDJDNjIwRDkxMDk4MDI5OTIwOTU1MzkxQ0VBM0EiLCJzaWQiOiIxRTFGRUVBOTc5QUYxQUM2QTUyQzA4OTg0NzVDMEM5RSIsImlhdCI6MTY5ODY3ODM5Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.ZgVHDcgDg14bARYrILTjofu6G2QxIGWDdE66xxZkyduIhtK9fPV6AfPLEsxcfTgJ50_raJMHHkVSK9UMrfTEFx0IX0Mlaey1brjCOAg5EsHrSqjlxrr90nHZWlcnyAujP5MecShEwRuFH5gqdHtUNNppamhZ9b1hgS6fROGh_J1v_0atUFlNWlCnACcVne1YxrmF6IVyNzxU7huC-EU-a8df7IjBSWS9kVAAXd3yB79TZVfOVVtrahjt8vlkbqX6vRjy1muKoE33QE-dzyGnYCjzNmYkUR-62ug3MQf66beAfUEN1pD6MYlpvOsApCjjmNNtCu_DoToXN_i9Y5jqUw"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg3NDIxMTMsImV4cCI6MTY5ODc0NTcxMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg3MTczNDksImlkcCI6IkZvcm1zIiwianRpIjoiNjUxRDU0NzlDRjAyNjMwNEM1RjI0RDJERUU5MTZCNjkiLCJzaWQiOiI2MEI0MjVCOTkwMEU0QkE1QjBBRDNFQ0MxN0Q4RkI3NyIsImlhdCI6MTY5ODcxNzM1Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.a6CU0RS8MwhVyqjSctuSy-IaPDw5DfQtI78G95uHL1C8PZbBQTvHdivEDVy12tUu62SqlCLSdD_d0pbGvHVuaMwsgikbBFbECyznubX8F1GnsoxtcqcYi14iP5kBEgZhKK06j7qri8aS2MARHwHhWXYlH_kOgeIcE9mqguIsfLB79BnOloIx0N6GBHDg-GObI98-BUBwJmKN8I-ngHs2Qf4ZrlM36cE_3d6fl5CZ7cKx0pxX5lwOz-eposEuTjK5vHeGwNS69cv6e0A0s_Aw5_raCmzD7hZ5U1gfzr18tHBRjFsuUYp-sVs9CF-3bZPRI-NOmqwd4e_rPlv5c8wZUA"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1093,5 +1114,69 @@ scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
 });
+
+setTimeout(() => {
+  const parallelRects = document.querySelectorAll('[data-type="custom.ParallelRectangle"]');
+  const parallelButtons = document.querySelectorAll('[data-type="custom.ParallelRectangle"] rect[joint-selector="button"]');
+  let size = parallelRects.length;
+
+  for (let i = 0; i < size; i++) {
+    let x = parallelRects[i].transform.baseVal[0].matrix.e;
+    let y = parallelRects[i].transform.baseVal[0].matrix.f;
+    let stageId = parallelButtons[i].id;
+
+    
+    parallelButtons[i].addEventListener('mouseover', (evt) => {
+
+      // Create an SVG circle element
+      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", (parseFloat(parallelButtons[i].getAttribute("x")) + x + 10));
+      rect.setAttribute("y",y);
+      rect.setAttribute("class", "parallelActionDetailsRect");
+
+      // Create an SVG text element
+      var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", (parseFloat(parallelButtons[i].getAttribute("x")) + parseFloat(parallelButtons[i].getAttribute("width")) + 10));
+      text.setAttribute("y",y);
+      text.setAttribute("font-size", "12"); // Set the font size as needed
+
+      // Create an SVG group (g) element and append the rect and text to it
+      var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("id", "g_" + stageId);
+      group.appendChild(rect);
+      group.appendChild(text);
+
+
+      // Append the text element to the same container as the rectangle
+      parallelButtons[i].parentNode.parentNode.appendChild(group);
+    })
+
+    
+    parallelButtons[i].addEventListener('mouseleave', (evt) => {
+      // Find the text element within the parent and remove it
+      var textElement = parallelButtons[i].parentNode.parentNode.querySelector(`g#g_${stageId}`);
+
+      if (textElement) {
+        parallelButtons[i].parentNode.parentNode.removeChild(textElement);
+      }
+    });
+
+
+  }
+
+
+    
+
+
+
+ 
+
+  // const parallelRect = document.querySelectorAll('[data-type="custom.ParallelRectangle"]');
+  // parallelRect.forEach(element => {
+  //   console.log(element.transform.baseVal[0].matrix.f); //distance between cells-viewport layer and element
+  // });
+
+}, 2000);
+
 
 

@@ -82,6 +82,7 @@ td:nth-child(2) {
 .branchLabel:hover{
   fill: rgb(0, 34, 255); 
   font-weight:bolder;
+  font-size: large;
   text-decoration: underline;
 }
 
@@ -89,4 +90,23 @@ td:nth-child(2) {
 /* modal */
 #modalTitleLabel {
   font-weight: bolder;
+}
+
+
+/* textlabel */
+.label{
+  cursor:pointer;
+}
+
+
+.label:hover rect{
+  fill:red;
+  background-color: red;
+}
+
+.parallelActionDetailsRect{
+  width: 200px;
+  height:250px;
+  fill:white;
+  stroke : black;
 }
