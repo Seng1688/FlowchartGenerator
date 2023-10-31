@@ -96,7 +96,7 @@ function resetModal() {
 
 
 const modalScaleDragger = document.getElementById("modalScaleDragger");
-modalScaleDragger.addEventListener("change", () => {
+modalScaleDragger.addEventListener("input", () => {
     const value = $("#modalScaleDragger").val();
     modalPaper.scale(value);
 });

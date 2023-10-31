@@ -871,7 +871,7 @@ function callAPI() {
     });
 }
 
-// create dropdown list based on number of workflows
+// create workflow dropdown list based on number of workflows
 function createDropdownList() {
   let workflowNoSelectField = document.getElementById('workflowNo');
   workflowNoSelectField.innerHTML = "";
@@ -1089,7 +1089,7 @@ workflowNoButton.addEventListener("change", () => {
 
 
 const scaleDragger = document.getElementById("scale");
-scaleDragger.addEventListener("change", () => {
+scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
 });
