@@ -19,12 +19,12 @@ body {
 }
 
 /* canvas */
-#canvas{
+#canvas {
   height: 800px;
   border: 0.2px solid rgb(233, 233, 233);
 }
 
-#modalCanvas{
+#modalCanvas {
   height: 600px;
   width: 100%;
   border: 0.2px solid rgb(233, 233, 233);
@@ -79,9 +79,9 @@ td:nth-child(2) {
 
 
 /* branch */
-.branchLabel:hover{
-  fill: rgb(0, 34, 255); 
-  font-weight:bolder;
+.branchLabel:hover {
+  fill: rgb(0, 34, 255);
+  font-weight: bolder;
   font-size: large;
   text-decoration: underline;
 }
@@ -92,21 +92,40 @@ td:nth-child(2) {
   font-weight: bolder;
 }
 
+/* Parallel Stage*/
+.CompleteActionsDetailsBody {
+  display: inline-block;
+  position: absolute;
+  padding: 8px 10px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid black;
+  border-radius: 0px 30px 30px 30px;
 
-/* textlabel */
-.label{
-  cursor:pointer;
+}
+
+.CompleteActionsDetailsBody .red {
+  color: red;
+}
+
+.CompleteActionsDetailsBody .blue {
+  color: rgb(77, 0, 242);
+}
+
+.CompleteActionsDetailsBody .green {
+  color: rgb(9, 163, 12);
+
+}
+
+.CompleteActionsDetailsBody .underline {
+  text-decoration: underline;
 }
 
 
-.label:hover rect{
-  fill:red;
-  background-color: red;
+.CompleteActionsDetailsBody .bold {
+  font-weight: bolder;
 }
 
-.parallelActionDetailsRect{
-  width: 200px;
-  height:250px;
-  fill:white;
-  stroke : black;
+
+g[data-type="custom.ParallelRectangle"] circle[joint-selector="button"] {
+  cursor: pointer;
 }

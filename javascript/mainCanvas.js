@@ -67,7 +67,10 @@ var LayoutControls = mvc.View.extend({
       linkView.hideTools();
     })
 
+    // build complete actions info's details for parallel stage
+    buildParallelStageInfoButtonDetails();
 
+    
 
 
     paper.freeze();
@@ -128,11 +131,12 @@ var ParallelRect = dia.Element.define(
       button: {
         width: 16,
         height: 16, //always make header height 24
-        x: "calc(w-21)", //middle of header
-        y: 4, //middle of header
+        cx: "calc(w-13)", //middle of header
+        cy: 12, //middle of header
+        r: 8,
         strokeWidth: 2,
         stroke: "black",
-        fill: "lime",
+        fill: 'lime',
       },
       titleLabel: {
         pointerEvents: "none",
@@ -154,7 +158,7 @@ var ParallelRect = dia.Element.define(
         selector: "header",
       },
       {
-        tagName: "rect",
+        tagName: "circle",
         selector: "button",
       },
       {
@@ -696,6 +700,7 @@ function createElements(elementsArray, linksArray, rectDataArray) {
   });
 
   //  =========================================Concatenate all elements========================================
+
   return elementsArray.concat(linksArray);
 }
 
@@ -858,7 +863,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg3NDIxMTMsImV4cCI6MTY5ODc0NTcxMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg3MTczNDksImlkcCI6IkZvcm1zIiwianRpIjoiNjUxRDU0NzlDRjAyNjMwNEM1RjI0RDJERUU5MTZCNjkiLCJzaWQiOiI2MEI0MjVCOTkwMEU0QkE1QjBBRDNFQ0MxN0Q4RkI3NyIsImlhdCI6MTY5ODcxNzM1Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.a6CU0RS8MwhVyqjSctuSy-IaPDw5DfQtI78G95uHL1C8PZbBQTvHdivEDVy12tUu62SqlCLSdD_d0pbGvHVuaMwsgikbBFbECyznubX8F1GnsoxtcqcYi14iP5kBEgZhKK06j7qri8aS2MARHwHhWXYlH_kOgeIcE9mqguIsfLB79BnOloIx0N6GBHDg-GObI98-BUBwJmKN8I-ngHs2Qf4ZrlM36cE_3d6fl5CZ7cKx0pxX5lwOz-eposEuTjK5vHeGwNS69cv6e0A0s_Aw5_raCmzD7hZ5U1gfzr18tHBRjFsuUYp-sVs9CF-3bZPRI-NOmqwd4e_rPlv5c8wZUA"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg4MjY1MTgsImV4cCI6MTY5ODgzMDExOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4MTgzOTMsImlkcCI6IkZvcm1zIiwianRpIjoiRkU5OUM1RTY4OTBBMTE3NkI2ODVDMDgxQzVBRTMxNzQiLCJzaWQiOiJENTRDNkM0OEJCQTU1QkNDMzdENDMwMUZGQjBGRTI3QSIsImlhdCI6MTY5ODgxODM5OCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.KzDhw78EXUvK3wv84lzZbW4Tpgwff4_g-xshhgd2jeBXOuu0tHl4gxX-qrAuHOe4LzgTaLVi9Bsv8lsUD3sKjH3VTnNk-HZ72soHF5FKbJVBbmK6saLY2Of6ntc6LbKrl4j7wrIOcDXJhai0YS5Lw09Mh7WiXfWT3DaCFEjMjltNuc3kOBge8X6sEpdkWgbT5592ckhoSL1XwqMZkmI6WYNs-tH_g_yKtE-l5HI3s4jIM4vVmlgIC0U2YJw0smP472439tker9cS3JebfqveUnTUpoJpQ5q9SUresSd6Qo5yL5VyeR_dRFi5LNBGxevP7mgecT1Ad4fBqBbfx_fEAg"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -925,6 +930,7 @@ function processJsonData(data) {
       actions: w.actions,
       stageType: w.stageType,
       parallelSets: w.parallelSets,
+      parallelCompletes: w.parallelCompletes,
     };
   });
 
@@ -949,6 +955,7 @@ function createStagesData(workflowStages) {
     let hasDecision = false;
     let stageType = workflowStages[i].stageType;
     let parallelSets = workflowStages[i].parallelSets;
+    let parallelCompletes = workflowStages[i].parallelCompletes;
 
     let actionLength =
       stageType == "Parallel"
@@ -1004,7 +1011,8 @@ function createStagesData(workflowStages) {
       stageType,
       hasDecision,
       branches,
-      parallelSets
+      parallelSets,
+      parallelCompletes
     });
 
   }
@@ -1029,7 +1037,7 @@ function createStagesData(workflowStages) {
 
 // create control and use constructor function to trigger createElements() function
 function createLayoutControl() {
-
+  console.log(rectDataArray);
   mainPaper = createPaper("myholder");
   mainPaper.on('link:pointerdown', (elementView, evt) => {
     console.log(elementView);
@@ -1095,7 +1103,6 @@ generateButton.addEventListener("click", () => {
 });
 generateButton.click();
 
-
 const workflowNoButton = document.getElementById("workflowNo");
 workflowNoButton.addEventListener("change", () => {
   const value = document.getElementById("workflowNo").value;
@@ -1108,75 +1115,108 @@ workflowNoButton.addEventListener("change", () => {
   callAPI();
 });
 
-
 const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
 });
 
-setTimeout(() => {
+
+
+
+
+
+// parallel stage related
+function buildParallelStageInfoButtonDetails(){
   const parallelRects = document.querySelectorAll('[data-type="custom.ParallelRectangle"]');
-  const parallelButtons = document.querySelectorAll('[data-type="custom.ParallelRectangle"] rect[joint-selector="button"]');
+  const parallelButtons = document.querySelectorAll('[data-type="custom.ParallelRectangle"] circle[joint-selector="button"]');
   let size = parallelRects.length;
 
   for (let i = 0; i < size; i++) {
-    let x = parallelRects[i].transform.baseVal[0].matrix.e;
-    let y = parallelRects[i].transform.baseVal[0].matrix.f;
     let stageId = parallelButtons[i].id;
 
-    
-    parallelButtons[i].addEventListener('mouseover', (evt) => {
+    parallelButtons[i].addEventListener('click', (evt) => {
 
-      // Create an SVG circle element
-      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", (parseFloat(parallelButtons[i].getAttribute("x")) + x + 10));
-      rect.setAttribute("y",y);
-      rect.setAttribute("class", "parallelActionDetailsRect");
+      var divBlock = document.querySelector(".CompleteActionsDetailsBody");
+      let paragraph = getParallelStageCompleteActionsDetails(stageId);
 
-      // Create an SVG text element
-      var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", (parseFloat(parallelButtons[i].getAttribute("x")) + parseFloat(parallelButtons[i].getAttribute("width")) + 10));
-      text.setAttribute("y",y);
-      text.setAttribute("font-size", "12"); // Set the font size as needed
+      if (!divBlock) {
+        divBlock = document.createElement("div");
+        divBlock.classList.add('CompleteActionsDetailsBody');
+        divBlock.style.top = (evt.y) + "px";
+        divBlock.style.left = (evt.x) + "px";
+        divBlock.appendChild(paragraph);
+        document.body.appendChild(divBlock); // This appends the div to the body element
 
-      // Create an SVG group (g) element and append the rect and text to it
-      var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      group.setAttribute("id", "g_" + stageId);
-      group.appendChild(rect);
-      group.appendChild(text);
+        divBlock.addEventListener('click', (evt) => {
+          // Find the text element within the parent and remove it
+          var divBlock = document.querySelector(".CompleteActionsDetailsBody");
 
+          if (divBlock) {
+            document.body.removeChild(divBlock);
+          }
+        });
+      }
 
-      // Append the text element to the same container as the rectangle
-      parallelButtons[i].parentNode.parentNode.appendChild(group);
     })
 
-    
-    parallelButtons[i].addEventListener('mouseleave', (evt) => {
-      // Find the text element within the parent and remove it
-      var textElement = parallelButtons[i].parentNode.parentNode.querySelector(`g#g_${stageId}`);
+  }
+}
+  
+function getParallelStageCompleteActionsDetails(stageId) {
 
-      if (textElement) {
-        parallelButtons[i].parentNode.parentNode.removeChild(textElement);
+  // simplify action details
+  let parallelCompletesActions = [];
+
+  let index = rectDataArray.findIndex((rect) => {
+    return rect.currentStageId.toString() === stageId.toString();
+  })
+
+  if (index) {
+    let parallelCompletes = rectDataArray[index].parallelCompletes;
+
+    for (let i = 0; i < parallelCompletes.length; i++) {
+      const details = {
+        title: parallelCompletes[i].title.key,
+        stageGroups: parallelCompletes[i].stageGroups
       }
-    });
-
+      parallelCompletesActions.push(details);
+    }
 
   }
 
+  //create text based on action details 
+  let textString = ``;
+  let divBlock = document.createElement("p");
 
-    
+  for (let i = 0; i < parallelCompletesActions.length; i++) {
+    let pcAction = parallelCompletesActions[i];
+    textString += `<span class="bold underline">${i + 1}) Complete Action:<span class="red"> ${pcAction.title} </span> </span><br>`
 
+    for (let j = 0; j < pcAction.stageGroups.length; j++) {
+      let stageGroup = pcAction.stageGroups[j];
+      textString += `<span class="bold"> Stage Group: ${j + 1} </span><br>`
+      textString += `<span class="green bold">${stageGroup.operator}</span> of these condition(s) must be fullfilled </span><br>`
 
+      for (let p = 0; p < stageGroup.stages.length; p++) {
+        let stages = stageGroup.stages[p];
+        let actionName = stages.actionName.key;
+        if (actionName === "") {
+          actionName = "Any/No Action"
+        }
 
- 
+        textString += ` When <span class="blue bold"> ${stages.stageName.key}</span> is  <span class="blue bold"> ${actionName}</span> <br>  `
 
-  // const parallelRect = document.querySelectorAll('[data-type="custom.ParallelRectangle"]');
-  // parallelRect.forEach(element => {
-  //   console.log(element.transform.baseVal[0].matrix.f); //distance between cells-viewport layer and element
-  // });
+      }
 
-}, 2000);
+      if (j < pcAction.stageGroups.length - 1) {
+        textString += `<span class="bold">AND </span><br>`
+      }
 
+    }
+    textString += `<br>`;
+  }
 
-
+  divBlock.innerHTML = textString;
+  return divBlock;
+}
