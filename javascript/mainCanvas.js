@@ -872,7 +872,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg4OTU5MzMsImV4cCI6MTY5ODg5OTUzMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4ODg5NzcsImlkcCI6IkZvcm1zIiwianRpIjoiMTZBNkJBNzVDRUM0N0JFNUZBNDE1QUIwMkJCMTE0M0QiLCJzaWQiOiJBMzI0QkRENTYxQ0VFNDE2ODA4RjYwNkE0OTFBMEEwNCIsImlhdCI6MTY5ODg5NTkzMywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.Mj-OOCIBIs_bfVlPt-vdkj_FAshhN3jqdhC1Dn2YWJdn-LRMUnGsHtQ5GKx_cg3RqvtLDT3-hpvHHgNpzmq7GV6vqxPYgiDcfSZPyukfjOBzUpq0rUeXEvLwzmVOPcYjXPY-iKzjPtY3X_5YJkuepXubdjXJ4GxzoQ3GOeDLrcyhw2z2OrrTxCZDC9vPrpkj801AwVE6xhIF5KM5e2sqYtaPe6sCbAu-zC7VN631sHMUUmMx98Qy3MrSLUJwLUZIsdAP6fYgiCAcfbER4wtkRejfVYSCnhqDTPsi_QGd3BW5O-q828hltd0RMsBju-UK2MDGpg1AQJKMk2hUNJEAmg"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg5MDQyMzgsImV4cCI6MTY5ODkwNzgzOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4ODg5NzcsImlkcCI6IkZvcm1zIiwianRpIjoiMTZBNkJBNzVDRUM0N0JFNUZBNDE1QUIwMkJCMTE0M0QiLCJzaWQiOiJBMzI0QkRENTYxQ0VFNDE2ODA4RjYwNkE0OTFBMEEwNCIsImlhdCI6MTY5ODg5NTkzMywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.ES5kBNSNlQbYJyMh3cDdya4WJiWVwpLi6Z7gmbW5q2RShv-T58rU-9j1EnYTvthV1smxCwuIDbtjSp71L5unfCMN2b0lA81fNU0elAvlbY8XZIb4EpKHVVS-Fu0QjywVvs9GicWtoTSfpMVdRQ-G0c_Nrd4chB9uM1EloshmlluOIPzEUpyhTfeHPyuVn1XWWsKwPNSiuKoVWVjCF5QmLnJHoe4AvDXxirDUf0CR-9iu9zri3-gdKD5aBmmhc8NOjjMrxCiLlx-4CE_chQJRj7R-Ad4pkRcCov6bKyc16Gcrc9Nsq7wVHWvGmurvjY5lW38tQmmWf_nlaD105QMpEg"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1161,18 +1161,18 @@ function buildParallelStageInfoButtonDetails() {
           divBlock.style.opacity = 1;
         }, 100);
 
-
-
+        // remove the div block when it is clicked
         divBlock.addEventListener('click', (evt) => {
-          // Find the text element within the parent and remove it
+
           var divBlock = document.querySelector(".CompleteActionsDetailsBody");
 
           if (divBlock) {
             divBlock.style.opacity = 0;
             setTimeout(() => {
               document.body.removeChild(divBlock);
-            }, 100);
+            }, 400);
           }
+          
         });
       }
 

@@ -2,6 +2,16 @@ body {
   font-family: "Calibri", sans-serif;
 }
 
+/* container */
+.outer-container {
+  padding: 5px 100px;
+}
+
+/* paper */
+#myholder{
+  border: 1px solid rgb(211, 211, 211);
+}
+
 /* controls */
 #layoutControl {
   background: linear-gradient(to bottom, #ecebeb, #ffffff);
@@ -18,17 +28,17 @@ body {
   font-weight: bolder;
 }
 
+
+
+
 /* canvas */
 #canvas {
   height: 800px;
   border: 0.2px solid rgb(233, 233, 233);
 }
 
-#modalCanvas {
-  height: 600px;
-  width: 100%;
-  border: 0.2px solid rgb(233, 233, 233);
-}
+
+
 
 /* reference board */
 #reference_board {
@@ -41,7 +51,8 @@ body {
 #links_table,
 #others_table {
   border: 0.5px solid #f6f6f6;
-  margin: 16px 0px;
+  margin: 35px 0px;
+    
 }
 
 #rects_table th,
@@ -70,12 +81,7 @@ td:nth-child(2) {
   width: 30%;
 }
 
-/* others */
-.scrollable {
-  white-space: nowrap;
-  overflow: auto;
-  border: 1px solid #cbcbcb;
-}
+
 
 
 /* branch */
@@ -87,12 +93,27 @@ td:nth-child(2) {
 }
 
 
+
+
 /* modal */
+#modalCanvas {
+  height: 600px;
+  width: 100%;
+  border: 0.2px solid rgb(233, 233, 233);
+}
+
 #modalTitleLabel {
   font-weight: bolder;
 }
 
+
+
+
 /* Parallel Stage*/
+g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
+  cursor: pointer;
+}
+
 .CompleteActionsDetailsBody {
   display: inline-block;
   position: absolute;
@@ -100,7 +121,7 @@ td:nth-child(2) {
   background-color: rgb(255, 255, 255);
   border: 1px solid black;
   border-radius: 0px 30px 30px 30px;
-  transition:  opacity linear .4s;
+  transition: opacity linear .4s;
 
 }
 
@@ -114,19 +135,22 @@ td:nth-child(2) {
 
 .CompleteActionsDetailsBody .green {
   color: rgb(9, 163, 12);
-
 }
 
 .CompleteActionsDetailsBody .underline {
   text-decoration: underline;
 }
 
-
 .CompleteActionsDetailsBody .bold {
   font-weight: bolder;
 }
 
 
-g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
-  cursor: pointer;
+
+
+/* others */
+.scrollable {
+  white-space: nowrap;
+  overflow: auto;
+  border: 1px solid #cbcbcb;
 }
