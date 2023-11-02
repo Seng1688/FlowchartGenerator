@@ -70,7 +70,7 @@ var LayoutControls = mvc.View.extend({
     // build complete actions info's details for parallel stage
     buildParallelStageInfoButtonDetails();
 
-    
+
 
 
     paper.freeze();
@@ -128,15 +128,12 @@ var ParallelRect = dia.Element.define(
         y: 0,
         fill: "lightyellow",
       },
-      button: {
+      icon: {
         width: 16,
-        height: 16, //always make header height 24
-        cx: "calc(w-13)", //middle of header
-        cy: 12, //middle of header
-        r: 8,
-        strokeWidth: 2,
-        stroke: "black",
-        fill: 'lime',
+        height: 16,
+        x: "calc(w-18)",
+        y: 4,
+        'xlink:href': 'picture/info_icon.png'
       },
       titleLabel: {
         pointerEvents: "none",
@@ -158,8 +155,8 @@ var ParallelRect = dia.Element.define(
         selector: "header",
       },
       {
-        tagName: "circle",
-        selector: "button",
+        tagName: "image",
+        selector: "icon",
       },
       {
         tagName: "text",
@@ -494,7 +491,7 @@ function createParallelRect(rectData) {
     counter++;
   }
 
-  parallel.attr("button", {
+  parallel.attr("icon", {
     id: rectData.currentStageId,
   });
 
@@ -798,6 +795,18 @@ function createLinkTools() {
   return toolsView;
 }
 
+function createImage(w, h, imagePath, imageLabel) {
+  var image = new joint.shapes.standard.Image({
+    size: { width: w, height: h },
+    attrs: {
+      label: { text: imageLabel },
+      image: { 'xlink:href': imagePath }
+    }
+  });
+  return image
+
+}
+
 function checkIsReturnLink(sourcId, targetId) {
   let sourceSeqNo;
   let targetSeqNo;
@@ -863,7 +872,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg4MjY1MTgsImV4cCI6MTY5ODgzMDExOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4MTgzOTMsImlkcCI6IkZvcm1zIiwianRpIjoiRkU5OUM1RTY4OTBBMTE3NkI2ODVDMDgxQzVBRTMxNzQiLCJzaWQiOiJENTRDNkM0OEJCQTU1QkNDMzdENDMwMUZGQjBGRTI3QSIsImlhdCI6MTY5ODgxODM5OCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.KzDhw78EXUvK3wv84lzZbW4Tpgwff4_g-xshhgd2jeBXOuu0tHl4gxX-qrAuHOe4LzgTaLVi9Bsv8lsUD3sKjH3VTnNk-HZ72soHF5FKbJVBbmK6saLY2Of6ntc6LbKrl4j7wrIOcDXJhai0YS5Lw09Mh7WiXfWT3DaCFEjMjltNuc3kOBge8X6sEpdkWgbT5592ckhoSL1XwqMZkmI6WYNs-tH_g_yKtE-l5HI3s4jIM4vVmlgIC0U2YJw0smP472439tker9cS3JebfqveUnTUpoJpQ5q9SUresSd6Qo5yL5VyeR_dRFi5LNBGxevP7mgecT1Ad4fBqBbfx_fEAg"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg4OTU5MzMsImV4cCI6MTY5ODg5OTUzMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4ODg5NzcsImlkcCI6IkZvcm1zIiwianRpIjoiMTZBNkJBNzVDRUM0N0JFNUZBNDE1QUIwMkJCMTE0M0QiLCJzaWQiOiJBMzI0QkRENTYxQ0VFNDE2ODA4RjYwNkE0OTFBMEEwNCIsImlhdCI6MTY5ODg5NTkzMywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.Mj-OOCIBIs_bfVlPt-vdkj_FAshhN3jqdhC1Dn2YWJdn-LRMUnGsHtQ5GKx_cg3RqvtLDT3-hpvHHgNpzmq7GV6vqxPYgiDcfSZPyukfjOBzUpq0rUeXEvLwzmVOPcYjXPY-iKzjPtY3X_5YJkuepXubdjXJ4GxzoQ3GOeDLrcyhw2z2OrrTxCZDC9vPrpkj801AwVE6xhIF5KM5e2sqYtaPe6sCbAu-zC7VN631sHMUUmMx98Qy3MrSLUJwLUZIsdAP6fYgiCAcfbER4wtkRejfVYSCnhqDTPsi_QGd3BW5O-q828hltd0RMsBju-UK2MDGpg1AQJKMk2hUNJEAmg"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1127,9 +1136,9 @@ scaleDragger.addEventListener("input", () => {
 
 
 // parallel stage related
-function buildParallelStageInfoButtonDetails(){
+function buildParallelStageInfoButtonDetails() {
   const parallelRects = document.querySelectorAll('[data-type="custom.ParallelRectangle"]');
-  const parallelButtons = document.querySelectorAll('[data-type="custom.ParallelRectangle"] circle[joint-selector="button"]');
+  const parallelButtons = document.querySelectorAll('[data-type="custom.ParallelRectangle"] image[joint-selector="icon"]');
   let size = parallelRects.length;
 
   for (let i = 0; i < size; i++) {
@@ -1145,15 +1154,24 @@ function buildParallelStageInfoButtonDetails(){
         divBlock.classList.add('CompleteActionsDetailsBody');
         divBlock.style.top = (evt.y) + "px";
         divBlock.style.left = (evt.x) + "px";
+        divBlock.style.opacity = 0;
         divBlock.appendChild(paragraph);
         document.body.appendChild(divBlock); // This appends the div to the body element
+        setTimeout(() => {
+          divBlock.style.opacity = 1;
+        }, 100);
+
+
 
         divBlock.addEventListener('click', (evt) => {
           // Find the text element within the parent and remove it
           var divBlock = document.querySelector(".CompleteActionsDetailsBody");
 
           if (divBlock) {
-            document.body.removeChild(divBlock);
+            divBlock.style.opacity = 0;
+            setTimeout(() => {
+              document.body.removeChild(divBlock);
+            }, 100);
           }
         });
       }
@@ -1162,7 +1180,7 @@ function buildParallelStageInfoButtonDetails(){
 
   }
 }
-  
+
 function getParallelStageCompleteActionsDetails(stageId) {
 
   // simplify action details
@@ -1186,17 +1204,17 @@ function getParallelStageCompleteActionsDetails(stageId) {
   }
 
   //create text based on action details 
-  let textString = ``;
-  let divBlock = document.createElement("p");
+  let html = ``;
+  let paragraph = document.createElement("p");
 
   for (let i = 0; i < parallelCompletesActions.length; i++) {
     let pcAction = parallelCompletesActions[i];
-    textString += `<span class="bold underline">${i + 1}) Complete Action:<span class="red"> ${pcAction.title} </span> </span><br>`
+    html += `<span class="bold underline">${i + 1}) Complete Action:<span class="red"> ${pcAction.title} </span> </span><br>`
 
     for (let j = 0; j < pcAction.stageGroups.length; j++) {
       let stageGroup = pcAction.stageGroups[j];
-      textString += `<span class="bold"> Stage Group: ${j + 1} </span><br>`
-      textString += `<span class="green bold">${stageGroup.operator}</span> of these condition(s) must be fullfilled </span><br>`
+      html += `<span class="bold"> Stage Group: ${j + 1} </span><br>`
+      html += `<span class="green bold">${stageGroup.operator}</span> of these condition(s) must be fullfilled </span><br>`
 
       for (let p = 0; p < stageGroup.stages.length; p++) {
         let stages = stageGroup.stages[p];
@@ -1205,18 +1223,18 @@ function getParallelStageCompleteActionsDetails(stageId) {
           actionName = "Any/No Action"
         }
 
-        textString += ` When <span class="blue bold"> ${stages.stageName.key}</span> is  <span class="blue bold"> ${actionName}</span> <br>  `
+        html += ` When <span class="blue bold"> ${stages.stageName.key}</span> is  <span class="blue bold"> ${actionName}</span> <br>  `
 
       }
 
       if (j < pcAction.stageGroups.length - 1) {
-        textString += `<span class="bold">AND </span><br>`
+        html += `<span class="bold">AND </span><br>`
       }
 
     }
-    textString += `<br>`;
+    html += `<br>`;
   }
 
-  divBlock.innerHTML = textString;
-  return divBlock;
+  paragraph.innerHTML = html;
+  return paragraph;
 }

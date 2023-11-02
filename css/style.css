@@ -100,6 +100,7 @@ td:nth-child(2) {
   background-color: rgb(255, 255, 255);
   border: 1px solid black;
   border-radius: 0px 30px 30px 30px;
+  transition:  opacity linear .4s;
 
 }
 
@@ -126,6 +127,6 @@ td:nth-child(2) {
 }
 
 
-g[data-type="custom.ParallelRectangle"] circle[joint-selector="button"] {
+g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   cursor: pointer;
 }
