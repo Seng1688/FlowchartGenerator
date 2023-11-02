@@ -115,14 +115,14 @@ var ParallelRect = dia.Element.define(
       header: {
         width: "calc(w)",
         height: "calc(h -calc(h -24))", //always make header height 24
-        strokeWidth: 2,
+        strokeWidth: 1.5,
         stroke: "black",
         fill: "yellow",
       },
       body: {
         width: "calc(w)",
         height: "calc(h)",
-        strokeWidth: 2,
+        strokeWidth: 1.5,
         stroke: "black",
         x: 0,
         y: 0,
@@ -385,19 +385,25 @@ function createRectangles(dataArray, elementsArray) {
 }
 
 function createStandardRect(rectData, fillValue) {
+
+  let fullStageName = rectData.currentStageName;
+  let processedStageName = checkAndAddEllipsis(fullStageName, 20);
+
   const Rect = new shapes.standard.Rectangle({
     id: rectData.currentStageId.toString(),
     size: { width: rectWidth, height: rectHeight },
+
     attrs: {
       body: {
         fill: fillValue,
         stroke: "black",
-        strokeWidth: 2,
+        strokeWidth: 1.5,
       },
 
       label: {
-        text: rectData.currentStageName,
-        fill: "black",
+        text: processedStageName,
+        title: fullStageName,
+        fill: "black"
       },
     },
     seqNo: rectData.seqNo,
@@ -406,6 +412,10 @@ function createStandardRect(rectData, fillValue) {
 }
 
 function createParallelRect(rectData) {
+ 
+   
+  let fullStageName = rectData.currentStageName;
+  let processedStageName = checkAndAddEllipsis(fullStageName, (rectData.branches.length > 3)? 30 : rectData.branches.length *12);
 
   var parallel = new ParallelRect({
     id: rectData.currentStageId.toString(),
@@ -413,8 +423,12 @@ function createParallelRect(rectData) {
     size: { width: 100, height: 80 },
     attrs: {
       titleLabel: {
-        text: rectData.currentStageName,
+        text: processedStageName,
       },
+      header:{
+        title: fullStageName,
+      }
+
     },
   });
 
@@ -430,6 +444,9 @@ function createParallelRect(rectData) {
   let counter = 1; // to calculate offsetX for each branch
 
   for (let i = 0; i < rectData.branches.length; i++) {
+
+    let fullBranchName = rectData.branches[i].branchName;
+    let processedBranchName = checkAndAddEllipsis(fullBranchName, 10);
 
     // bind parallelSet with label
     const parallelSet = rectData.parallelSets[i]
@@ -472,6 +489,7 @@ function createParallelRect(rectData) {
       selector: "branch" + branchCounter + "_label",
     };
 
+
     // define attribute for branch's label subelements
     parallel.attr("branch" + branchCounter + "_label", {
       ref: "branch" + branchCounter,
@@ -479,7 +497,8 @@ function createParallelRect(rectData) {
       event: 'element:branchLabel:pointerdown',
       textAnchor: "middle",
       textVerticalAnchor: "middle",
-      text: rectData.branches[i].branchName,
+      text:  processedBranchName,
+      title: fullBranchName,
       refX: "50%",
       refY: "50%",
       parallelSet: parallelSet,
@@ -622,14 +641,22 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
           break;
       }
     }
+
     const labelPosition = {
       distance: isSourceDecision ? 0.35 : 0.4,
     };
+
+
+    let fullActionName = actionLabel;
+    let processedActionLabel = checkAndAddEllipsis(fullActionName, 15);
+
     link.labels([
       {
         attrs: {
           labelText: {
-            text: actionLabel,
+            text: processedActionLabel,
+            title: fullActionName,
+            z: 9,
             textAnchor,
           },
         },
@@ -783,7 +810,7 @@ function createLinkTools() {
 
   var boundaryTool = new joint.linkTools.Boundary({
     focusOpacity: 0.5,
-    padding: 20,
+    padding: 10,
     useModelGeometry: false
   });
 
@@ -854,6 +881,18 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
   return fillValue;
 }
 
+function checkAndAddEllipsis(text, maxLength) {
+  if (text !== '') {
+    if (text.length > 20) {
+      var string = text.substring(0, maxLength) + "...";
+      return string;
+    }
+    else {
+      return text;
+    }
+  }
+
+}
 
 
 
@@ -872,7 +911,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg5MDQyMzgsImV4cCI6MTY5ODkwNzgzOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4ODg5NzcsImlkcCI6IkZvcm1zIiwianRpIjoiMTZBNkJBNzVDRUM0N0JFNUZBNDE1QUIwMkJCMTE0M0QiLCJzaWQiOiJBMzI0QkRENTYxQ0VFNDE2ODA4RjYwNkE0OTFBMEEwNCIsImlhdCI6MTY5ODg5NTkzMywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.ES5kBNSNlQbYJyMh3cDdya4WJiWVwpLi6Z7gmbW5q2RShv-T58rU-9j1EnYTvthV1smxCwuIDbtjSp71L5unfCMN2b0lA81fNU0elAvlbY8XZIb4EpKHVVS-Fu0QjywVvs9GicWtoTSfpMVdRQ-G0c_Nrd4chB9uM1EloshmlluOIPzEUpyhTfeHPyuVn1XWWsKwPNSiuKoVWVjCF5QmLnJHoe4AvDXxirDUf0CR-9iu9zri3-gdKD5aBmmhc8NOjjMrxCiLlx-4CE_chQJRj7R-Ad4pkRcCov6bKyc16Gcrc9Nsq7wVHWvGmurvjY5lW38tQmmWf_nlaD105QMpEg"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg5MTMzODgsImV4cCI6MTY5ODkxNjk4OCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg4ODg5NzcsImlkcCI6IkZvcm1zIiwianRpIjoiNDNGMjZEM0RBMzYyRkY0QjQxMTgxRDFERUI2QzRCRDUiLCJzaWQiOiJBMzI0QkRENTYxQ0VFNDE2ODA4RjYwNkE0OTFBMEEwNCIsImlhdCI6MTY5ODkwOTc3Nywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.UlwmPcLf9AaJ-nBG2bJgagAki3laW6Y-8JaKTyae4Js_BOFXPJkXA_-sArCrvMQedkvL9LqXAhs7dIJcv8yeIpAS0MhDlJa1CafcbXhbrz9sJlvAcmwg9rDOxUR50izIX8x4ik4zpQgrAvYlB-H9k1tp08YXYRirUBZg7Dlw-fZ_Y_AQC217N9vP6y5IuhOqE4YctpP9kOja1dJJYFsQ5DucCAHIOfBu4a_JRI8ksOdZ2aZfegi-nYk6EunlUuZ8CajlWtIrPvaLILXtwstqQodfcUVVLll8Oz3wrInG_zBm4blSAnQgoAWK9XZi0HRlD6vUjgsfCSPrvqPRTcCuSQ"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1172,7 +1211,7 @@ function buildParallelStageInfoButtonDetails() {
               document.body.removeChild(divBlock);
             }, 400);
           }
-          
+
         });
       }
 

@@ -52,7 +52,7 @@ body {
 #others_table {
   border: 0.5px solid #f6f6f6;
   margin: 35px 0px;
-    
+
 }
 
 #rects_table th,
@@ -144,8 +144,6 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
 .CompleteActionsDetailsBody .bold {
   font-weight: bolder;
 }
-
-
 
 
 /* others */
