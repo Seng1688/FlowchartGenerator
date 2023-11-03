@@ -10,6 +10,11 @@ body {
 /* paper */
 #myholder {
   border: 1px solid rgb(211, 211, 211);
+  width:100%;
+  height:100%;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
 
 /* controls */
@@ -136,6 +141,9 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   border: 1px solid #cbcbcb;
 }
 
+#loading-icon{
+  position: absolute;
+}
 
 /* Link Tools */
 path[data-tool-name="source-arrowhead"] {
