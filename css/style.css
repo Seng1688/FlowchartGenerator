@@ -8,7 +8,7 @@ body {
 }
 
 /* paper */
-#myholder{
+#myholder {
   border: 1px solid rgb(211, 211, 211);
 }
 
@@ -134,4 +134,26 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   white-space: nowrap;
   overflow: auto;
   border: 1px solid #cbcbcb;
+}
+
+
+/* Link Tools */
+path[data-tool-name="source-arrowhead"] {
+  stroke: rgb(122, 199, 59);
+  fill: rgb(97, 252, 128);
+}
+
+path[data-tool-name="target-arrowhead"] {
+  stroke: rgb(252, 97, 97);
+  fill: rgb(244, 150, 87)
+}
+
+rect[data-tool-name="boundary"]{
+stroke:rgb(186, 10, 206);
+stroke-width: 1.2;
+}
+
+circle.joint-marker-vertex {
+  stroke: rgb(255, 255, 255);
+  fill: red;
 }
