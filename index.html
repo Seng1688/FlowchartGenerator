@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title></title>
+    <title>FlowChart Generator</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,23 +14,6 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
 </head>
-<!-- 
-<template id="link-controls-template">
-    <div id="link-controls" class="controls">
-        <label for="labelpos">LabelPos:</label>
-        <select id="labelpos">
-            <option value="c">c</option>
-            <option value="r">r</option>
-            <option value="l">l</option>
-        </select>
-        <label for="minlen">MinLen:</label>
-        <input id="minlen" type="range" min="1" max="5" value="1" />
-        <label for="weight">Weight:</label>
-        <input id="weight" type="range" min="1" max="10" value="1" />
-        <label for="labeloffset">LabelOffset:</label>
-        <input id="labeloffset" type="range" min="1" max="10" value="10" />
-    </div>
-</template> -->
 
 <body>
     <!-- workflow's details -->
@@ -50,11 +33,11 @@
                     <input type="text" readonly class="form-control-plaintext fw-bold" value="Form ID:">
                 </div>
                 <div class="col-md-2">
-                    <input type="text" id="formId" class="form-control d-inline" value="909">
+                    <input type="text" id="formId" class="form-control d-inline" value="841">
                 </div>
                 <div class="col-md-2">
                     <button id="fetchDataButton" type="button" class="btn btn-primary">Generate</button>
-                </div>        
+                </div>
             </div>
 
             <!-- flowchart -->
@@ -194,7 +177,7 @@
 
                 </div>
 
-                
+
                 <div id="canvas" class="col-md-10 scrollable p-4 ">
                     <div id="myholder" class="mx-auto"></div>
                 </div>
@@ -207,8 +190,8 @@
 </html>
 
 
- <!-- Modal -->
- <div class="modal fade" id="branchModal" tabindex="-1" aria-labelledby="branchModal" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="branchModal" tabindex="-1" aria-labelledby="branchModal" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable ">
         <div class="modal-content ">
             <div class="modal-header">
@@ -220,7 +203,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label for="ranker">Ranker :</label>
-    
+
                             <select class="ranker">
                                 <option value="network-simplex" selected>Network-simplex</option>
                                 <option value="tight-tree">Tight-tree</option>
@@ -246,7 +229,7 @@
                             </select>
                         </div>
                     </div>
-    
+
                     <div class="row mt-3 ">
                         <div class="col-md-3">
                             <label for="ranksep">RankSep:</label>
@@ -265,7 +248,7 @@
                             <input id="modalScaleDragger" type="range" min="0.1" max="2" step="0.1" value="0.8" />
                         </div>
                     </div>
-    
+
                 </div>
 
                 <div id="modalCanvas" class="col-md-9 scrollable p-4 ">
@@ -278,8 +261,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- JointJs Dependencies -->
 <script src="node_modules/jquery/dist/jquery.js"></script>

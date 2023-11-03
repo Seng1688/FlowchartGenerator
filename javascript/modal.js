@@ -33,7 +33,7 @@ modalTarget.addEventListener('hidden.bs.modal', function (event) {
     resetModal();
 })
 
-// with this, we cam use modal.show() to manually trigger it in javascript
+// with this, we can use modal.show() to manually trigger it in javascript
 let modal = new bootstrap.Modal(modalTarget, {
     keyboard: true,
     backdrop: 'static',
@@ -41,7 +41,7 @@ let modal = new bootstrap.Modal(modalTarget, {
 })
 
 
-//parallelSet get from manCanvas.js within createLayoutControl function
+// parallelSet get from manCanvas.js within createLayoutControl function
 function createModalStageData(parallelSet) {
 
     for (let i = 0; i < parallelSet.parallelStages.length; i++) {
@@ -92,8 +92,6 @@ function resetModal() {
     modalPaper="";
 
 }
-
-
 
 const modalScaleDragger = document.getElementById("modalScaleDragger");
 modalScaleDragger.addEventListener("input", () => {
