@@ -11,6 +11,7 @@ let elements = [];
 let links = [];
 let controls;
 let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' error
+let dragStartPosition;
 
 
 
@@ -976,6 +977,11 @@ function getParallelStageCompleteActionsDetails(stageId) {
 
 function resetAll() {
 
+  $(".ranksep").val(75);
+  $(".edgesep").val(100);
+  $(".nodesep").val(75);
+  $("#scale").val(0.8);
+
   rectDataArray = [];
   elements = [];
   links = [];
@@ -1021,7 +1027,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTg5OTU0NTUsImV4cCI6MTY5ODk5OTA1NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTg5OTEzOTYsImlkcCI6IkZvcm1zIiwianRpIjoiRDdBMDJGOTJBQTdBQkFDMjY2MjZDMTZFRkJGREFDRTIiLCJzaWQiOiI4MTk5QzJFM0U2QTg4NzAzREIwODc4NzE0QTJFNjhDNCIsImlhdCI6MTY5ODk5MTQwMCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.fwZhDzKObKXzawFyGVxz6WS3eQLaRQ0VC0I3QMEAC1SR_lXbDaO_GuuauIWq3ShW5lI417RJU_qgr1p32z3o4eLteP3BgJUgp8Be-ygsspaNV3q5ryApXQDC9p-o5q_mJzthqD_pAr87zIgydWjin68q6Qw1KU6TnN-m8SttniSk3k3LrAsT5tRfNmHjYPj9BXqVXIwJYK3KFDH68zjO7p4TY0WTUkq797sAX_hCPLYsDrLOQI7Ehjfap39xxk60ObheVXf_HfFXwEd5g1bllNsnEtrH7I2hfZ_21OzzGbHka5WyOhANcCs3bhpjHIfbuoh77h6--CLAADTH_Im7oQ"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkyNjkyMjYsImV4cCI6MTY5OTI3MjgyNiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkyNjkyMjEsImlkcCI6IkZvcm1zIiwianRpIjoiMTQ0MUU2OEZGOUFBQzkzNDFFMUYxQzQwMDQ0MTA1NkUiLCJzaWQiOiJCMjdGNTBEMEEwQzA1NzM1RUM0M0I0Q0VDNjA2RUFGMyIsImlhdCI6MTY5OTI2OTIyNiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.gtBKzM_InemWKDgp5j_4jprhImRB2oFfNb4c-oOvaDco0OJ8EsH38YAlC-M7RKPWp0Rthh9JmS9E675FJFDzAxJZQCtpCVuIhMekV5if9hek1j3094CSBzjK_pYeTrBfhYHPsYZ1tlH9Vx0mLDKv8G5upDBwdU30nDKOUYOiSNcJfsihp4vtoEKFrk0mGD6H02B9DRpnbEVG6fSnXVSq6A9IqRu_1uZE42WJ80BeYK4Vlyyo6Co3k1th6VuUUp_GK9LpYoGR692Iunp8NgEc-hbqt-aR-Nh8AJvQPXfN_fahRy1MZ2GQz-oK4Ve7gFh0VspXs5-O4d1s8VLJuTAqHw"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1046,9 +1052,12 @@ function callAPI() {
       processJsonData(data);
     })
     .catch((error) => {
-      //Handle any errors that occurred during the fetch or processing of the data
-      holder.innerHTML = "";
-      holder.innerHTML = `<span class="fs-3"> No Workflows is found on <b>Form ID: ${formId} 😊!!</b> </span>`;
+      if (error.message.includes("401")) {
+        holder.innerHTML = `<span class="fs-3"> ${error.message}!! 😊 You do not have the necessary <b>permissions</b> to access this resource. </span>`
+      }
+      else {
+        holder.innerHTML = `<span class="fs-3"> No Workflows is found on <b>Form ID: ${formId} 😊!!</b> </span>`;
+      }
     });
 }
 
@@ -1195,6 +1204,33 @@ function createLayoutControl() {
 
   mainPaper = createPaper("myholder");
 
+  if (mainPaper) {
+    mainPaper.on('blank:pointerdown',
+      function (event, x, y) {
+        var scale = V(mainPaper.viewport).scale();
+        mainPaper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
+      }
+    );
+
+    mainPaper.on('blank:pointerup', function () {
+      mainPaper.dragStartPosition = false;
+    });
+
+    $("#myholder")
+      .mousemove(function (event) {
+        if (mainPaper.dragStartPosition) {
+          mainPaper.translate(
+            event.offsetX - mainPaper.dragStartPosition.x,
+            event.offsetY - mainPaper.dragStartPosition.y);
+        }
+
+      });
+  }
+  else{
+    console.log("Paper createad unsuccessfully");
+  }
+
+
   controls = new LayoutControls({
     el: document.getElementById("layoutControl"),
     paper: mainPaper,
@@ -1228,7 +1264,7 @@ workflowNoButton.addEventListener("change", () => {
 const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
-  mainPaper.scale(value);
+  V(mainPaper.viewport).scale(value);
 });
 
 const generateButton = document.getElementById("fetchDataButton");
@@ -1236,19 +1272,19 @@ generateButton.addEventListener("click", () => {
 
   const holder = document.getElementById("myholder");
   // insert loading icon
-  holder.innerHTML = `<div id="aaa"> <img id="loading-icon" style=" width:380px; height:350px;top:120px" src="picture/loading.gif"> </div>`
+  holder.innerHTML = `<div id="aaa"> <img id="loading-icon" style=" width:300px; height:300px;top:120px" src="picture/loading.gif"> </div>`
   const loadingIcon = document.getElementById("loading-icon");
   let centerX;
 
   if (holder.style.width) {
-     centerX = parseInt(holder.style.width, 10) / 2 - 190;
+    centerX = parseInt(holder.style.width, 10) / 2 - 150;
   }
   else {
-    centerX =holder.parentElement.clientWidth / 2 - 190 + (0.26 * holder.parentElement.clientWidth); 
-    loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230)+'px';
+    centerX = holder.parentElement.clientWidth / 2 - 150 + (0.26 * holder.parentElement.clientWidth);
+    loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230) + 'px';
   }
 
-  loadingIcon.style.left = centerX+'px';
+  loadingIcon.style.left = centerX + 'px';
 
   if (controls) {
     resetAll();
@@ -1256,4 +1292,9 @@ generateButton.addEventListener("click", () => {
   workflowNo = 1;
   callAPI(processJsonData);
 });
+generateButton.click();
+
+
+
+
 
