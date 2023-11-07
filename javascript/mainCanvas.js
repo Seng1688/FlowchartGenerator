@@ -1027,7 +1027,7 @@ function callAPI() {
 
   // Bearer token (replace 'YOUR_TOKEN' with your actual token)
   const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkyNjkyMjYsImV4cCI6MTY5OTI3MjgyNiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkyNjkyMjEsImlkcCI6IkZvcm1zIiwianRpIjoiMTQ0MUU2OEZGOUFBQzkzNDFFMUYxQzQwMDQ0MTA1NkUiLCJzaWQiOiJCMjdGNTBEMEEwQzA1NzM1RUM0M0I0Q0VDNjA2RUFGMyIsImlhdCI6MTY5OTI2OTIyNiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.gtBKzM_InemWKDgp5j_4jprhImRB2oFfNb4c-oOvaDco0OJ8EsH38YAlC-M7RKPWp0Rthh9JmS9E675FJFDzAxJZQCtpCVuIhMekV5if9hek1j3094CSBzjK_pYeTrBfhYHPsYZ1tlH9Vx0mLDKv8G5upDBwdU30nDKOUYOiSNcJfsihp4vtoEKFrk0mGD6H02B9DRpnbEVG6fSnXVSq6A9IqRu_1uZE42WJ80BeYK4Vlyyo6Co3k1th6VuUUp_GK9LpYoGR692Iunp8NgEc-hbqt-aR-Nh8AJvQPXfN_fahRy1MZ2GQz-oK4Ve7gFh0VspXs5-O4d1s8VLJuTAqHw"
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkzMjQyOTMsImV4cCI6MTY5OTMyNzg5MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkzMjAzMjQsImlkcCI6IkZvcm1zIiwianRpIjoiMDRFNkMwMDI0RkNFNDUyMjhBRjcxOTE4NEJGRTcxNjIiLCJzaWQiOiI2MzdCNTQ4Q0E0RkRDOUZDQzc1REVDQzQ5RUE1NTc3NSIsImlhdCI6MTY5OTMyMDMyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.hBUcjN3cArCTsHHyL3y32wEQ0Zbji0zMeGqy8B0YUm_pnsOAyPf4uSGBVLncJwtdli6LIAzYuj4kTr88lGjTcQVlUR85EKD6Y4D_ugRLu-fBCxwGGZMpZLDcK9H3yfj_qkdgLrNe29-W4fkvtp5VcT-Wrcab8DqlsiKaMfR3ITUVNeksKo8FoNYX5EQTPgbBzrz3ahqAtlHeR8Ot2eb0X65C1jlbCXQnBQLCUmRAPrc9XgNxc7vJi0YbZY1ZrcSEYTA6nJUinchXLVEV2gUkAlQdrYTLMqrkc5MKYDGn8FMDrAxepwXbZPDqnrOyTKIhY1hqpMwu0PD3jKj8UgZ1yg"
 
   // Create headers with the bearer token
   const headers = new Headers({
@@ -1272,15 +1272,17 @@ generateButton.addEventListener("click", () => {
 
   const holder = document.getElementById("myholder");
   // insert loading icon
-  holder.innerHTML = `<div id="aaa"> <img id="loading-icon" style=" width:300px; height:300px;top:120px" src="picture/loading.gif"> </div>`
+  holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
   const loadingIcon = document.getElementById("loading-icon");
+  loadingIconWidth = parseInt(loadingIcon.style.width, 10)  ;
+  console.log(loadingIconWidth);
   let centerX;
 
   if (holder.style.width) {
-    centerX = parseInt(holder.style.width, 10) / 2 - 150;
+    centerX = parseInt(holder.style.width, 10) / 2 - (loadingIconWidth/2);
   }
   else {
-    centerX = holder.parentElement.clientWidth / 2 - 150 + (0.26 * holder.parentElement.clientWidth);
+    centerX = holder.parentElement.clientWidth / 2 - (loadingIconWidth/2) + (0.26 * holder.parentElement.clientWidth);
     loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230) + 'px';
   }
 
@@ -1293,8 +1295,3 @@ generateButton.addEventListener("click", () => {
   callAPI(processJsonData);
 });
 generateButton.click();
-
-
-
-
-
