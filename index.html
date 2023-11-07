@@ -34,10 +34,13 @@
                     <input type="text" readonly class="form-control-plaintext fw-bold" value="Form ID:">
                 </div>
                 <div class="col-md-2">
-                    <input type="text" id="formId" class="form-control d-inline" value="">
+                    <input type="text" id="formId" class="form-control d-inline" value="841">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <button id="fetchDataButton" type="button" class="btn btn-primary">Generate</button>
+                    <button id="exportButton" type="button" class="btn btn-primary">Export</button>
+                    <button id="importButton" type="button" class="btn btn-primary">Import</button>
+                    <button id="downloadButton" type="button" class="btn btn-danger">Download</button>
                 </div>
             </div>
 
@@ -173,15 +176,14 @@
                         </tr>
 
                     </table>
-
-
                 </div>
-
 
                 <div id="canvas" class="col-md-10 scrollable p-4 ">
                     <div id="myholder" class="mx-auto">
                        <span class="fs-3" > Input <b>Form ID </b> and click on <b> "Generate"</b> Button to generate the Flowchart 😊 </span> 
                     </div>
+                    <div id="myholder2" class="mx-auto">
+                     </div>
                 </div>
 
             </div>
@@ -279,6 +281,8 @@
 
 <!-- Jquery -->
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
+<!-- File Saver -->
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin = "anonymous" referrerpolicy = "no-referrer"> </script>
 
 <!-- User Defined -->
 <script src="javascript/mainCanvas.js"></script>

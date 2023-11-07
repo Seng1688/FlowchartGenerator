@@ -6,6 +6,7 @@ const rectHeight = 60;
 let totalWorkflows;
 let workflowNo = 1;
 let mainPaper;
+let mainGraph;
 let rectDataArray = [];
 let elements = [];
 let links = [];
@@ -49,6 +50,7 @@ var LayoutControls = mvc.View.extend({
     let paper = this.options.paper;
     let graph = paper.model;
     let cells = this.options.cells;
+    mainGraph = graph;
     graph.resetCells(cells);
 
     // add link tools for each link
@@ -272,7 +274,7 @@ function createPaper(holderId) {
       color: "white",
     },
     snapLabels: true,
-    defaultRouter: { name: "manhattan" },
+    defaultRouter: { name: "orthogonal" },
     linkPinning: true,
     interactive: function (cellView) {
       if (cellView.model.get("isLocked")) {
@@ -1054,7 +1056,7 @@ function callAPI() {
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
     const authToken =
-      "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkzMjgwMTMsImV4cCI6MTY5OTMzMTYxMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkzMjAzMjQsImlkcCI6IkZvcm1zIiwianRpIjoiMDRFNkMwMDI0RkNFNDUyMjhBRjcxOTE4NEJGRTcxNjIiLCJzaWQiOiI2MzdCNTQ4Q0E0RkRDOUZDQzc1REVDQzQ5RUE1NTc3NSIsImlhdCI6MTY5OTMyMDMyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.BK60KLczAYvMKCdBaiD87iXxadZnerLHNtPkq79U9qKjUg4SBOHvlP1a7rbNKUW4HRgnT7-72pGlQx58K4UnLi9NClDS5mV66_uHmDwNRaLw_LkCeuDTOtL4iwWjCR5PzBZ-M32AWynvZj_oLByqgBI_bfqnPY8zYMN35pu1Zq-39DAstb-ZaMGILxTFO3-JJ8wUj_a4oT81dt2P2fEiDkAQdjyjKtsarYZS-clzSsE4ps2GsEknGHJ8qqa-aqD1blalM9qXhheHDuD5OXlobceLej5sAkbfvRp0t-9luC-OxtIbUfX-DWYTjE13I9OUpfmyeNyNosaAUpwXjSO3Lw"
+      "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkzNDY0OTQsImV4cCI6MTY5OTM1MDA5NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkzMjkyNTgsImlkcCI6IkZvcm1zIiwianRpIjoiRDNGOEFDMzdCMEQyNzU0MDY0RkI4Qzc5MTQ0NkUxQzYiLCJzaWQiOiIzRkQzOEFCOTM3OTlDNjRCQzcyRTM5ODUzMDVGQTk0NiIsImlhdCI6MTY5OTMyOTMwNCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.YD3GgtyQ-_ca68tBbuhnHU1RfQS2DzpNokYNrOqGZsfAy_VvkuwqjU6TACkx1eWzFdYw5ydbLxjacN5lVDlcITdZiPgLfNB15RFllxW-Zc3pG3diD77__fMaCutyyPUlQ4KUK0hbcGrWGJZfDRnhy6KEZwKDw0cFm0l-5khxVlUxXAbZVGeoUvoCbAq65tiTfr9BCoKByyJaVDQ2IzE1YbmhQqyaAZJASzr6oneHhoTBVOjINUQbJD_V971_IBaF84h9M-l_b4wnQ-ZF2QT7EqDVk15KwcqjQk_QDKYCf2dogHhpNM-jdZOYB9H2kWopKjK3belag1pyZn_NML17zw"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1089,7 +1091,7 @@ function callAPI() {
         }
       });
   }
-  else{
+  else {
     message = `Please Input a <b>Form ID</b>😊!!`;
     insertErrorMessage(holder, message);
   }
@@ -1273,9 +1275,6 @@ function createLayoutControl() {
 
 
 
-
-
-
 const workflowNoButton = document.getElementById("workflowNo");
 workflowNoButton.addEventListener("change", () => {
   const value = document.getElementById("workflowNo").value;
@@ -1306,3 +1305,81 @@ generateButton.addEventListener("click", () => {
   callAPI();
 });
 
+
+
+
+
+
+
+
+
+
+
+
+// const exportButton = document.getElementById("exportButton");
+// exportButton.addEventListener("click", () => {
+//   mainGraph.set('graphCustomProperty', true);
+//   mainGraph.set('graphExportTime', Date.now());
+//   var jsonObject = mainGraph.toJSON();
+
+//   var graph2 = new joint.dia.Graph();
+//   graph2.fromJSON(jsonObject);
+//   graph2.get('graphCustomProperty'); // true
+//   graph2.get('graphExportTime');
+//   var paper2 = createPaper("myholder2", graph2);
+
+// });
+
+// const importButton = document.getElementById("importButton");
+// importButton.addEventListener("click", () => {
+
+//   graph2.fromJSON(graphObject());
+// });
+
+// const downloadButton = document.getElementById("downloadButton");
+// downloadButton.addEventListener("click", () => {
+//   let string = JSON.stringify(mainGraph.toJSON());
+
+
+//   var blob = new Blob([string], {
+//     type: "text/plain;charset=utf-8",
+//   });
+
+//   // Create and save the file using the FileWriter library
+//   saveAs(blob, 'fileName');
+
+// });
+
+
+// function createGraph(cellNamespace) {
+//   return new joint.dia.Graph({}, { cellNamespace: namespace });
+// }
+
+// function createPaper(holderId, graph) {
+//   return new joint.dia.Paper({
+//     el: document.getElementById(holderId),
+//     model: graph,
+//     width: 700,
+//     height: 800,
+//     gridSize: 10,
+//     drawGrid: true,
+//     background: {
+//       color: "rgba(0, 255, 0, 0.3)",
+//     },
+//     defaultAnchor: {
+//       name: 'perpendicular'
+//     },
+//     cellViewNamespace: cellNamespace,
+//   });
+// }
+// var graph2 = new joint.dia.Graph();
+// var paper2 = createPaper("myholder2", graph2);
+
+// function graphObject() {
+//   return obj;
+// }
+
+// function graphObject(){
+//   let obj =
+//   return obj;
+// }
