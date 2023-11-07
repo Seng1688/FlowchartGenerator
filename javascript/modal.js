@@ -20,7 +20,8 @@ modalTarget.addEventListener('show.bs.modal', function (event) {
         paper: modalPaper,
         elementsArray: modalElements,
         linksArray: modalLinks,
-        rectDataArray: modalRectDataArray
+        rectDataArray: modalRectDataArray,
+        padding:50
     });
 
     setTimeout(() => {
@@ -96,6 +97,6 @@ function resetModal() {
 const modalScaleDragger = document.getElementById("modalScaleDragger");
 modalScaleDragger.addEventListener("input", () => {
     const value = $("#modalScaleDragger").val();
-    V(modalPaper.viewport).scale(value);
+    modalPaper.scale(value);
 });
 

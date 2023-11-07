@@ -1,6 +1,6 @@
 //** Global Variable **//
 // destructuring assignment
-const { shapes, util, dia, anchors, mvc } = joint;
+const { shapes, util, dia, mvc } = joint;
 const rectWidth = 140;
 const rectHeight = 60;
 let totalWorkflows;
@@ -11,7 +11,8 @@ let elements = [];
 let links = [];
 let controls;
 let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' error
-let dragStartPosition;
+let dragStartPosition; // drag paper event
+let message;
 
 
 
@@ -25,20 +26,17 @@ var LayoutControls = mvc.View.extend({
     input: "onChange",
   },
 
-  options: {
-    padding: 50,
-  },
-
   init: function () {
     var options = this.options;
     options.cells = createElements(options.elementsArray, options.linksArray, options.rectDataArray);
 
     // add eventlinstener to the paper's elements
     this.listenTo(options.paper.model, "change", function (_, opt) {
-      if (opt.layout) {
-        this.layout();
-      }
     });
+    setTimeout(() => {
+      this.layout();
+    }, 200);
+
   },
 
   onChange: function () {
@@ -823,7 +821,6 @@ function checkIsReturnLink(sourcId, targetId) {
     }
   });
 
-  // console.log(sourceSeqNo + ">" + targetSeqNo );
   return sourceSeqNo > targetSeqNo;
 }
 
@@ -870,6 +867,35 @@ function checkAndAddEllipsis(text, maxLength) {
   }
 
 }
+
+function insertLoading() {
+  const holder = document.getElementById("myholder");
+  // insert loading icon
+  holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
+  const loadingIcon = document.getElementById("loading-icon");
+  loadingIconWidth = parseInt(loadingIcon.style.width, 10);
+  let centerX;
+
+  if (holder.style.width) {
+    centerX = parseInt(holder.style.width, 10) / 2 - (loadingIconWidth / 2);
+  }
+  else {
+    centerX = holder.parentElement.clientWidth / 2 - (loadingIconWidth / 2) + (0.26 * holder.parentElement.clientWidth);
+    loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230) + 'px';
+  }
+
+  loadingIcon.style.left = centerX + 'px';
+}
+
+function insertErrorMessage(divHolder, message) {
+  let errorMessage = `<span class="fs-3">${message}</span>`;
+  divHolder.innerHTML = errorMessage;
+}
+
+
+
+
+
 
 // parallel stage related
 function buildParallelStageInfoButtonDetails() {
@@ -1022,49 +1048,57 @@ function callAPI() {
   const formId = document.getElementById("formId").value;
   const holder = document.getElementById("myholder");
 
-  // API endpoint URL
-  const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
+  if (formId !== '') {
+    // API endpoint URL
+    const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
-  // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-  const authToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkzMjQyOTMsImV4cCI6MTY5OTMyNzg5MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkzMjAzMjQsImlkcCI6IkZvcm1zIiwianRpIjoiMDRFNkMwMDI0RkNFNDUyMjhBRjcxOTE4NEJGRTcxNjIiLCJzaWQiOiI2MzdCNTQ4Q0E0RkRDOUZDQzc1REVDQzQ5RUE1NTc3NSIsImlhdCI6MTY5OTMyMDMyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.hBUcjN3cArCTsHHyL3y32wEQ0Zbji0zMeGqy8B0YUm_pnsOAyPf4uSGBVLncJwtdli6LIAzYuj4kTr88lGjTcQVlUR85EKD6Y4D_ugRLu-fBCxwGGZMpZLDcK9H3yfj_qkdgLrNe29-W4fkvtp5VcT-Wrcab8DqlsiKaMfR3ITUVNeksKo8FoNYX5EQTPgbBzrz3ahqAtlHeR8Ot2eb0X65C1jlbCXQnBQLCUmRAPrc9XgNxc7vJi0YbZY1ZrcSEYTA6nJUinchXLVEV2gUkAlQdrYTLMqrkc5MKYDGn8FMDrAxepwXbZPDqnrOyTKIhY1hqpMwu0PD3jKj8UgZ1yg"
+    // Bearer token (replace 'YOUR_TOKEN' with your actual token)
+    const authToken =
+      "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTkzMjgwMTMsImV4cCI6MTY5OTMzMTYxMywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTkzMjAzMjQsImlkcCI6IkZvcm1zIiwianRpIjoiMDRFNkMwMDI0RkNFNDUyMjhBRjcxOTE4NEJGRTcxNjIiLCJzaWQiOiI2MzdCNTQ4Q0E0RkRDOUZDQzc1REVDQzQ5RUE1NTc3NSIsImlhdCI6MTY5OTMyMDMyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.BK60KLczAYvMKCdBaiD87iXxadZnerLHNtPkq79U9qKjUg4SBOHvlP1a7rbNKUW4HRgnT7-72pGlQx58K4UnLi9NClDS5mV66_uHmDwNRaLw_LkCeuDTOtL4iwWjCR5PzBZ-M32AWynvZj_oLByqgBI_bfqnPY8zYMN35pu1Zq-39DAstb-ZaMGILxTFO3-JJ8wUj_a4oT81dt2P2fEiDkAQdjyjKtsarYZS-clzSsE4ps2GsEknGHJ8qqa-aqD1blalM9qXhheHDuD5OXlobceLej5sAkbfvRp0t-9luC-OxtIbUfX-DWYTjE13I9OUpfmyeNyNosaAUpwXjSO3Lw"
 
-  // Create headers with the bearer token
-  const headers = new Headers({
-    Authorization: `Bearer ${authToken}`,
-    "Content-Type": "application/json", // Adjust as needed
-  });
-
-  // Make a GET request to the API endpoint with the headers
-  fetch(apiUrl, {
-    method: "GET",
-    headers: headers,
-  })
-    .then((response) => {
-      // Check if the response status is OK (200)
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      // Parse the JSON response
-      return response.json();
-    })
-    .then((data) => {
-      processJsonData(data);
-    })
-    .catch((error) => {
-      if (error.message.includes("401")) {
-        holder.innerHTML = `<span class="fs-3"> ${error.message}!! 😊 You do not have the necessary <b>permissions</b> to access this resource. </span>`
-      }
-      else {
-        holder.innerHTML = `<span class="fs-3"> No Workflows is found on <b>Form ID: ${formId} 😊!!</b> </span>`;
-      }
+    // Create headers with the bearer token
+    const headers = new Headers({
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json", // Adjust as needed
     });
+
+    // Make a GET request to the API endpoint with the headers
+    fetch(apiUrl, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        // Check if the response status is OK (200)
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        // Parse the JSON response
+        return response.json();
+      })
+      .then((data) => {
+        processJsonData(data);
+      })
+      .catch((error) => {
+        if (error.message.includes("401")) {
+          message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
+          insertErrorMessage(holder, message);
+        }
+        else {
+          message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
+          insertErrorMessage(holder, message);
+        }
+      });
+  }
+  else{
+    message = `Please Input a <b>Form ID</b>😊!!`;
+    insertErrorMessage(holder, message);
+  }
+
 }
 
 // process and get only required data from raw JSON Data
 function processJsonData(data) {
   totalWorkflows = data.responseData.length;
-
 
   // initially will use first workflow
   let workflowStagesFromJSON = data.responseData[workflowNo - 1].workflowStages.workflowStages;
@@ -1204,47 +1238,40 @@ function createLayoutControl() {
 
   mainPaper = createPaper("myholder");
 
-  if (mainPaper) {
-    mainPaper.on('blank:pointerdown',
-      function (event, x, y) {
-        var scale = V(mainPaper.viewport).scale();
-        mainPaper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
-      }
-    );
+  mainPaper.on('blank:pointerdown',
+    function (event, x, y) {
+      var scale = mainPaper.scale();
+      mainPaper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
+    }
+  );
 
-    mainPaper.on('blank:pointerup', function () {
-      mainPaper.dragStartPosition = false;
-    });
+  mainPaper.on('blank:pointerup', function () {
+    mainPaper.dragStartPosition = false;
+  });
 
-    $("#myholder")
-      .mousemove(function (event) {
-        if (mainPaper.dragStartPosition) {
-          mainPaper.translate(
-            event.offsetX - mainPaper.dragStartPosition.x,
-            event.offsetY - mainPaper.dragStartPosition.y);
-        }
+  $("#myholder").mousemove(function (event) {
+    if (mainPaper.dragStartPosition) {
+      mainPaper.translate(
+        event.offsetX - mainPaper.dragStartPosition.x,
+        event.offsetY - mainPaper.dragStartPosition.y);
+    }
 
-      });
-  }
-  else{
-    console.log("Paper createad unsuccessfully");
-  }
-
+  });
 
   controls = new LayoutControls({
     el: document.getElementById("layoutControl"),
     paper: mainPaper,
     elementsArray: elements,
     linksArray: links,
-    rectDataArray: rectDataArray
+    rectDataArray: rectDataArray,
+    padding: 50,
+    cellViewNamespace: cellNamespace
   });
 
-  // to avoid rendering issue
-  setTimeout(() => {
-    controls.layout();
-  }, 100);
-
 }
+
+
+
 
 
 
@@ -1252,7 +1279,7 @@ function createLayoutControl() {
 const workflowNoButton = document.getElementById("workflowNo");
 workflowNoButton.addEventListener("change", () => {
   const value = document.getElementById("workflowNo").value;
-
+  insertLoading();
   if (controls) {
     resetAll();
   }
@@ -1264,34 +1291,18 @@ workflowNoButton.addEventListener("change", () => {
 const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
-  V(mainPaper.viewport).scale(value);
+  mainPaper.scale(value);
 });
 
 const generateButton = document.getElementById("fetchDataButton");
 generateButton.addEventListener("click", () => {
 
-  const holder = document.getElementById("myholder");
-  // insert loading icon
-  holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
-  const loadingIcon = document.getElementById("loading-icon");
-  loadingIconWidth = parseInt(loadingIcon.style.width, 10)  ;
-  console.log(loadingIconWidth);
-  let centerX;
-
-  if (holder.style.width) {
-    centerX = parseInt(holder.style.width, 10) / 2 - (loadingIconWidth/2);
-  }
-  else {
-    centerX = holder.parentElement.clientWidth / 2 - (loadingIconWidth/2) + (0.26 * holder.parentElement.clientWidth);
-    loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230) + 'px';
-  }
-
-  loadingIcon.style.left = centerX + 'px';
+  insertLoading();
 
   if (controls) {
     resetAll();
   }
   workflowNo = 1;
-  callAPI(processJsonData);
+  callAPI();
 });
-generateButton.click();
+
