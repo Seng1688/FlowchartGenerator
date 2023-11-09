@@ -10,6 +10,7 @@ let mainGraph;
 let rectDataArray = [];
 let elements = [];
 let links = [];
+let cells = [];
 let controls;
 let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' error
 let dragStartPosition; // drag paper event
@@ -259,7 +260,7 @@ const cellNamespace = {};
 
 //** Graph Elements Creation Function **//
 function createPaper(holderId) {
-  return new dia.Paper({
+  let paper = new dia.Paper({
     el: document.getElementById(holderId),
     gridSize: 15,
     drawGrid: {
@@ -292,6 +293,29 @@ function createPaper(holderId) {
       };
     },
   });
+
+  paper.on('blank:pointerdown',
+    function (event, x, y) {
+      var scale = paper.scale();
+      paper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
+    }
+  );
+
+  paper.on('blank:pointerup', function () {
+    paper.dragStartPosition = false;
+  });
+
+  $(`#${holderId}`).mousemove(function (event) {
+    if (paper.dragStartPosition) {
+      paper.translate(
+        event.offsetX - paper.dragStartPosition.x,
+        event.offsetY - paper.dragStartPosition.y);
+    }
+
+  });
+
+
+  return paper;
 }
 
 function createStartNode(elementsArray) {
@@ -662,8 +686,8 @@ function createElements(elementsArray, linksArray, rectDataArray) {
   });
 
   //  =========================================Concatenate all elements========================================
-
-  return elementsArray.concat(linksArray);
+  cells = elementsArray.concat(linksArray);
+  return cells;
 }
 
 
@@ -671,9 +695,9 @@ function createElements(elementsArray, linksArray, rectDataArray) {
 
 
 //** Other Function **//
-function addLinkTools(cells, paper) {
-  cells.forEach(element => {
-    let linkView = paper.findViewByModel(element);
+function addLinkTools(links, paper) {
+  links.forEach(link => {
+    let linkView = paper.findViewByModel(link);
     linkView.addTools(createLinkTools());
     linkView.hideTools();
   });
@@ -1038,7 +1062,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk0MzMwNjcsImV4cCI6MTY5OTQzNjY2NywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk0MjUyNjEsImlkcCI6IkZvcm1zIiwianRpIjoiODM2Rjg5OTVDQzNDOTBENjA0NzQ3QjAzRjJCM0Y3REYiLCJzaWQiOiJFQTY2NTYzRkU4RTMzMUMzRURCMzg3OTVBNEMwRjA4MCIsImlhdCI6MTY5OTQyNTI2NCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EhqcmIWjBzcUS6p9jZLxaDRB3u_apeSLbfdnTQdxA2uvoCD20RiQp6UEWGSfG8GFahFuSXNjr5QuHVcEFYahaddZ7JRSvbLpmd4oPjK_4mZWGo585BapjDVwtfPUZvVXeAqV-wXflFfg3li9Y8apjQ1C_9IO_XBmIfkNvJ95oNbTGU-IcEp6HaCc-Xdc1biBriDIVoKeDrLNdv6YzxZN__OZZN8gRyd9xuRWL0fOO-7OfEvGRZ2K9vlKhhlhgFRMT2CeGY1Cgv4Ro4SVJM_oiwpU7d86bis4QR0tb9bV0s5LB1GqfPQpLSs495kpyh65mY57e2gUNW1h8m_Cupqrpg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk0OTYwNjMsImV4cCI6MTY5OTQ5OTY2MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk0OTYwNjEsImlkcCI6IkZvcm1zIiwianRpIjoiMDI3ODRDNjY4MEQwNTI5RTYyOEQ3RkRENzExNUZBRDAiLCJzaWQiOiJDMEQ0NjE5QjFEOTRERUEzQURDQjg0Nzk1NDhBM0ZFRCIsImlhdCI6MTY5OTQ5NjA2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.IaST4x4PvzHZsO78NdMo-DeLjF3gri3ShW5BM7kFURQ01mMOaLRSi5elWiXZkJIilQaMjYwbHz2C4KL2sOVG8E2DnOls--oNgzl4Nn63mPX73p5fbJdMbl7-FY_6FPC3jflVyZSZLLANVrqF0__lS1NQJgHFQmhqWkfjuCVWNm4CGZi9Q4_adgOItLwDCGG4xMlgR0JNUfFrnW6ByW38QDeVILQ8prSlFZEl8i0YV9Jowm_XC1vSHbn0ZiJqol1Y9oUwzXO1fuHr8pYz6D8hByC5wxWDV6Wsmo3MsMrrKpwSxndMlPzpMAiXMlotZGw5wOaEj6SR_HgwskjAncdNfg"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1222,26 +1246,6 @@ function createLayoutControl() {
 
   mainPaper = createPaper("myholder");
 
-  mainPaper.on('blank:pointerdown',
-    function (event, x, y) {
-      var scale = mainPaper.scale();
-      mainPaper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
-    }
-  );
-
-  mainPaper.on('blank:pointerup', function () {
-    mainPaper.dragStartPosition = false;
-  });
-
-  $("#myholder").mousemove(function (event) {
-    if (mainPaper.dragStartPosition) {
-      mainPaper.translate(
-        event.offsetX - mainPaper.dragStartPosition.x,
-        event.offsetY - mainPaper.dragStartPosition.y);
-    }
-
-  });
-
   controls = new LayoutControls({
     el: document.getElementById("layoutControl"),
     paper: mainPaper,
@@ -1314,24 +1318,26 @@ exportButton.addEventListener("click", () => {
 // json object and pass to graph.fromJson() function
 const importButton = document.getElementById("importButton");
 importButton.addEventListener("click", () => {
-  let fileContent ='';
+  console.log('old links:');
+  mainGraph.getElements().forEach(element => {
+    console.log(element);
+  });
+  let fileContent = '';
   var fr = new FileReader();
   fr.onload = function () {
-     fileContent = fr.result;
+    fileContent = fr.result;
+    mainGraph.fromJSON(JSON.parse(fileContent));
+    links = mainGraph.getLinks();
+
+    addLinkTools(links, mainPaper);
   }
   fr.readAsText(document.getElementById('inputfile').files[0]);
-console.log(fileContent);
 
-  mainGraph.fromJSON(JSON.parse(fileContent));
-  links = mainGraph.getLinks();
-  addLinkTools(links, mainPaper);
+
 
 });
 
 
-setTimeout(() => {
-  $('#myholder').css('opacity', 1);
-}, 200);
 
 
 
