@@ -1070,7 +1070,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MjI4MjcsImV4cCI6MTY5OTUyNjQyNywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1MDg2NzIsImlkcCI6IkZvcm1zIiwianRpIjoiMjI5NkQwOUQ2MzYxQzI2MDNDMDRCMDA1RjRCQTg1QUQiLCJzaWQiOiJDM0JGRDNCNzlFMDE2QzRBQUVBQTdBNEM2QzRGREI0OSIsImlhdCI6MTY5OTUyMjgyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.D0ycOIDXPoq4EwyEe02tkqKoJEn1iSOvHvzQFCEJTH1f9dFzwAWhtBqXnAQ5o1L9LGaW01pa2XwYOpHVaCEHx_mTAIqh9pFNovyXon5cyLHwP6VgbEq0KEzioEcXlGfT_52yhaXBOXhRL_2jdNC6c6EofJUeMvd0RgmqSmGnVTyMjSiQJ3Pk1MJ3JXbVd9FxZVsGlPUN_MXQed3hv2mkzygf1mxs8EWoQVt9okluBgiBDMCSJW10J9zXNT2CP1qUhyuiyVLYkauRkpdd123KZnOe4P2HIv6cpu2KQV-wxVccKzGbINxRn8Oy3n8awg-iRTkTqYKuekMEnLirxT5uJg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MTU2MjEsImV4cCI6MTY5OTUxOTIyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1MDg2NzIsImlkcCI6IkZvcm1zIiwianRpIjoiNTI0MjVBMTFFMjY1N0ZGMDMxQUFFMTFDOTBFMEUzOTciLCJzaWQiOiJDM0JGRDNCNzlFMDE2QzRBQUVBQTdBNEM2QzRGREI0OSIsImlhdCI6MTY5OTUwODY3Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.oCJWmU7ZhgfL_6gv-m7a7SP7gs6PRnqImoMKN1POF882rfgmfuHt1qydGokHnTfMG3L_Fj_KLNXV3msU_4HURL5RQQeXt4ge63AaJ7hofaVPrcupzHxA8oqlptrLRet6HcNAdnKpGIZXOz5s6uUnCtmrJei1884l-YqTEiVBEnIsyXb1m-zcBM-bfjX_6rPEgXTib_MZwDeW2FPdfPAwrTWqUB_PJH8Q0eIFHYT1gsg741_QiPKu_m69BvKQbCu2VFzoMOtZcfP4ohUJnhpZZSzDqsfeW3-AAY186EwAz-0r3PoRUgAsgrrVIGqrUkVkyjWMiCGWa6cfTUw9AuX5Ig"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1326,21 +1326,10 @@ console.log(fileContent);
 
 const saveButton = document.getElementById("saveButton");
 saveButton.addEventListener("click", () => {
-  $('.alert').css('opacity', 1);
-  $('.alert').css('top', '5%');
 
-  setTimeout(() => {  
-    $('.alert').css('opacity', 0);
-    $('.alert').css('top', '-50%');
-  }, 2500);
+alert('ssss');
 
-  //disable all the available controls
-  let selectControls = $("#layoutControl input, #layoutControl select");
-  selectControls.each(function(index, element) {
-    $(element).prop("disabled", true);
-});
 
-;
 });
 
 

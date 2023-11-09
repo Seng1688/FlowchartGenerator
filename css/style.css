@@ -10,7 +10,7 @@ body {
 }
 
 /* container */
-#outer-container {
+.outer-container {
   padding: 5px 100px;
 }
 
@@ -25,7 +25,7 @@ body {
 }
 
 /* controls-container */
-#controls-container {
+.controls-container {
   background: linear-gradient(to bottom, #ecebeb, #ffffff);
   color: rgb(0, 0, 0);
   border: 0.2px solid rgb(233, 233, 233);
@@ -33,20 +33,20 @@ body {
   padding: 10px;
 }
 
-#controls-container input {
+.controls-container input {
   width: 50%;
 }
 
-#controls-container label {
+.controls-container label {
   font-weight: bolder;
 }
 
-#controls-container .row {
+.controls-container .row {
   margin-top: px;
 }
 
 /* canvas-container */
-#canvas-container {
+.canvas-container {
   border: 0.2px solid rgb(233, 233, 233);
 }
 
@@ -182,37 +182,6 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   position: absolute;
 }
 
-.alert{
-  position:absolute;
-  font-size: 30px;
-  opacity: 1;
-  width:30%;
-  left:35%;
-  top: -50%;
-  z-index:3;
-  transition: opacity 0.5s, top 0.5s;
-}
-
-.alert div{
-  text-align:center;
-  align-items:center;
-  vertical-align: middle;
-}
-
-
-#inputfile +label{
-  align-items:center;
-  padding:6px 12px;
-  vertical-align: middle;
-  display: inline-block;
-  background-color:#ffc107;
-  color: rgb(255, 255, 255);
-  font-size: 16px;;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  height:38.67px;
-}
-
 /* Link Tools */
 path[data-tool-name="source-arrowhead"] {
   stroke: rgb(122, 199, 59);
@@ -232,4 +201,17 @@ rect[data-tool-name="boundary"] {
 circle.joint-marker-vertex {
   stroke: rgb(255, 255, 255);
   fill: red;
+}
+
+#inputfile +label{
+  align-items:center;
+  padding:6px 12px;
+  vertical-align: middle;
+  display: inline-block;
+  background-color:#ffc107;
+  color: rgb(255, 255, 255);
+  font-size: 16px;;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  height:38.67px;
 }
