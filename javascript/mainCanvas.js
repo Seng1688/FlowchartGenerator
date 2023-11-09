@@ -63,7 +63,7 @@ var LayoutControls = mvc.View.extend({
     addBranchLabelModal(paper);
 
     paper.freeze();
-    joint.layout.DirectedGraph.layout(graph, this.getLayoutOptions());
+    var graphBBox = joint.layout.DirectedGraph.layout(graph, this.getLayoutOptions());
 
     paper.fitToContent({
       padding: this.options.padding,
@@ -92,7 +92,7 @@ var LayoutControls = mvc.View.extend({
   },
 });
 
-// custom shape element for 'parallel'
+// custom  shape
 var ParallelRect = dia.Element.define(
   "custom.ParallelRectangle",
   {
@@ -150,7 +150,6 @@ var ParallelRect = dia.Element.define(
     ],
   }
 );
-
 
 class InitialNode extends joint.dia.Element {
   constructor(attributes) {
@@ -249,10 +248,6 @@ class Decision extends joint.dia.Element {
     });
   }
 }
-
-
-const cellNamespace = {};
-
 
 
 
@@ -699,7 +694,6 @@ function createLayoutControl(controlDivId,paper,graph,cells) {
     cells : cells,
     rectDataArray: rectDataArray,
     padding: 50,
-    cellViewNamespace: cellNamespace
   });
 
 }
@@ -1076,7 +1070,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MDAwMjEsImV4cCI6MTY5OTUwMzYyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk0OTYwNjEsImlkcCI6IkZvcm1zIiwianRpIjoiMDI3ODRDNjY4MEQwNTI5RTYyOEQ3RkRENzExNUZBRDAiLCJzaWQiOiJDMEQ0NjE5QjFEOTRERUEzQURDQjg0Nzk1NDhBM0ZFRCIsImlhdCI6MTY5OTQ5NjA2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EDfKJof7e-UYPJZVSzLWZoQ_t2Wpo3ybPKuRJk6x0ApzGc4_QSkI8c5mX_LOKjzmfRHWqkCpEWp9i19ADEwnckJH6tWOOvyWbUutiuX8FWSatpZT5ptEZuFh88E6rmSezvgAk2u-3mASRf1F-7HyqZAmjqpLXju3cb7T2SgVPVUZuWjhchX8k_qmAM92oU-hFYQ3uWU2tFfdDMMB1m-ly360QO_E3HKYIBfSVY24AS1tvPhcfjHFb-P-GsSD0yK9nte-NxqRYm6uG7L6DOM3t4YI5S3pNSNYcC3Kh5cYqXrId0YXrV-RjaqRr4XQCKQQOlfk4KTjqg6OBowcidO61Q"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MTU2MjEsImV4cCI6MTY5OTUxOTIyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1MDg2NzIsImlkcCI6IkZvcm1zIiwianRpIjoiNTI0MjVBMTFFMjY1N0ZGMDMxQUFFMTFDOTBFMEUzOTciLCJzaWQiOiJDM0JGRDNCNzlFMDE2QzRBQUVBQTdBNEM2QzRGREI0OSIsImlhdCI6MTY5OTUwODY3Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.oCJWmU7ZhgfL_6gv-m7a7SP7gs6PRnqImoMKN1POF882rfgmfuHt1qydGokHnTfMG3L_Fj_KLNXV3msU_4HURL5RQQeXt4ge63AaJ7hofaVPrcupzHxA8oqlptrLRet6HcNAdnKpGIZXOz5s6uUnCtmrJei1884l-YqTEiVBEnIsyXb1m-zcBM-bfjX_6rPEgXTib_MZwDeW2FPdfPAwrTWqUB_PJH8Q0eIFHYT1gsg741_QiPKu_m69BvKQbCu2VFzoMOtZcfP4ohUJnhpZZSzDqsfeW3-AAY186EwAz-0r3PoRUgAsgrrVIGqrUkVkyjWMiCGWa6cfTUw9AuX5Ig"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1298,17 +1292,6 @@ generateButton.addEventListener("click", () => {
 });
 generateButton.click();
 
-
-
-
-
-
-
-
-
-
-
-
 const exportButton = document.getElementById("exportButton");
 exportButton.addEventListener("click", () => {
   let string = JSON.stringify(mainGraph.toJSON());
@@ -1320,26 +1303,31 @@ exportButton.addEventListener("click", () => {
   saveAs(blob, 'fileName');
 });
 
-// next task , select file first, when click on import , be able to read the file and store content in a variable,the convert the string to 
-// json object and pass to graph.fromJson() function
-const importButton = document.getElementById("importButton");
-importButton.addEventListener("click", () => {
-  console.log('old links:');
-  mainGraph.getElements().forEach(element => {
-    console.log(element);
-  });
+const importButton = document.getElementById("inputfile");
+importButton.addEventListener("change", () => {
+
   let fileContent = '';
   var fr = new FileReader();
   fr.onload = function () {
     fileContent = fr.result;
+console.log(fileContent);
     mainGraph.fromJSON(JSON.parse(fileContent));
     links = mainGraph.getLinks();
     elements = mainGraph.getElements();
     cells = mainGraph.getCells();
     addLinkTools(links, mainPaper);
+    buildParallelStageInfoButtonDetails();
   }
   fr.readAsText(document.getElementById('inputfile').files[0]);
 
+
+
+});
+
+const saveButton = document.getElementById("saveButton");
+saveButton.addEventListener("click", () => {
+
+alert('ssss');
 
 
 });

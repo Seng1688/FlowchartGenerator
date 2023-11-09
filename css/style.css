@@ -1,5 +1,12 @@
 body {
   font-family: "Calibri", sans-serif;
+  font-size: 18px;
+  ;
+}
+
+.row {
+  margin: 0px;
+  padding: 0px;
 }
 
 /* container */
@@ -10,27 +17,58 @@ body {
 /* paper */
 #myholder {
   border: 1px solid rgb(211, 211, 211);
-  width:100%;
-  height:100%;
-  display: flex; 
+  width: 100%;
+  height: 100%;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* controls */
-#layoutControl {
+/* controls-container */
+.controls-container {
   background: linear-gradient(to bottom, #ecebeb, #ffffff);
   color: rgb(0, 0, 0);
   border: 0.2px solid rgb(233, 233, 233);
   border-bottom: none;
+  padding: 10px;
 }
 
-#layoutControl input {
+.controls-container input {
+  width: 50%;
+}
+
+.controls-container label {
+  font-weight: bolder;
+}
+
+.controls-container .row {
+  margin-top: px;
+}
+
+/* canvas-container */
+.canvas-container {
+  border: 0.2px solid rgb(233, 233, 233);
+}
+
+/* #canvas-control */
+#canvas-control input {
   width: 70%;
 }
 
-#layoutControl label {
+#canvas-control select {
+  width: 30%;
+}
+
+#canvas-control label {
   font-weight: bolder;
+  color: white;
+}
+
+#canvas-control {
+  background-color: rgb(178, 179, 181);
+  vertical-align: middle;
+  align-items: center;
+  padding:5px 0px;
 }
 
 /* canvas */
@@ -42,7 +80,6 @@ body {
 /* reference board */
 #reference_board {
   overflow: auto;
-  border: 0.2px solid rgb(233, 233, 233);
   background: linear-gradient(to bottom, #f6f6f6, #e5e5e5);
 }
 
@@ -141,7 +178,7 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   border: 1px solid #cbcbcb;
 }
 
-#loading-icon{
+#loading-icon {
   position: absolute;
 }
 
@@ -156,12 +193,25 @@ path[data-tool-name="target-arrowhead"] {
   fill: rgb(244, 150, 87)
 }
 
-rect[data-tool-name="boundary"]{
-stroke:rgb(186, 10, 206);
-stroke-width: 1.2;
+rect[data-tool-name="boundary"] {
+  stroke: rgb(186, 10, 206);
+  stroke-width: 1.2;
 }
 
 circle.joint-marker-vertex {
   stroke: rgb(255, 255, 255);
   fill: red;
+}
+
+#inputfile +label{
+  align-items:center;
+  padding:6px 12px;
+  vertical-align: middle;
+  display: inline-block;
+  background-color:#ffc107;
+  color: rgb(255, 255, 255);
+  font-size: 16px;;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  height:38.67px;
 }
