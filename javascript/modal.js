@@ -1,9 +1,12 @@
 var modalRectDataArray = [];
+var modalPaper;
+var modalGraph;
+var modalCells = [];
 var modalElements = [];
 var modalLinks = [];
 var modalControls;
 var modalTitleLabel;
-var modalPaper;
+
 
 // create modal
 let modalTarget = document.getElementById('branchModal');
@@ -14,15 +17,9 @@ modalTarget.addEventListener('show.bs.modal', function (event) {
     $('#modalTitleLabel').text(modalTitleLabel);
 
     modalPaper = createPaper("modalCanvasHolder");
-
-    modalControls = new LayoutControls({
-        el: document.getElementById("modalLayoutControls"),
-        paper: modalPaper,
-        elementsArray: modalElements,
-        linksArray: modalLinks,
-        rectDataArray: modalRectDataArray,
-        padding:50
-    });
+    modalGraph = modalPaper.model;
+    modalCells = createCells(modalElements, modalLinks, modalRectDataArray);
+    createLayoutControl('modalLayoutControls', modalPaper,modalGraph,modalCells);
 
     setTimeout(() => {
         modalControls.layout();

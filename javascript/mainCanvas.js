@@ -30,7 +30,6 @@ var LayoutControls = mvc.View.extend({
 
   init: function () {
     var options = this.options;
-    options.cells = createElements(options.elementsArray, options.linksArray, options.rectDataArray);
 
     // add eventlinstener to the paper's elements
     this.listenTo(options.paper.model, "change", function (_, opt) {
@@ -49,9 +48,9 @@ var LayoutControls = mvc.View.extend({
   layout: function () {
 
     let paper = this.options.paper;
-    let graph = paper.model;
+    let graph = this.options.graph;
     let cells = this.options.cells;
-    mainGraph = graph;
+
     graph.resetCells(cells);
 
     // add link tools for each link
@@ -632,7 +631,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
 }
 
 // use the processed data to create all required elements
-function createElements(elementsArray, linksArray, rectDataArray) {
+function createCells(elementsArray, linksArray, rectDataArray) {
   //  =========================================Create Shapes===================================================
 
   createStartNode(elementsArray);
@@ -688,6 +687,21 @@ function createElements(elementsArray, linksArray, rectDataArray) {
   //  =========================================Concatenate all elements========================================
   cells = elementsArray.concat(linksArray);
   return cells;
+}
+
+// create control for graph
+function createLayoutControl(controlDivId,paper,graph,cells) {
+
+  controls = new LayoutControls({
+    el: document.getElementById(`${controlDivId}`),
+    paper: paper,
+    graph: graph,
+    cells : cells,
+    rectDataArray: rectDataArray,
+    padding: 50,
+    cellViewNamespace: cellNamespace
+  });
+
 }
 
 
@@ -1062,7 +1076,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk0OTYwNjMsImV4cCI6MTY5OTQ5OTY2MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk0OTYwNjEsImlkcCI6IkZvcm1zIiwianRpIjoiMDI3ODRDNjY4MEQwNTI5RTYyOEQ3RkRENzExNUZBRDAiLCJzaWQiOiJDMEQ0NjE5QjFEOTRERUEzQURDQjg0Nzk1NDhBM0ZFRCIsImlhdCI6MTY5OTQ5NjA2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.IaST4x4PvzHZsO78NdMo-DeLjF3gri3ShW5BM7kFURQ01mMOaLRSi5elWiXZkJIilQaMjYwbHz2C4KL2sOVG8E2DnOls--oNgzl4Nn63mPX73p5fbJdMbl7-FY_6FPC3jflVyZSZLLANVrqF0__lS1NQJgHFQmhqWkfjuCVWNm4CGZi9Q4_adgOItLwDCGG4xMlgR0JNUfFrnW6ByW38QDeVILQ8prSlFZEl8i0YV9Jowm_XC1vSHbn0ZiJqol1Y9oUwzXO1fuHr8pYz6D8hByC5wxWDV6Wsmo3MsMrrKpwSxndMlPzpMAiXMlotZGw5wOaEj6SR_HgwskjAncdNfg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MDAwMjEsImV4cCI6MTY5OTUwMzYyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk0OTYwNjEsImlkcCI6IkZvcm1zIiwianRpIjoiMDI3ODRDNjY4MEQwNTI5RTYyOEQ3RkRENzExNUZBRDAiLCJzaWQiOiJDMEQ0NjE5QjFEOTRERUEzQURDQjg0Nzk1NDhBM0ZFRCIsImlhdCI6MTY5OTQ5NjA2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EDfKJof7e-UYPJZVSzLWZoQ_t2Wpo3ybPKuRJk6x0ApzGc4_QSkI8c5mX_LOKjzmfRHWqkCpEWp9i19ADEwnckJH6tWOOvyWbUutiuX8FWSatpZT5ptEZuFh88E6rmSezvgAk2u-3mASRf1F-7HyqZAmjqpLXju3cb7T2SgVPVUZuWjhchX8k_qmAM92oU-hFYQ3uWU2tFfdDMMB1m-ly360QO_E3HKYIBfSVY24AS1tvPhcfjHFb-P-GsSD0yK9nte-NxqRYm6uG7L6DOM3t4YI5S3pNSNYcC3Kh5cYqXrId0YXrV-RjaqRr4XQCKQQOlfk4KTjqg6OBowcidO61Q"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1128,8 +1142,9 @@ function processJsonData(data) {
   });
 
   createDropdownList();
-  createStagesData(workflowStages);
-  createLayoutControl();
+  createStagesData(workflowStages); // output is rectDataArray
+  init();
+
 }
 
 // create workflow dropdown list based on number of workflows
@@ -1241,22 +1256,13 @@ function createStagesData(workflowStages) {
   }
 }
 
-// create control and use constructor function to trigger createElements() function
-function createLayoutControl() {
-
+function init(){
   mainPaper = createPaper("myholder");
-
-  controls = new LayoutControls({
-    el: document.getElementById("layoutControl"),
-    paper: mainPaper,
-    elementsArray: elements,
-    linksArray: links,
-    rectDataArray: rectDataArray,
-    padding: 50,
-    cellViewNamespace: cellNamespace
-  });
-
+  mainGraph = mainPaper.model;
+  cells = createCells(elements, links, rectDataArray);
+  createLayoutControl('layoutControl',mainPaper,mainGraph,cells);
 }
+
 
 
 
@@ -1328,7 +1334,8 @@ importButton.addEventListener("click", () => {
     fileContent = fr.result;
     mainGraph.fromJSON(JSON.parse(fileContent));
     links = mainGraph.getLinks();
-
+    elements = mainGraph.getElements();
+    cells = mainGraph.getCells();
     addLinkTools(links, mainPaper);
   }
   fr.readAsText(document.getElementById('inputfile').files[0]);
