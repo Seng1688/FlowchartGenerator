@@ -1291,6 +1291,7 @@ const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
+  autoResizePaper(mainPaper);
 });
 
 const generateButton = document.getElementById("fetchDataButton");
