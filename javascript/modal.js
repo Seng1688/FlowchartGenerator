@@ -16,7 +16,7 @@ modalTarget.addEventListener('show.bs.modal', function (event) {
 
     $('#modalTitleLabel').text(modalTitleLabel);
 
-    modalPaper = createPaper("modalCanvasHolder");
+    modalPaper = createPaper("modalPaper");
     modalGraph = modalPaper.model;
     modalCells = createCells(modalElements, modalLinks, modalRectDataArray);
     createLayoutControl('modalLayoutControls', modalPaper,modalGraph,modalCells);

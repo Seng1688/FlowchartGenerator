@@ -292,12 +292,20 @@ function createPaper(holderId) {
     function (event, x, y) {
       var scale = paper.scale();
       paper.dragStartPosition = { x: x * scale.sx, y: y * scale.sy };
+
     }
   );
 
   paper.on('blank:pointerup', function () {
+    console.log('a');
     paper.dragStartPosition = false;
   });
+
+  paper.on('cell:pointerup', function () {
+    autoResizePaper(paper);
+  });
+
+
 
   $(`#${holderId}`).mousemove(function (event) {
     if (paper.dragStartPosition) {
@@ -685,13 +693,13 @@ function createCells(elementsArray, linksArray, rectDataArray) {
 }
 
 // create control for graph
-function createLayoutControl(controlDivId,paper,graph,cells) {
+function createLayoutControl(controlDivId, paper, graph, cells) {
 
   controls = new LayoutControls({
     el: document.getElementById(`${controlDivId}`),
     paper: paper,
     graph: graph,
-    cells : cells,
+    cells: cells,
     rectDataArray: rectDataArray,
     padding: 50,
   });
@@ -886,7 +894,7 @@ function checkAndAddEllipsis(text, maxLength) {
 }
 
 function insertLoading() {
-  const holder = document.getElementById("myholder");
+  const holder = document.getElementById("mainPaper");
   // insert loading icon
   holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
   const loadingIcon = document.getElementById("loading-icon");
@@ -909,7 +917,13 @@ function insertErrorMessage(divHolder, message) {
   divHolder.innerHTML = errorMessage;
 }
 
-
+function autoResizePaper(paper) {
+  paper.fitToContent({
+    padding: 50,
+    allowNewOrigin: "any",
+    useModelGeometry: true,
+  });
+}
 
 
 
@@ -1063,14 +1077,14 @@ function addBranchLabelModal(paper) {
 // get raw JSON Data
 function callAPI() {
   const formId = document.getElementById("formId").value;
-  const holder = document.getElementById("myholder");
+  const holder = document.getElementById("mainPaper");
 
   if (formId !== '') {
     // API endpoint URL
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1MjI4MjcsImV4cCI6MTY5OTUyNjQyNywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1MDg2NzIsImlkcCI6IkZvcm1zIiwianRpIjoiMjI5NkQwOUQ2MzYxQzI2MDNDMDRCMDA1RjRCQTg1QUQiLCJzaWQiOiJDM0JGRDNCNzlFMDE2QzRBQUVBQTdBNEM2QzRGREI0OSIsImlhdCI6MTY5OTUyMjgyNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.D0ycOIDXPoq4EwyEe02tkqKoJEn1iSOvHvzQFCEJTH1f9dFzwAWhtBqXnAQ5o1L9LGaW01pa2XwYOpHVaCEHx_mTAIqh9pFNovyXon5cyLHwP6VgbEq0KEzioEcXlGfT_52yhaXBOXhRL_2jdNC6c6EofJUeMvd0RgmqSmGnVTyMjSiQJ3Pk1MJ3JXbVd9FxZVsGlPUN_MXQed3hv2mkzygf1mxs8EWoQVt9okluBgiBDMCSJW10J9zXNT2CP1qUhyuiyVLYkauRkpdd123KZnOe4P2HIv6cpu2KQV-wxVccKzGbINxRn8Oy3n8awg-iRTkTqYKuekMEnLirxT5uJg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1ODIzOTUsImV4cCI6MTY5OTU4NTk5NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1Nzg3NTEsImlkcCI6IkZvcm1zIiwianRpIjoiMjlBOEFGODg2MjgyMzlGRkVGNzFCRjNCMjhCQUM3RkEiLCJzaWQiOiJFNDQ1QTQzM0U2OEUyQjUwMTNCM0UwRTQ1NjcwRjE5OCIsImlhdCI6MTY5OTU3ODc1NSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.DNRYn4-ju-vOBK4KM4QOHi7WWxktlJ_2Q_rmPFv-vbaIpK6CnNX7z4VZgMmyc_Nhv6UAFEoYTbM9mRnrld8XQdMwQ1ic6svLm1qtKfC603jGCR08pqjCW9gFrMm4S5V7UbLguxKgNmazDmySGPi7Jy75L6jD7yebm1C-XVHzyYZNzxLJZatTIGkalPRZ50qrvkzdp-W2lpm1shr74w0YUdoL4XAw2iKFzPh_ZBE_i3dltZYToLDWjRVeDV-5FM2u02KZW0aeMyMTJAq7toW4yblc6SrzybHHOv4INZ-IGGASRmPrsCzKuEaCKpLeZEw-gNfwWZ-_ZovPfRETbjnmZQ"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1250,11 +1264,11 @@ function createStagesData(workflowStages) {
   }
 }
 
-function init(){
-  mainPaper = createPaper("myholder");
+function init() {
+  mainPaper = createPaper("mainPaper");
   mainGraph = mainPaper.model;
   cells = createCells(elements, links, rectDataArray);
-  createLayoutControl('layoutControl',mainPaper,mainGraph,cells);
+  createLayoutControl('layoutControl', mainPaper, mainGraph, cells);
 }
 
 
@@ -1310,13 +1324,14 @@ importButton.addEventListener("change", () => {
   var fr = new FileReader();
   fr.onload = function () {
     fileContent = fr.result;
-console.log(fileContent);
+
     mainGraph.fromJSON(JSON.parse(fileContent));
     links = mainGraph.getLinks();
     elements = mainGraph.getElements();
     cells = mainGraph.getCells();
     addLinkTools(links, mainPaper);
     buildParallelStageInfoButtonDetails();
+    autoResizePaper(mainPaper);
   }
   fr.readAsText(document.getElementById('inputfile').files[0]);
 
@@ -1329,22 +1344,17 @@ saveButton.addEventListener("click", () => {
   $('.alert').css('opacity', 1);
   $('.alert').css('top', '5%');
 
-  setTimeout(() => {  
+  setTimeout(() => {
     $('.alert').css('opacity', 0);
     $('.alert').css('top', '-50%');
   }, 2500);
 
   //disable all the available controls
   let selectControls = $("#layoutControl input, #layoutControl select");
-  selectControls.each(function(index, element) {
+  selectControls.each(function (index, element) {
     $(element).prop("disabled", true);
+  });
+
+  ;
 });
-
-;
-});
-
-
-
-
-
 
