@@ -1084,7 +1084,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk1ODIzOTUsImV4cCI6MTY5OTU4NTk5NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1Nzg3NTEsImlkcCI6IkZvcm1zIiwianRpIjoiMjlBOEFGODg2MjgyMzlGRkVGNzFCRjNCMjhCQUM3RkEiLCJzaWQiOiJFNDQ1QTQzM0U2OEUyQjUwMTNCM0UwRTQ1NjcwRjE5OCIsImlhdCI6MTY5OTU3ODc1NSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.DNRYn4-ju-vOBK4KM4QOHi7WWxktlJ_2Q_rmPFv-vbaIpK6CnNX7z4VZgMmyc_Nhv6UAFEoYTbM9mRnrld8XQdMwQ1ic6svLm1qtKfC603jGCR08pqjCW9gFrMm4S5V7UbLguxKgNmazDmySGPi7Jy75L6jD7yebm1C-XVHzyYZNzxLJZatTIGkalPRZ50qrvkzdp-W2lpm1shr74w0YUdoL4XAw2iKFzPh_ZBE_i3dltZYToLDWjRVeDV-5FM2u02KZW0aeMyMTJAq7toW4yblc6SrzybHHOv4INZ-IGGASRmPrsCzKuEaCKpLeZEw-gNfwWZ-_ZovPfRETbjnmZQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk2MDExNDIsImV4cCI6MTY5OTYwNDc0MiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1OTcwNjUsImlkcCI6IkZvcm1zIiwianRpIjoiM0Q2NkQ0OEQ3NTRCOEIxQ0IzNzVDRkRDNkFEMDI0NDgiLCJzaWQiOiJDNzdGM0YzOEZCMTU3RjE4N0EyRDQyQTM2MTQzRUQzNiIsImlhdCI6MTY5OTYwMTE0Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.KDMN7PvsJs51SiIszH591LgqJdwP4fc9wtTjuV41osC163TdoMKivM2cJ64BCAlUkcRAk33qMRZoDXhbGE9DyTr8p8hSGJUtsDdZEDcwOmkuYavLdBCQUiJVWlCpJdbpatbvFuKf9C8tpu5ShneD7GrWPkANa_x_IFs3MSJnN433L_UqUOQU7MX2GBw7p6TyflsmwawdzwEMcZZdsxZWXOYTCsUoL0qsER2A2N63Oyhozhu4Zqid4kc_-lH9PuoEeBAHoq9Fbirgkx-L0zIPEfxWvSk2VB6b3YcxdZcgdJDKpt4fPNIAlq-DGAzrsoYeQpNIFsZTz5K7crHZcwT70g"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1356,6 +1356,39 @@ saveButton.addEventListener("click", () => {
     $(element).prop("disabled", true);
   });
 
-  ;
 });
+
+// the canvas's size will always follow the svg's height and width
+const downloadButton = document.getElementById("downloadButton");
+downloadButton.addEventListener("click", () => {
+
+  let svgElement = document.querySelector('div#mainPaper>svg');
+
+  svgElement.setAttribute('width', mainPaper.getArea().width);
+  svgElement.setAttribute('height', mainPaper.getArea().height);
+
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+
+  // Clear the canvas
+  context.clearRect(0, 0, mainPaper.getArea().width, mainPaper.getArea().height);
+
+  // Use canvg to render SVG onto the canvas
+  canvg(canvas, new XMLSerializer().serializeToString(svgElement));
+
+  // Convert the canvas content to a data URL (PNG format)
+  var dataURL = canvas.toDataURL('image/png');
+
+  // Create a temporary link and trigger a download
+  var a = document.createElement('a');
+  a.href = dataURL;
+  a.download = 'my-image.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  svgElement.setAttribute('width','100%');
+  svgElement.setAttribute('height','100%');
+});
+
 
