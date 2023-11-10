@@ -1362,10 +1362,14 @@ saveButton.addEventListener("click", () => {
 const downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", () => {
 
+  let paperW = mainPaper.getArea().width;
+  let paperH = mainPaper.getArea().height;
   let svgElement = document.querySelector('div#mainPaper>svg');
+  let whiteBgd = `<rect id="whiteBgd" width="${paperW}" height="${paperH}" style="fill:white;"> </rect>`;
 
-  svgElement.setAttribute('width', mainPaper.getArea().width);
-  svgElement.setAttribute('height', mainPaper.getArea().height);
+  svgElement.insertAdjacentHTML('afterbegin', whiteBgd);
+  svgElement.setAttribute('width', paperW );
+  svgElement.setAttribute('height', paperH);
 
   var canvas = document.createElement('canvas');
   var context = canvas.getContext('2d');
@@ -1386,6 +1390,7 @@ downloadButton.addEventListener("click", () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+  document.getElementById("whiteBgd").remove();
 
   svgElement.setAttribute('width','100%');
   svgElement.setAttribute('height','100%');
