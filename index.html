@@ -58,15 +58,22 @@
                     <input type="text" readonly class="form-control-plaintext fw-bold" value="Form ID:">
                 </div>
                 <div class="col-md-2">
-                    <input type="text" id="formId" class="form-control d-inline" value="901">
+                    <input type="text" id="formId" class="form-control d-inline" value="841">
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <button id="fetchDataButton" type="button" class="btn btn-primary">Generate</button>
-                    <button id="exportButton" type="button" class="btn btn-danger">Export</button>
-                    <input type="file" id="inputfile" hidden />
-                    <label for="inputfile">Import</label>
-                    <button id="saveButton" type="button" class="btn btn-success">Save</button>
-                    <button id="downloadButton" type="button" class="btn btn-secondary">Download </button>
+                    <button id="saveButton" type="button" class="btn btn-warning">Save</button>
+                    <input type="file" id="loadButton" hidden />
+                    <label for="loadButton">Load</label>
+                </div>
+
+                <div class="col-md-4 text-md-end ">
+                    <button id="downloadButton" type="button" class="btn btn-danger text-md-end ">Download </button>
+                    <select id="downloadOption" class="form-select form-select-md" aria-label=".form-select-lg example">
+                        <option selected value="png">PNG</option>
+                        <option value="jpg">JPG</option>
+                        <option value="pdf">PDF</option>
+                    </select>
                 </div>
 
             </div>
@@ -79,7 +86,7 @@
                     <div class="col-md-4">
                         <label for="ranker">Ranker :</label>
 
-                        <select class="ranker"  >
+                        <select class="ranker">
                             <option value="network-simplex" selected>Network-simplex</option>
                             <option value="tight-tree">Tight-tree</option>
                             <option value="longest-path">Longer-path</option>
@@ -127,7 +134,7 @@
 
         <div id="canvas-container">
             <div class="row">
-                <div id="reference_board" class="col-md-2">
+                <div id="reference_board" class="col-md-3">
                     <table id="rects_table">
                         <tr>
                             <th>Stages</th>
@@ -201,7 +208,7 @@
                     </table>
                 </div>
 
-                <div class="row col-md-10 text-md-end">
+                <div class="row col-md-9 text-md-end">
 
                     <div class="row col-md-12">
                         <div id="canvas-control" class="row">
@@ -332,8 +339,11 @@
 <!-- Canvg -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.5/canvg.min.js"></script>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+
 <!-- User Defined -->
-<script src="javascript/mainCanvas.js"></script>
-<script src="javascript/modal.js"></script>
-<script src="javascript/referenceBoard.js"></script>
-<script src="javascript/getCoordinator.js"></script>
+<script defer src="javascript/mainCanvas.js"></script>
+<script defer src="javascript/modal.js"></script>
+<script defer src="javascript/referenceBoard.js"></script>
+<script defer src="javascript/getCoordinator.js"></script>

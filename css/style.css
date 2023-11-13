@@ -11,7 +11,15 @@ body {
 
 /* container */
 #outer-container {
-  padding: 5px 100px;
+  padding: 5px 50px;
+}
+
+#downloadOption{
+  display:inline;
+  height:38.48px;
+  width:80px;
+  text-align: center;
+  vertical-align: middle;
 }
 
 /* paper */
@@ -88,6 +96,7 @@ body {
 #others_table {
   border: 0.5px solid #f6f6f6;
   margin: 35px 0px;
+  width:100%;
 
 }
 
@@ -199,13 +208,16 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   vertical-align: middle;
 }
 
+button{
+  color: white !important;;
+}
 
-#inputfile +label{
+#loadButton +label{
   align-items:center;
   padding:6px 12px;
   vertical-align: middle;
   display: inline-block;
-  background-color:#ffc107;
+  background-color:rgb(249, 107, 161);
   color: rgb(255, 255, 255);
   font-size: 16px;;
   border-radius: 0.3rem;

@@ -18,8 +18,6 @@ let message;
 
 
 
-
-
 //** Definition **//
 // extend mvc view and add custom control
 var LayoutControls = mvc.View.extend({
@@ -37,6 +35,7 @@ var LayoutControls = mvc.View.extend({
     setTimeout(() => {
       this.layout();
     }, 200);
+    
 
   },
 
@@ -70,7 +69,7 @@ var LayoutControls = mvc.View.extend({
       allowNewOrigin: "any",
       useModelGeometry: true,
     });
-
+    paper.scale(0.8);
     paper.unfreeze();
 
 
@@ -297,7 +296,7 @@ function createPaper(holderId) {
   );
 
   paper.on('blank:pointerup', function () {
-    console.log('a');
+
     paper.dragStartPosition = false;
   });
 
@@ -925,6 +924,47 @@ function autoResizePaper(paper) {
   });
 }
 
+function downloadPDF(canvas) {
+
+  // Create a jsPDF instance
+  let pdf = new jsPDF();
+  let pdfWidth = 210; // PDF page width in mm (A4 size)
+  let pdfHeight = 297; // PDF page height in mm (A4 size)
+  let cw = canvas.width ;
+  let ch = canvas.height ;
+  let ratio;
+
+  // Calculate the width and height for the image to fit within the PDF page
+  if(cw>ch){
+    ratio = cw / pdfWidth;
+  }else{
+    ratio = ch / pdfHeight;
+  }
+
+  let imgWidth = cw / ratio;
+  let imgHeight = ch / ratio;
+
+  pdf.addImage(canvas, 'PNG', 0, 0, imgWidth, imgHeight);
+  pdf.save('my-document.pdf');
+
+}
+
+function downloadImage(canvas, fileType) {
+
+  canvas.toBlob(function (blob) {
+
+    // Create a temporary link and trigger a download
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `my-image.${fileType}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(a.href);
+    canvas = null;
+  }, `image/${fileType}`);
+}
 
 
 
@@ -1084,7 +1124,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk2MDExNDIsImV4cCI6MTY5OTYwNDc0MiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk1OTcwNjUsImlkcCI6IkZvcm1zIiwianRpIjoiM0Q2NkQ0OEQ3NTRCOEIxQ0IzNzVDRkRDNkFEMDI0NDgiLCJzaWQiOiJDNzdGM0YzOEZCMTU3RjE4N0EyRDQyQTM2MTQzRUQzNiIsImlhdCI6MTY5OTYwMTE0Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.KDMN7PvsJs51SiIszH591LgqJdwP4fc9wtTjuV41osC163TdoMKivM2cJ64BCAlUkcRAk33qMRZoDXhbGE9DyTr8p8hSGJUtsDdZEDcwOmkuYavLdBCQUiJVWlCpJdbpatbvFuKf9C8tpu5ShneD7GrWPkANa_x_IFs3MSJnN433L_UqUOQU7MX2GBw7p6TyflsmwawdzwEMcZZdsxZWXOYTCsUoL0qsER2A2N63Oyhozhu4Zqid4kc_-lH9PuoEeBAHoq9Fbirgkx-L0zIPEfxWvSk2VB6b3YcxdZcgdJDKpt4fPNIAlq-DGAzrsoYeQpNIFsZTz5K7crHZcwT70g"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2OTk4NDk4MjcsImV4cCI6MTY5OTg1MzQyNywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE2OTk4NDU5MDUsImlkcCI6IkZvcm1zIiwianRpIjoiMTVBRjVDRTVGMTUwN0E5RjZCMTU1MEZGMkZBNURDNzEiLCJzaWQiOiJDRDI5QUFCQUZGM0QwMjdDQjNDRkIxOUVEM0E2MjNCMSIsImlhdCI6MTY5OTg0NTkwOCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.dlJ3FkyznUB3JCyAMBSaSjjLS5MeFvn1SAKmhx9mcjeIZdBL4o9HrXRtTox_m9k320dpwOzjvKQ5Za7ydhqhB5LtxMT83rWSbXBw8pdBhNr5l7jEzrU8WeShROTSP7marLFYeXwL2CpW7qMce0Jgr5OYIANzArKoaRJNmDt8lU06jCDaKyLEwL-gaH9LEQPC94Glg1tUCabb7S2LYzy216cXwQkEqXCByZNqWU4twryHPehJxLxMglRx80IXGfrEUHdzXf6Z3LJRXvjShs9znbyE-xpY0yVY4uBMgi5D6jjyqAaTMl12t8D5nQKItKFvMs0tiy4uBwnbtcyUWmtAzw"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1292,6 +1332,8 @@ scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
   autoResizePaper(mainPaper);
+  // let svgElement = document.querySelector('div#mainPaper>svg');
+  // console.log(svgElement.width + '  ' + svgElement.height);
 });
 
 const generateButton = document.getElementById("fetchDataButton");
@@ -1307,19 +1349,8 @@ generateButton.addEventListener("click", () => {
 });
 generateButton.click();
 
-const exportButton = document.getElementById("exportButton");
-exportButton.addEventListener("click", () => {
-  let string = JSON.stringify(mainGraph.toJSON());
-  var blob = new Blob([string], {
-    type: "text/plain;charset=utf-8",
-  });
-
-  // Create and save the file using the FileWriter library
-  saveAs(blob, 'fileName');
-});
-
-const importButton = document.getElementById("inputfile");
-importButton.addEventListener("change", () => {
+const loadButton = document.getElementById("loadButton");
+loadButton.addEventListener("change", () => {
 
   let fileContent = '';
   var fr = new FileReader();
@@ -1334,7 +1365,7 @@ importButton.addEventListener("change", () => {
     buildParallelStageInfoButtonDetails();
     autoResizePaper(mainPaper);
   }
-  fr.readAsText(document.getElementById('inputfile').files[0]);
+  fr.readAsText(document.getElementById('loadButton').files[0]);
 
 
 
@@ -1356,44 +1387,60 @@ saveButton.addEventListener("click", () => {
     $(element).prop("disabled", true);
   });
 
+  let string = JSON.stringify(mainGraph.toJSON());
+  var blob = new Blob([string], {
+    type: "text/plain;charset=utf-8",
+  });
+
+  // Create and save the file using the FileWriter library
+  saveAs(blob, 'fileName');
+
+
 });
 
 // the canvas's size will always follow the svg's height and width
 const downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", () => {
-
-  let paperW = mainPaper.getArea().width;
-  let paperH = mainPaper.getArea().height;
+  let fileType = $('#downloadOption').val();
+  let paperW =  $('#mainPaper').width();
+  let paperH = $('#mainPaper').height();
   let svgElement = document.querySelector('div#mainPaper>svg');
   let whiteBgd = `<rect id="whiteBgd" width="${paperW}" height="${paperH}" style="fill:white;"> </rect>`;
 
   svgElement.insertAdjacentHTML('afterbegin', whiteBgd);
-  svgElement.setAttribute('width', paperW );
+  svgElement.setAttribute('width', paperW);
   svgElement.setAttribute('height', paperH);
 
   var canvas = document.createElement('canvas');
   var context = canvas.getContext('2d');
 
   // Clear the canvas
-  context.clearRect(0, 0, mainPaper.getArea().width, mainPaper.getArea().height);
+  context.clearRect(0, 0, paperW, paperH);
+
 
   // Use canvg to render SVG onto the canvas
   canvg(canvas, new XMLSerializer().serializeToString(svgElement));
 
-  // Convert the canvas content to a data URL (PNG format)
-  var dataURL = canvas.toDataURL('image/png');
+  //make sure image is loaded successfully
+  setTimeout(() => {
 
-  // Create a temporary link and trigger a download
-  var a = document.createElement('a');
-  a.href = dataURL;
-  a.download = 'my-image.png';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  document.getElementById("whiteBgd").remove();
+    switch (fileType) {
+      case 'png':
+      case 'jpg':
+        downloadImage(canvas, fileType);
+        break;
 
-  svgElement.setAttribute('width','100%');
-  svgElement.setAttribute('height','100%');
+      case 'pdf':
+        downloadPDF(canvas);
+        break;
+      default:
+        break;
+    }
+
+    document.getElementById("whiteBgd").remove();
+    svgElement.setAttribute('width', '100%');
+    svgElement.setAttribute('height', '100%');
+  }, 200);
+
 });
-
 
