@@ -1,39 +1,93 @@
 body {
   font-family: "Calibri", sans-serif;
+  font-size: 18px;
+  ;
 }
 
-/* controls */
-#layoutControl {
+.row {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* container */
+#outer-container {
+  padding: 5px 50px;
+}
+
+#downloadOption{
+  display:inline;
+  height:38.48px;
+  width:80px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* paper */
+#mainPaper {
+  border: 1px solid rgb(211, 211, 211);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* controls-container */
+#controls-container {
   background: linear-gradient(to bottom, #ecebeb, #ffffff);
   color: rgb(0, 0, 0);
   border: 0.2px solid rgb(233, 233, 233);
   border-bottom: none;
+  padding: 10px;
 }
 
-#layoutControl input {
-  width: 70%;
+#controls-container input {
+  width: 50%;
 }
 
-#layoutControl label {
+#controls-container label {
   font-weight: bolder;
 }
 
-/* canvas */
-#canvas{
-  height: 800px;
+#controls-container .row {
+  margin-top: px;
+}
+
+/* canvas-container */
+#canvas-container {
   border: 0.2px solid rgb(233, 233, 233);
 }
 
-#modalCanvas{
-  height: 600px;
-  width: 100%;
+/* #canvas-control */
+#canvas-control input {
+  width: 70%;
+}
+
+#canvas-control select {
+  width: 30%;
+}
+
+#canvas-control label {
+  font-weight: bolder;
+  color: white;
+}
+
+#canvas-control {
+  background-color: rgb(178, 179, 181);
+  vertical-align: middle;
+  align-items: center;
+  padding:5px 0px;
+}
+
+/* canvas */
+#canvas {
+  height: 800px;
   border: 0.2px solid rgb(233, 233, 233);
 }
 
 /* reference board */
 #reference_board {
   overflow: auto;
-  border: 0.2px solid rgb(233, 233, 233);
   background: linear-gradient(to bottom, #f6f6f6, #e5e5e5);
 }
 
@@ -41,7 +95,9 @@ body {
 #links_table,
 #others_table {
   border: 0.5px solid #f6f6f6;
-  margin: 16px 0px;
+  margin: 35px 0px;
+  width:100%;
+
 }
 
 #rects_table th,
@@ -70,6 +126,60 @@ td:nth-child(2) {
   width: 30%;
 }
 
+/* Parallel Stage*/
+g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
+  cursor: pointer;
+}
+
+.CompleteActionsDetailsBody {
+  display: inline-block;
+  position: absolute;
+  padding: 8px 10px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid black;
+  border-radius: 0px 30px 30px 30px;
+  transition: opacity linear .4s;
+
+}
+
+.CompleteActionsDetailsBody .red {
+  color: red;
+}
+
+.CompleteActionsDetailsBody .blue {
+  color: rgb(77, 0, 242);
+}
+
+.CompleteActionsDetailsBody .green {
+  color: rgb(9, 163, 12);
+}
+
+.CompleteActionsDetailsBody .underline {
+  text-decoration: underline;
+}
+
+.CompleteActionsDetailsBody .bold {
+  font-weight: bolder;
+}
+
+.branchLabel:hover {
+  fill: rgb(0, 34, 255);
+  font-weight: bolder;
+  font-size: large;
+  text-decoration: underline;
+}
+
+/* modal */
+#modalCanvas {
+  height: 600px;
+  width: 100%;
+  border: 0.2px solid rgb(233, 233, 233);
+}
+
+#modalTitleLabel {
+  font-weight: bolder;
+}
+
 /* others */
 .scrollable {
   white-space: nowrap;
@@ -77,16 +187,61 @@ td:nth-child(2) {
   border: 1px solid #cbcbcb;
 }
 
-
-/* branch */
-.branchLabel:hover{
-  fill: rgb(0, 34, 255); 
-  font-weight:bolder;
-  text-decoration: underline;
+#loading-icon {
+  position: absolute;
 }
 
+.alert{
+  position:absolute;
+  font-size: 30px;
+  opacity: 1;
+  width:30%;
+  left:35%;
+  top: -50%;
+  z-index:3;
+  transition: opacity 0.5s, top 0.5s;
+}
 
-/* modal */
-#modalTitleLabel {
-  font-weight: bolder;
+.alert div{
+  text-align:center;
+  align-items:center;
+  vertical-align: middle;
+}
+
+button{
+  color: white !important;;
+}
+
+#loadButton +label{
+  align-items:center;
+  vertical-align: middle;
+  padding:8px 12px;
+  display: inline-block;
+  background-color:rgb(249, 107, 161);
+  color: rgb(255, 255, 255);
+  font-size: 16px;;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  height:38.67px;
+}
+
+/* Link Tools */
+path[data-tool-name="source-arrowhead"] {
+  stroke: rgb(122, 199, 59);
+  fill: rgb(97, 252, 128);
+}
+
+path[data-tool-name="target-arrowhead"] {
+  stroke: rgb(252, 97, 97);
+  fill: rgb(244, 150, 87)
+}
+
+rect[data-tool-name="boundary"] {
+  stroke: rgb(186, 10, 206);
+  stroke-width: 1.2;
+}
+
+circle.joint-marker-vertex {
+  stroke: rgb(255, 255, 255);
+  fill: red;
 }

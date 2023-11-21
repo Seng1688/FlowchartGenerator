@@ -1,9 +1,12 @@
 var modalRectDataArray = [];
+var modalPaper;
+var modalGraph;
+var modalCells = [];
 var modalElements = [];
 var modalLinks = [];
 var modalControls;
 var modalTitleLabel;
-var modalPaper;
+
 
 // create modal
 let modalTarget = document.getElementById('branchModal');
@@ -13,15 +16,10 @@ modalTarget.addEventListener('show.bs.modal', function (event) {
 
     $('#modalTitleLabel').text(modalTitleLabel);
 
-    modalPaper = createPaper("modalCanvasHolder");
-
-    modalControls = new LayoutControls({
-        el: document.getElementById("modalLayoutControls"),
-        paper: modalPaper,
-        elementsArray: modalElements,
-        linksArray: modalLinks,
-        rectDataArray: modalRectDataArray
-    });
+    modalPaper = createPaper("modalPaper");
+    modalGraph = modalPaper.model;
+    modalCells = createCells(modalElements, modalLinks, modalRectDataArray);
+    createLayoutControl('modalLayoutControls', modalPaper,modalGraph,modalCells);
 
     setTimeout(() => {
         modalControls.layout();
@@ -33,7 +31,7 @@ modalTarget.addEventListener('hidden.bs.modal', function (event) {
     resetModal();
 })
 
-// with this, we cam use modal.show() to manually trigger it in javascript
+// with this, we can use modal.show() to manually trigger it in javascript
 let modal = new bootstrap.Modal(modalTarget, {
     keyboard: true,
     backdrop: 'static',
@@ -41,7 +39,7 @@ let modal = new bootstrap.Modal(modalTarget, {
 })
 
 
-//parallelSet get from manCanvas.js within createLayoutControl function
+// parallelSet get from manCanvas.js within createLayoutControl function
 function createModalStageData(parallelSet) {
 
     for (let i = 0; i < parallelSet.parallelStages.length; i++) {
@@ -93,10 +91,8 @@ function resetModal() {
 
 }
 
-
-
 const modalScaleDragger = document.getElementById("modalScaleDragger");
-modalScaleDragger.addEventListener("change", () => {
+modalScaleDragger.addEventListener("input", () => {
     const value = $("#modalScaleDragger").val();
     modalPaper.scale(value);
 });
