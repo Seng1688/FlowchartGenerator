@@ -1137,60 +1137,60 @@ function addBranchLabelModal(paper) {
 
 //** Data Process Function **//
 // get raw JSON Data
-function callAPI() {
-  const formId = document.getElementById("formId").value;
-  const holder = document.getElementById("mainPaper");
-
-  if (formId !== '') {
-    // API endpoint URL
-    const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
-
-    // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA1Mzc0MzQsImV4cCI6MTcwMDU0MTAzNCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA1MzIxNDIsImlkcCI6IkZvcm1zIiwianRpIjoiRDRGRjU3NkFDOTgzMEMzMUVERUNCMDEzOEJBNUI4NTEiLCJzaWQiOiI4RDYwNDhCNUQ0OTI4MDY4NEY5QzQ5Q0E0NDY2QzkyNSIsImlhdCI6MTcwMDUzMjE0NSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.XRNmZ9ARul0f5Y_YdRla_g-P5dJhDujB6Ad_3sJjvy0Zcm6jVudHf38MKqspFqv8gLHN_wTj4Ny1ttcoEd70iClezWRdNQ_uAV9RC_jil_z03t1DRV4NdbE4BdTeH7QthjZPSvgkkSHaRpcOAk9LC-lWd7MzW60n6-n0gTf15YPjNsgy_RZMcuwdz8GC6bLnbjjG3EzBlktAxpdF0s_m1v9UDywhZXuQXE_KQHyNYfGO7TMZIouGRh2uTIHOTHGdXTad9tFswIXOQbC6thD-eV2UdyHkddL1hUn6qkAfvH0PaTfpeKVJ09dC8xcPD7uZ-pEd9tsJTX3E134LB415lg"
-
-    // Create headers with the bearer token
-    const headers = new Headers({
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json", // Adjust as needed
-    });
-
-    // Make a GET request to the API endpoint with the headers
-    fetch(apiUrl, {
-      method: "GET",
-      headers: headers,
-    })
-      .then((response) => {
-        // Check if the response status is OK (200)
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-        // Parse the JSON response
-        return response.json();
-      })
-      .then((data) => {
-        processJsonData(data);
-      })
-      .catch((error) => {
-        if (error.message.includes("401")) {
-          message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
-          insertErrorMessage(holder, message);
-        }
-        else {
-          message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
-          insertErrorMessage(holder, message);
-        }
-      });
-  }
-  else {
-    message = `Please Input a <b>Form ID</b>😊!!`;
-    insertErrorMessage(holder, message);
-  }
-
-}
-
 // function callAPI() {
-//   processJsonData(getCarWF());
+//   const formId = document.getElementById("formId").value;
+//   const holder = document.getElementById("mainPaper");
+
+//   if (formId !== '') {
+//     // API endpoint URL
+//     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
+
+//     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
+//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA1NTYwOTQsImV4cCI6MTcwMDU1OTY5NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA1MzIxNDIsImlkcCI6IkZvcm1zIiwianRpIjoiMUYyQ0UxQjU1MTc2NjJCN0FFN0U1OERFQUVBNThBMDgiLCJzaWQiOiI4RDYwNDhCNUQ0OTI4MDY4NEY5QzQ5Q0E0NDY2QzkyNSIsImlhdCI6MTcwMDUzOTQxNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.SgWPvL7DvTDzkdwYu4oJAin25sBmDMnBdr-DLry4ntAfADabf07ndSh8WMbkC9hNe3usinOat8wRfPdYQf_OBx8NZoOlOg0SzuaHFJ6Dgo9BrG1GRZ7DccqRk6ag71Iq_lm8Rb86-ut37A9a8t5lHZ2PeDV_mYTgkFvkTRMIKyYodyycDiuoe7qEPvGl7K50ZjfztfI_qmKFhtwz6DxbB-WaP2GOWFYZOjqyC6XTSoxakdN4j8QjhFsRztBZEbatfFlKOxUqGFpuxPlt7-9UT8LJ25pXSibSJuM0LPtTA_wNxxPfzh-FyQaVM2Q2u49qtR2CrOyEm4dkHVbJmbNEiw"
+
+//     // Create headers with the bearer token
+//     const headers = new Headers({
+//       Authorization: `Bearer ${authToken}`,
+//       "Content-Type": "application/json", // Adjust as needed
+//     });
+
+//     // Make a GET request to the API endpoint with the headers
+//     fetch(apiUrl, {
+//       method: "GET",
+//       headers: headers,
+//     })
+//       .then((response) => {
+//         // Check if the response status is OK (200)
+//         if (!response.ok) {
+//           throw new Error(`API request failed with status ${response.status}`);
+//         }
+//         // Parse the JSON response
+//         return response.json();
+//       })
+//       .then((data) => {
+//         processJsonData(data);
+//       })
+//       .catch((error) => {
+//         if (error.message.includes("401")) {
+//           message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
+//           insertErrorMessage(holder, message);
+//         }
+//         else {
+//           message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
+//           insertErrorMessage(holder, message);
+//         }
+//       });
+//   }
+//   else {
+//     message = `Please Input a <b>Form ID</b>😊!!`;
+//     insertErrorMessage(holder, message);
+//   }
+
 // }
+
+function callAPI() {
+  processJsonData(getCarWF());
+}
 
 
 // process and get only required data from raw JSON Data
@@ -1238,6 +1238,7 @@ function createDropdownList() {
 
 // add extra data needed for each stage
 function createStagesData(workflowStages) {
+// console.log(workflowStages);
 
   // get nextStage & branches data > push to rectDataArray
   for (let i = 0; i < workflowStages.length; i++) {
@@ -1246,6 +1247,7 @@ function createStagesData(workflowStages) {
     let nextStages = [];
     let preStages = [];
     let branches = [];
+    let hasBackToPrev =false;
     let isEndStage = workflowStages[i].isEndStage;
     let isApprovedStage = workflowStages[i].isApprovedStage;
     let seqNo = workflowStages[i].seqNo;
@@ -1269,32 +1271,34 @@ function createStagesData(workflowStages) {
 
     // get nextStage data
     for (let j = 0; j < actionLength; j++) {
-      console.log(currentStageId);
-      let stageName;
+
+      let stageName="";
       let actionName;
       let stageId;
 
       if (stageType === "Parallel") {
-        stageName =
-          workflowStages[i].parallelCompletes[j].actions[0].stageTitle.key;
+        stageName = workflowStages[i].parallelCompletes[j].actions[0].stageTitle.key;
         actionName = workflowStages[i].parallelCompletes[j].title.key;
-        stageId =
-          workflowStages[i].parallelCompletes[j].actions[0].workflowStageId;
-      }
+        stageId = workflowStages[i].parallelCompletes[j].actions[0].workflowStageId;
 
-      if (stageType === "Standard" || stageType === "RequestorSubmission" || stageType === "ReturnToRequestor" ){
+      }
+      //"Standard", "RequestorSubmission", "ReturnToRequestor" 
+      else {
         let eventType = workflowStages[i].actions[j].eventLists[0].events[0].eventType;
+        
+      // "GotoStage" , "BacktoPrevStage"
         if (eventType === "GotoStage") {
           stageName = workflowStages[i].actions[j].eventLists[0].events[0].stageTitle.title.key;
           actionName = workflowStages[i].actions[j].title.key;
           stageId = workflowStages[i].actions[j].eventLists[0].events[0].workflowStageId;
+
         }
         else if (eventType === "BacktoPrevStage") {
-          stageName = tempPrevStageName;
+          stageName = 'dummy';
           actionName = workflowStages[i].actions[j].title.key;
-          stageId = tempPrevStageId;
+          stageId = 'dummy';
+          hasBackToPrev =true
         }
-
       }
 
       nextStages.push({ stageName, actionName, stageId });
@@ -1324,9 +1328,11 @@ function createStagesData(workflowStages) {
       hasDecision,
       branches,
       parallelSets,
-      parallelCompletes
+      parallelCompletes,
+      hasBackToPrev
     });
-// console.log(rectDataArray);
+    // console.log(rectDataArray);
+
   }
 
   // get prestage data only after 'nestStage' data is completed pushed to rectDataArray
@@ -1345,6 +1351,36 @@ function createStagesData(workflowStages) {
       }
     }
   }
+
+  // fill in the 'backToPrevStage' action
+  let dataSet1 =  rectDataArray.filter((data)=>{
+    return data.hasBackToPrev == true;
+  })
+
+  for (let i = 0; i < dataSet1.length; i++) {
+    let currentStageId = dataSet1[i].currentStageId;
+    let prestages = rectDataArray.filter((data)=>{ return data.currentStageId === currentStageId; })[0].preStages;
+    let nextStages = dataSet1[i].nextStages.filter((data)=>{ return data.stageName === 'dummy'; });
+    console.log(prestages);
+    for (let j = 0; j < nextStages.length; j++) {
+        let actionName = nextStages[j].actionName;
+
+      for (let p = 0; p < prestages.length; p++) {
+        
+        let index = rectDataArray.findIndex((data)=>data.currentStageId === currentStageId);
+        let obj = {
+          stageName: prestages[p].preStageName,
+          actionName: actionName,
+          stageId: prestages[p].preStageId
+        };
+        rectDataArray[index].nextStages.push(obj);
+        rectDataArray[index].nextStages =   rectDataArray[index].nextStages.filter((data)=>{ return data.stageName!=='dummy'});
+        console.log(rectDataArray);
+      }
+    }
+  }
+
+ 
 }
 
 function init() {
@@ -1471,7 +1507,7 @@ downloadButton.addEventListener("click", () => {
     switch (fileType) {
       case 'png':
       case 'jpg':
-          downloadImage(canvas, fileType); // need adjustment on arrowhead before export image
+        downloadImage(canvas, fileType); // need adjustment on arrowhead before export image
 
         // downloadImg(fileType); // can't render transparent
         break;
