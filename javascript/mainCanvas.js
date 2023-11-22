@@ -301,7 +301,15 @@ function createPaper(holderId) {
     paper.dragStartPosition = false;
   });
 
+  paper.on('cell:pointerdown', function () {
+    
+    paper.paperContentW = paper.getContentArea().width;
+    paper.paperContentH = paper.getContentArea().height;
+  });
+
+
   paper.on('cell:pointerup', function () {
+    if(paper.getContentArea().width > paper.paperContentW  || paper.getContentArea().height > paper.paperContentH)
     autoResizePaper(paper);
   });
 
@@ -1137,60 +1145,60 @@ function addBranchLabelModal(paper) {
 
 //** Data Process Function **//
 // get raw JSON Data
-// function callAPI() {
-//   const formId = document.getElementById("formId").value;
-//   const holder = document.getElementById("mainPaper");
-
-//   if (formId !== '') {
-//     // API endpoint URL
-//     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
-
-//     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA1NTYwOTQsImV4cCI6MTcwMDU1OTY5NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA1MzIxNDIsImlkcCI6IkZvcm1zIiwianRpIjoiMUYyQ0UxQjU1MTc2NjJCN0FFN0U1OERFQUVBNThBMDgiLCJzaWQiOiI4RDYwNDhCNUQ0OTI4MDY4NEY5QzQ5Q0E0NDY2QzkyNSIsImlhdCI6MTcwMDUzOTQxNywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.SgWPvL7DvTDzkdwYu4oJAin25sBmDMnBdr-DLry4ntAfADabf07ndSh8WMbkC9hNe3usinOat8wRfPdYQf_OBx8NZoOlOg0SzuaHFJ6Dgo9BrG1GRZ7DccqRk6ag71Iq_lm8Rb86-ut37A9a8t5lHZ2PeDV_mYTgkFvkTRMIKyYodyycDiuoe7qEPvGl7K50ZjfztfI_qmKFhtwz6DxbB-WaP2GOWFYZOjqyC6XTSoxakdN4j8QjhFsRztBZEbatfFlKOxUqGFpuxPlt7-9UT8LJ25pXSibSJuM0LPtTA_wNxxPfzh-FyQaVM2Q2u49qtR2CrOyEm4dkHVbJmbNEiw"
-
-//     // Create headers with the bearer token
-//     const headers = new Headers({
-//       Authorization: `Bearer ${authToken}`,
-//       "Content-Type": "application/json", // Adjust as needed
-//     });
-
-//     // Make a GET request to the API endpoint with the headers
-//     fetch(apiUrl, {
-//       method: "GET",
-//       headers: headers,
-//     })
-//       .then((response) => {
-//         // Check if the response status is OK (200)
-//         if (!response.ok) {
-//           throw new Error(`API request failed with status ${response.status}`);
-//         }
-//         // Parse the JSON response
-//         return response.json();
-//       })
-//       .then((data) => {
-//         processJsonData(data);
-//       })
-//       .catch((error) => {
-//         if (error.message.includes("401")) {
-//           message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
-//           insertErrorMessage(holder, message);
-//         }
-//         else {
-//           message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
-//           insertErrorMessage(holder, message);
-//         }
-//       });
-//   }
-//   else {
-//     message = `Please Input a <b>Form ID</b>😊!!`;
-//     insertErrorMessage(holder, message);
-//   }
-
-// }
-
 function callAPI() {
-  processJsonData(getCarWF());
+  const formId = document.getElementById("formId").value;
+  const holder = document.getElementById("mainPaper");
+
+  if (formId !== '') {
+    // API endpoint URL
+    const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
+
+    // Bearer token (replace 'YOUR_TOKEN' with your actual token)
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2MTc0NjEsImV4cCI6MTcwMDYyMTA2MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MTc0NTksImlkcCI6IkZvcm1zIiwianRpIjoiMTJBRjFFNDJGRDhFOUZBRkIxRjE2NTZCQTNGREIxNkQiLCJzaWQiOiIyMzE1RUQyNjU5MTNFQkNBMTc4ODcxNjI2OTQ2MDg3NiIsImlhdCI6MTcwMDYxNzQ2MSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EaNT5mpQqkd5o3fLvqlpvSsasKI_XVFuwt653tBf-Qb-vkyIbaOTxv4V-VOh89vYz-Cbrn9KSptQT6EaQuEA-A5k6zEVuKHw41xttJ7S3A0B-ebL8hDuMlrB42GcCetgWsq0kNeMWcxtCdxE4Od-oj94yJCaRHDZGQbcMGjZNiMyINFIohDqSLjekutbPCB3Vu3sbcZVVjyaD1kf_pgS-t4cm4239RW4vse1MTfbYwKEaHNFnSVYXMRioRu-o89VhJrvD-TF97iju2OKcr8uAKyDbamNTNKvF3rCv8dOHX7fGeJclci8cl2V5GNzmJh1FvObZf8i4yHsAQl6QcrSzQ"
+
+    // Create headers with the bearer token
+    const headers = new Headers({
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json", // Adjust as needed
+    });
+
+    // Make a GET request to the API endpoint with the headers
+    fetch(apiUrl, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        // Check if the response status is OK (200)
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        // Parse the JSON response
+        return response.json();
+      })
+      .then((data) => {
+        processJsonData(data);
+      })
+      .catch((error) => {
+        if (error.message.includes("401")) {
+          message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
+          insertErrorMessage(holder, message);
+        }
+        else {
+          message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
+          insertErrorMessage(holder, message);
+        }
+      });
+  }
+  else {
+    message = `Please Input a <b>Form ID</b>😊!!`;
+    insertErrorMessage(holder, message);
+  }
+
 }
+
+// function callAPI() {
+//   processJsonData(getCarWF());
+// }
 
 
 // process and get only required data from raw JSON Data
@@ -1238,8 +1246,13 @@ function createDropdownList() {
 
 // add extra data needed for each stage
 function createStagesData(workflowStages) {
-// console.log(workflowStages);
+  // console.log(workflowStages);
+  addNextStageData(workflowStages);
+  addPrevStageData (workflowStages)
+  addBackToPrevStageData();
+}
 
+function addNextStageData(workflowStages) {
   // get nextStage & branches data > push to rectDataArray
   for (let i = 0; i < workflowStages.length; i++) {
     let currentStageName = workflowStages[i].currentStageName;
@@ -1247,7 +1260,7 @@ function createStagesData(workflowStages) {
     let nextStages = [];
     let preStages = [];
     let branches = [];
-    let hasBackToPrev =false;
+    let hasBackToPrev = false;
     let isEndStage = workflowStages[i].isEndStage;
     let isApprovedStage = workflowStages[i].isApprovedStage;
     let seqNo = workflowStages[i].seqNo;
@@ -1272,7 +1285,7 @@ function createStagesData(workflowStages) {
     // get nextStage data
     for (let j = 0; j < actionLength; j++) {
 
-      let stageName="";
+      let stageName = "";
       let actionName;
       let stageId;
 
@@ -1285,8 +1298,8 @@ function createStagesData(workflowStages) {
       //"Standard", "RequestorSubmission", "ReturnToRequestor" 
       else {
         let eventType = workflowStages[i].actions[j].eventLists[0].events[0].eventType;
-        
-      // "GotoStage" , "BacktoPrevStage"
+
+        // "GotoStage" , "BacktoPrevStage"
         if (eventType === "GotoStage") {
           stageName = workflowStages[i].actions[j].eventLists[0].events[0].stageTitle.title.key;
           actionName = workflowStages[i].actions[j].title.key;
@@ -1297,7 +1310,7 @@ function createStagesData(workflowStages) {
           stageName = 'dummy';
           actionName = workflowStages[i].actions[j].title.key;
           stageId = 'dummy';
-          hasBackToPrev =true
+          hasBackToPrev = true
         }
       }
 
@@ -1332,55 +1345,58 @@ function createStagesData(workflowStages) {
       hasBackToPrev
     });
     // console.log(rectDataArray);
-
   }
+}
 
-  // get prestage data only after 'nestStage' data is completed pushed to rectDataArray
-  for (let i = 0; i < workflowStages.length; i++) {
-    let currentStageId = rectDataArray[i].currentStageId;
-    let preStageName;
-    let preStageId;
-
-    for (let j = 0; j < rectDataArray.length; j++) {
-      for (let p = 0; p < rectDataArray[j].nextStages.length; p++) {
-        if (rectDataArray[j].nextStages[p].stageId === currentStageId) {
-          preStageId = rectDataArray[j].currentStageId;
-          preStageName = rectDataArray[j].currentStageName;
-          rectDataArray[i].preStages.push({ preStageName, preStageId });
+function addPrevStageData(workflowStages){
+    // get prestage data only after 'nestStage' data is completed pushed to rectDataArray
+    for (let i = 0; i < workflowStages.length; i++) {
+      let currentStageId = rectDataArray[i].currentStageId;
+      let preStageName;
+      let preStageId;
+  
+      for (let j = 0; j < rectDataArray.length; j++) {
+        for (let p = 0; p < rectDataArray[j].nextStages.length; p++) {
+          if (rectDataArray[j].nextStages[p].stageId === currentStageId) {
+            preStageId = rectDataArray[j].currentStageId;
+            preStageName = rectDataArray[j].currentStageName;
+            rectDataArray[i].preStages.push({ preStageName, preStageId });
+          }
         }
       }
     }
-  }
+}
 
+function addBackToPrevStageData(){
+  
   // fill in the 'backToPrevStage' action
-  let dataSet1 =  rectDataArray.filter((data)=>{
+  let stages = rectDataArray.filter((data) => {
     return data.hasBackToPrev == true;
   })
 
-  for (let i = 0; i < dataSet1.length; i++) {
-    let currentStageId = dataSet1[i].currentStageId;
-    let prestages = rectDataArray.filter((data)=>{ return data.currentStageId === currentStageId; })[0].preStages;
-    let nextStages = dataSet1[i].nextStages.filter((data)=>{ return data.stageName === 'dummy'; });
-    console.log(prestages);
-    for (let j = 0; j < nextStages.length; j++) {
-        let actionName = nextStages[j].actionName;
+  for (let i = 0; i < stages.length; i++) {
+    let currentStageId = stages[i].currentStageId;
+    let prestages = rectDataArray.filter((data) => { return data.currentStageId === currentStageId; })[0].preStages;
+    let dummies = stages[i].nextStages.filter((data) => { return data.stageName === 'dummy'; });
+
+    for (let j = 0; j < dummies.length; j++) {
+      let actionName = dummies[j].actionName;
 
       for (let p = 0; p < prestages.length; p++) {
-        
-        let index = rectDataArray.findIndex((data)=>data.currentStageId === currentStageId);
+
+        let index = rectDataArray.findIndex((data) => data.currentStageId === currentStageId);
         let obj = {
           stageName: prestages[p].preStageName,
           actionName: actionName,
           stageId: prestages[p].preStageId
         };
         rectDataArray[index].nextStages.push(obj);
-        rectDataArray[index].nextStages =   rectDataArray[index].nextStages.filter((data)=>{ return data.stageName!=='dummy'});
-        console.log(rectDataArray);
+
+        //remove all dummy obj
+        rectDataArray[index].nextStages = rectDataArray[index].nextStages.filter((data) => { return data.stageName !== 'dummy' });
       }
     }
   }
-
- 
 }
 
 function init() {
@@ -1426,7 +1442,8 @@ generateButton.addEventListener("click", () => {
   workflowNo = 1;
   callAPI();
 });
-
+generateButton.click()
+;
 const loadButton = document.getElementById("loadButton");
 loadButton.addEventListener("change", () => {
 
