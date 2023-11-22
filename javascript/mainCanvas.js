@@ -1,6 +1,6 @@
 //** Global Variable **//
 // destructuring assignment
-const { shapes, util, dia, mvc } = joint;
+const { shapes, util, dia, mvc, elementTools } = joint;
 const rectWidth = 140;
 const rectHeight = 60;
 let totalWorkflows;
@@ -32,7 +32,7 @@ var LayoutControls = mvc.View.extend({
     // add eventlinstener to the paper's elements
     this.listenTo(paper.model, "change", function (_, opt) {
       if (paper.getContentArea().width !== paper.paperContentW || paper.getContentArea().height !== paper.paperContentH)
-      autoResizePaper(paper);
+        autoResizePaper(paper);
     });
 
     setTimeout(() => {
@@ -56,6 +56,8 @@ var LayoutControls = mvc.View.extend({
 
     // add link tools for each link
     addLinkTools(graph.getLinks(), paper);
+
+    addElementTools(graph.getElements(), paper);
 
     // build complete actions info's details for parallel stage
     buildParallelStageInfoButtonDetails();
@@ -92,6 +94,71 @@ var LayoutControls = mvc.View.extend({
       nodeSep: parseInt(this.$(".nodesep").val(), 15),
     };
   },
+});
+
+// custom elementTool
+const ResizeTool = elementTools.Control.extend({
+  children: [
+    {
+      tagName: "image",
+      selector: "handle",
+      attributes: {
+        cursor: "pointer",
+        width: 20,
+        height: 20,
+        "xlink:href": "picture/resize.png"
+      }
+    },
+    {
+      tagName: "rect",
+      selector: "extras",
+      attributes: {
+        "pointer-events": "none",
+        fill: "none",
+        stroke: "rgb(255, 112, 238)",
+        "stroke-width": "3",
+        "stroke-dasharray": "10",
+        rx: 5,
+        ry: 5
+      }
+    }
+  ],
+  getPosition: function (view) {
+    const model = view.model;
+    const { width, height } = model.size();
+    return { x: width - 10, y: height - 10 };
+  },
+  setPosition: function (view, coordinates) {
+   
+    const model = view.model; 
+    const { width, height } = model.size();
+
+    if(model instanceof Decision){
+      var dAttribute = model.attr('body/d');
+
+      if (typeof dAttribute !== 'undefined') {
+        let sX = width/20;
+        let sY =  height/20;
+  
+        model.attr('body/d', `M ${20*sX} 0 L ${40*sX} ${20*sY} L${20*sX}  ${40*sY} L 0 ${20*sY} z`);
+        model.resize(
+          Math.max(coordinates.x - 10 , 1),
+          Math.max(coordinates.y - 10, 1)
+        );
+      }
+    }
+    else{
+      model.resize(
+        Math.max(coordinates.x - 10, 1),
+        Math.max(coordinates.y - 10, 1)
+      );
+    }
+
+  },
+  resetPosition: function (view) {
+    const model = view.model;
+    model.resize(100, 40)
+  }
 });
 
 // custom  shape
@@ -243,7 +310,7 @@ class Decision extends joint.dia.Element {
           fill: 'white',
           stroke: 'black',
           strokeWidth: 2,
-          d: 'M 20 0 L 40 20 L 20 40 L 0 20 z',
+          d: `M 20 0 L 40 20 L 20 40 L 0 20 z`,
         },
       },
       ...attributes,
@@ -709,6 +776,46 @@ function addLinkTools(links, paper) {
 
 }
 
+function addElementTools(elements, paper) {
+  elements.forEach(element => {
+    let elementView = paper.findViewByModel(element);
+    elementView.addTools(createElementTools());
+    elementView.hideTools();
+  });
+
+  paper.on("element:mouseover", (elementView) => {
+    elementView.showTools();
+  })
+
+  paper.on("element:mouseout", (elementView) => {
+    elementView.hideTools();
+  })
+}
+
+function createElementTools() {
+
+
+  var boundaryTool = new joint.elementTools.Boundary({
+    focusOpacity: 0.5,
+    padding: 15,
+    useModelGeometry: true
+  });
+
+
+  let resizeTool = new ResizeTool({
+    padding: 15,
+    selector: "body"
+  });
+
+  var elementsView = new joint.dia.ToolsView({
+    name: 'element-tools',
+    tools: [boundaryTool, resizeTool]
+  });
+
+  return elementsView;
+
+}
+
 function createLinkTools() {
 
   // var InfoButton = joint.linkTools.Button.extend({
@@ -1143,7 +1250,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2MjEzODgsImV4cCI6MTcwMDYyNDk4OCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MjA3NzEsImlkcCI6IkZvcm1zIiwianRpIjoiRDMzNTE1RkZFODNFQjE5OTM4QjA2ODE2QzE4MjU0NDUiLCJzaWQiOiIwNEJCNEQ0RDk4NkUzNEMwOUEwQ0VGMzI5OTQyRkMzNSIsImlhdCI6MTcwMDYyMDc3NCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.HJBkbJ8RIN3U2TnPi_55L_VwXdeSBwCrKcu2KSrDzfe-T79TxRF4My-5QLj7mZogVlUzz1sh7Q4z_D5a1dVblkbhcGrdNWuwCpDjVglt5_bUU3UUl1EbOBGamwi1w0ovr-sYZv3M0fy1PqMO_QN9JhtRzWaFw4mAZ3i8x4GA85-PpuuVoUjGw4Gi1gTP9RIdhTM9_C0fo1z2yON-uYS7HYH_ZyJlJQJNoz9ZOSmjfSJYiSE2otM2jqymAraYqL0XqUa2Yy6ayGTe1Sdzcx5GbDYRSU00gkUqVDaQURAkq0kKnwaDrrenl3a2on3s9cAJ5t_nJlx6JHGykBFO08vguA"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2NDQ4MjgsImV4cCI6MTcwMDY0ODQyOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MzE4NDYsImlkcCI6IkZvcm1zIiwianRpIjoiQ0RGOTcwOEQxQ0QwRkE5MjIxQjA1OTRCQkY4MTE4OTgiLCJzaWQiOiJDQzlBNEY3QjlFQzRCMjEyNjJDQkZDNUY4RjI2NkNGMCIsImlhdCI6MTcwMDYzMTg1MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.DmOqDyrUDPN5MKycR65jLnMVR0FVrLtLWTbnuv4sjogTGOMvGUqacaFzwPtf3E2CXGgZtowkylG9iQYDZpZaXX0cnXxdY57S-IDmvI0qa2N-G7Duwbcksx7JFpd_ZdLFAFkiGF7BaZ0iV6i2NliZmiojJh96W-3hZ2_s4Ot7_I9HY4cJxTeAGrhtH5uMQAnOQQsa3fGEFNot0Ws6j-qKhk7NtPiTs3HDz9KHHdUrvvs_KonZBxjP4bnyOcoJ1PcJBE1hV-D7xZEmgh0SlNfPWZqkeaWQOixp_vQVUfKodQ6ZvA3ijwwH3XDK11zKD_DvNkvFhwwCsfls-v5nMYDkPQ"
 
     // Create headers with the bearer token
     const headers = new Headers({
