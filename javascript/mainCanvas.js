@@ -27,15 +27,17 @@ var LayoutControls = mvc.View.extend({
   },
 
   init: function () {
-    var options = this.options;
+    var paper = this.options.paper;
 
     // add eventlinstener to the paper's elements
-    this.listenTo(options.paper.model, "change", function (_, opt) {
+    this.listenTo(paper.model, "change", function (_, opt) {
+      if (paper.getContentArea().width !== paper.paperContentW || paper.getContentArea().height !== paper.paperContentH)
+      autoResizePaper(paper);
     });
+
     setTimeout(() => {
       this.layout();
     }, 200);
-
 
   },
 
@@ -300,19 +302,6 @@ function createPaper(holderId) {
 
     paper.dragStartPosition = false;
   });
-
-  paper.on('cell:pointerdown', function () {
-    
-    paper.paperContentW = paper.getContentArea().width;
-    paper.paperContentH = paper.getContentArea().height;
-  });
-
-
-  paper.on('cell:pointerup', function () {
-    if(paper.getContentArea().width > paper.paperContentW  || paper.getContentArea().height > paper.paperContentH)
-    autoResizePaper(paper);
-  });
-
 
 
   $(`#${holderId}`).mousemove(function (event) {
@@ -1154,7 +1143,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2MTc0NjEsImV4cCI6MTcwMDYyMTA2MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MTc0NTksImlkcCI6IkZvcm1zIiwianRpIjoiMTJBRjFFNDJGRDhFOUZBRkIxRjE2NTZCQTNGREIxNkQiLCJzaWQiOiIyMzE1RUQyNjU5MTNFQkNBMTc4ODcxNjI2OTQ2MDg3NiIsImlhdCI6MTcwMDYxNzQ2MSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.EaNT5mpQqkd5o3fLvqlpvSsasKI_XVFuwt653tBf-Qb-vkyIbaOTxv4V-VOh89vYz-Cbrn9KSptQT6EaQuEA-A5k6zEVuKHw41xttJ7S3A0B-ebL8hDuMlrB42GcCetgWsq0kNeMWcxtCdxE4Od-oj94yJCaRHDZGQbcMGjZNiMyINFIohDqSLjekutbPCB3Vu3sbcZVVjyaD1kf_pgS-t4cm4239RW4vse1MTfbYwKEaHNFnSVYXMRioRu-o89VhJrvD-TF97iju2OKcr8uAKyDbamNTNKvF3rCv8dOHX7fGeJclci8cl2V5GNzmJh1FvObZf8i4yHsAQl6QcrSzQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2MjEzODgsImV4cCI6MTcwMDYyNDk4OCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MjA3NzEsImlkcCI6IkZvcm1zIiwianRpIjoiRDMzNTE1RkZFODNFQjE5OTM4QjA2ODE2QzE4MjU0NDUiLCJzaWQiOiIwNEJCNEQ0RDk4NkUzNEMwOUEwQ0VGMzI5OTQyRkMzNSIsImlhdCI6MTcwMDYyMDc3NCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.HJBkbJ8RIN3U2TnPi_55L_VwXdeSBwCrKcu2KSrDzfe-T79TxRF4My-5QLj7mZogVlUzz1sh7Q4z_D5a1dVblkbhcGrdNWuwCpDjVglt5_bUU3UUl1EbOBGamwi1w0ovr-sYZv3M0fy1PqMO_QN9JhtRzWaFw4mAZ3i8x4GA85-PpuuVoUjGw4Gi1gTP9RIdhTM9_C0fo1z2yON-uYS7HYH_ZyJlJQJNoz9ZOSmjfSJYiSE2otM2jqymAraYqL0XqUa2Yy6ayGTe1Sdzcx5GbDYRSU00gkUqVDaQURAkq0kKnwaDrrenl3a2on3s9cAJ5t_nJlx6JHGykBFO08vguA"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1248,7 +1237,7 @@ function createDropdownList() {
 function createStagesData(workflowStages) {
   // console.log(workflowStages);
   addNextStageData(workflowStages);
-  addPrevStageData (workflowStages)
+  addPrevStageData(workflowStages)
   addBackToPrevStageData();
 }
 
@@ -1265,7 +1254,8 @@ function addNextStageData(workflowStages) {
     let isApprovedStage = workflowStages[i].isApprovedStage;
     let seqNo = workflowStages[i].seqNo;
     let hasDecision = false;
-    let stageType = workflowStages[i].stageType;
+    let stageType = workflowStages[i].stageType;       //"Standard", "RequestorSubmission", "ReturnToRequestor" ,"Parallel"
+    let eventType;                                     // "GotoStage" , "BacktoPrevStage"
     let parallelSets = workflowStages[i].parallelSets;
     let parallelCompletes = workflowStages[i].parallelCompletes;
 
@@ -1276,12 +1266,6 @@ function addNextStageData(workflowStages) {
 
     let branchesLength = workflowStages[i].parallelSets.length;
 
-    if (i !== 0) {
-      var tempPrevStageName = workflowStages[i - 1].currentStageName;
-      var tempPrevStageId = workflowStages[i - 1].currentStageId;
-    }
-
-
     // get nextStage data
     for (let j = 0; j < actionLength; j++) {
 
@@ -1290,14 +1274,26 @@ function addNextStageData(workflowStages) {
       let stageId;
 
       if (stageType === "Parallel") {
-        stageName = workflowStages[i].parallelCompletes[j].actions[0].stageTitle.key;
-        actionName = workflowStages[i].parallelCompletes[j].title.key;
-        stageId = workflowStages[i].parallelCompletes[j].actions[0].workflowStageId;
+        eventType = workflowStages[i].parallelCompletes[j].actions[0].action;
+
+
+        if (eventType === "goToStage") {
+          stageName = workflowStages[i].parallelCompletes[j].actions[0].stageTitle.key;
+          actionName = workflowStages[i].parallelCompletes[j].title.key;
+          stageId = workflowStages[i].parallelCompletes[j].actions[0].workflowStageId;
+        }
+
+        else if (eventType === "prevStage") {
+          stageName = 'dummy';
+          actionName = workflowStages[i].parallelCompletes[j].title.key;
+          stageId = 'dummy';
+          hasBackToPrev = true
+        }
 
       }
-      //"Standard", "RequestorSubmission", "ReturnToRequestor" 
+
       else {
-        let eventType = workflowStages[i].actions[j].eventLists[0].events[0].eventType;
+        eventType = workflowStages[i].actions[j].eventLists[0].events[0].eventType;
 
         // "GotoStage" , "BacktoPrevStage"
         if (eventType === "GotoStage") {
@@ -1338,6 +1334,7 @@ function addNextStageData(workflowStages) {
       isApprovedStage,
       seqNo,
       stageType,
+      eventType,
       hasDecision,
       branches,
       parallelSets,
@@ -1348,27 +1345,27 @@ function addNextStageData(workflowStages) {
   }
 }
 
-function addPrevStageData(workflowStages){
-    // get prestage data only after 'nestStage' data is completed pushed to rectDataArray
-    for (let i = 0; i < workflowStages.length; i++) {
-      let currentStageId = rectDataArray[i].currentStageId;
-      let preStageName;
-      let preStageId;
-  
-      for (let j = 0; j < rectDataArray.length; j++) {
-        for (let p = 0; p < rectDataArray[j].nextStages.length; p++) {
-          if (rectDataArray[j].nextStages[p].stageId === currentStageId) {
-            preStageId = rectDataArray[j].currentStageId;
-            preStageName = rectDataArray[j].currentStageName;
-            rectDataArray[i].preStages.push({ preStageName, preStageId });
-          }
+function addPrevStageData(workflowStages) {
+  // get prestage data only after 'nestStage' data is completed pushed to rectDataArray
+  for (let i = 0; i < workflowStages.length; i++) {
+    let currentStageId = rectDataArray[i].currentStageId;
+    let preStageName;
+    let preStageId;
+
+    for (let j = 0; j < rectDataArray.length; j++) {
+      for (let p = 0; p < rectDataArray[j].nextStages.length; p++) {
+        if (rectDataArray[j].nextStages[p].stageId === currentStageId) {
+          preStageId = rectDataArray[j].currentStageId;
+          preStageName = rectDataArray[j].currentStageName;
+          rectDataArray[i].preStages.push({ preStageName, preStageId });
         }
       }
     }
+  }
 }
 
-function addBackToPrevStageData(){
-  
+function addBackToPrevStageData() {
+  console.log(rectDataArray);
   // fill in the 'backToPrevStage' action
   let stages = rectDataArray.filter((data) => {
     return data.hasBackToPrev == true;
@@ -1443,7 +1440,7 @@ generateButton.addEventListener("click", () => {
   callAPI();
 });
 generateButton.click()
-;
+  ;
 const loadButton = document.getElementById("loadButton");
 loadButton.addEventListener("change", () => {
 
