@@ -103,7 +103,7 @@ const ResizeTool = elementTools.Control.extend({
       tagName: "image",
       selector: "handle",
       attributes: {
-        cursor: "pointer",
+        cursor: "se-resize",
         width: 20,
         height: 20,
         "xlink:href": "picture/resize.png"
@@ -126,14 +126,12 @@ const ResizeTool = elementTools.Control.extend({
   getPosition: function (view) {
     const model = view.model;
     const { width, height } = model.size();
-    return { x: width - 10, y: height - 10 };
+    return { x: width - 5, y: height - 5 };
 
   },
   setPosition: function (view, coordinates) {
 
     const model = view.model;
-    const { width, height } = model.size();
-
       model.resize(
         Math.max(coordinates.x - 10, 1),
         Math.max(coordinates.y - 10, 1)
@@ -141,7 +139,8 @@ const ResizeTool = elementTools.Control.extend({
     },
   resetPosition: function (view) {
     const model = view.model;
-    model.resize(100, 40)
+    model instanceof shapes.standard.Rectangle ?  model.resize(140, 60) : model.resize(40, 40) ;
+
   }
 });
 
@@ -218,7 +217,7 @@ class InitialNode extends joint.dia.Element {
         },
       ],
       type: 'custom.InitialNode',
-      size: { width: 30, height: 30 },
+      size: { width: 40, height: 40 },
       attrs: {
         body: {
           fill: '#333',
@@ -254,7 +253,7 @@ class EndNode extends joint.dia.Element {
         },
       ],
       type: 'custom.EndNode',
-      size: { width: 30, height: 30 },
+      size: { width: 40, height: 40 },
       attrs: {
         body: {
           fill: 'transparent',
@@ -671,12 +670,6 @@ function createCells(elementsArray, linksArray, rectDataArray) {
     let target = "";
     let childSize = rectData.nextStages.length;
     let stageType = rectData.stageType;
-    let isReturnLink = false;
-    let isResubmission = false;
-
-    if (stageType === "ReturnToRequestor") {
-      isResubmission = true;
-    }
 
     // check if it has decision and handle it
     if (childSize > 1) {
@@ -692,7 +685,6 @@ function createCells(elementsArray, linksArray, rectDataArray) {
 
     for (let i = 0; i < childSize; i++) {
       target = rectData.nextStages[i].stageId;
-      isReturnLink = checkIsReturnLink(source, target);
       let actionLabel = rectData.nextStages[i].actionName;
       createLink(linksArray, source, target, { sourceSide: "perpendicular" }, { targetSide: "perpendicular", targetDx: 0, targetDy: 0 }, actionLabel);
     }
@@ -734,12 +726,14 @@ function addLinkTools(links, paper) {
     linkView.hideTools();
   });
 
-  paper.on("link:mouseover", (linkView) => {
+  paper.on("link:mouseover", (linkView,evt) => {
     linkView.showTools();
+    evt.stopPropagation();
   })
 
-  paper.on("link:mouseout", (linkView) => {
+  paper.on("link:mouseout", (linkView,evt) => {
     linkView.hideTools();
+    evt.stopPropagation();
   })
 
 }
@@ -751,15 +745,17 @@ function addElementTools(elements, paper) {
     elementView.hideTools();
   });
 
-  paper.on("element:pointerclick", (elementView) => {
+  paper.on("element:pointerclick", (elementView,evt) => {
     let isSelected = elementView.model.attributes.isSelected;
     if (isSelected) {
       elementView.hideTools();
       elementView.model.attributes.isSelected = false;
+      evt.stopPropagation();
     }
     else {
       elementView.showTools();
       elementView.model.attributes.isSelected = true;
+      evt.stopPropagation();
     }
   })
 }
@@ -892,21 +888,6 @@ function createImage(w, h, imagePath, imageLabel) {
   });
   return image
 
-}
-
-function checkIsReturnLink(sourcId, targetId) {
-  let sourceSeqNo;
-  let targetSeqNo;
-
-  elements.findIndex(function (element) {
-    if (element.id == sourcId) {
-      sourceSeqNo = element.attributes.seqNo;
-    } else if (element.id == targetId) {
-      targetSeqNo = element.attributes.seqNo;
-    }
-  });
-
-  return sourceSeqNo > targetSeqNo;
 }
 
 function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
