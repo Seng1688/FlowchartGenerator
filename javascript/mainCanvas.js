@@ -127,34 +127,18 @@ const ResizeTool = elementTools.Control.extend({
     const model = view.model;
     const { width, height } = model.size();
     return { x: width - 10, y: height - 10 };
+
   },
   setPosition: function (view, coordinates) {
-   
-    const model = view.model; 
+
+    const model = view.model;
     const { width, height } = model.size();
 
-    if(model instanceof Decision){
-      var dAttribute = model.attr('body/d');
-
-      if (typeof dAttribute !== 'undefined') {
-        let sX = width/20;
-        let sY =  height/20;
-  
-        model.attr('body/d', `M ${20*sX} 0 L ${40*sX} ${20*sY} L${20*sX}  ${40*sY} L 0 ${20*sY} z`);
-        model.resize(
-          Math.max(coordinates.x - 10 , 1),
-          Math.max(coordinates.y - 10, 1)
-        );
-      }
-    }
-    else{
       model.resize(
         Math.max(coordinates.x - 10, 1),
         Math.max(coordinates.y - 10, 1)
-      );
-    }
-
-  },
+      )
+    },
   resetPosition: function (view) {
     const model = view.model;
     model.resize(100, 40)
@@ -292,34 +276,6 @@ class EndNode extends joint.dia.Element {
     });
   }
 }
-
-class Decision extends joint.dia.Element {
-  constructor(attributes) {
-    super({
-      markup: [
-        {
-          tagName: 'path',
-          selector: 'body',
-        },
-      ],
-      type: 'custom.Decision',
-      size: { width: 40, height: 40 },
-      position: { x: 100, y: 100 }, // Set the initial position of the element
-      attrs: {
-        body: {
-          fill: 'white',
-          stroke: 'black',
-          strokeWidth: 2,
-          d: `M 20 0 L 40 20 L 20 40 L 0 20 z`,
-        },
-      },
-      ...attributes,
-    });
-  }
-}
-
-
-
 
 //** Graph Elements Creation Function **//
 function createPaper(holderId) {
@@ -556,19 +512,31 @@ function createParallelRect(rectData) {
   return parallel;
 }
 
-function createDecisionPolygon(dataArray, elementsArray) {
+function createPolygon(dataArray, elementsArray) {
+
   dataArray.forEach((rectData) => {
     let childSize = rectData.nextStages.length;
     let parentId = rectData.currentStageId;
     let seqNo = rectData.seqNo;
 
     if (childSize > 1) {
-      const decisionPolygon = new Decision({
+
+      let polygon = new joint.shapes.standard.Polygon({
+        size: { width: 40, height: 40 },
+        position: { x: 250, y: 210 },
+        attrs: {
+          root: {
+            title: 'joint.shapes.standard.Polygon',
+          },
+          body: {
+            refPoints: '0,10 10,0 20,10 10,20',
+          },
+        },
         parentId,
         seqNo,
       });
 
-      elementsArray.push(decisionPolygon);
+      elementsArray.push(polygon);
     }
   });
 }
@@ -688,7 +656,7 @@ function createCells(elementsArray, linksArray, rectDataArray) {
   createStartNode(elementsArray);
   createEndNode(elementsArray);
   createRectangles(rectDataArray, elementsArray);
-  createDecisionPolygon(rectDataArray, elementsArray);
+  createPolygon(rectDataArray, elementsArray);
 
   //  =========================================Create Links===================================================
   // create link for startNode
@@ -783,12 +751,16 @@ function addElementTools(elements, paper) {
     elementView.hideTools();
   });
 
-  paper.on("element:mouseover", (elementView) => {
-    elementView.showTools();
-  })
-
-  paper.on("element:mouseout", (elementView) => {
-    elementView.hideTools();
+  paper.on("element:pointerclick", (elementView) => {
+    let isSelected = elementView.model.attributes.isSelected;
+    if (isSelected) {
+      elementView.hideTools();
+      elementView.model.attributes.isSelected = false;
+    }
+    else {
+      elementView.showTools();
+      elementView.model.attributes.isSelected = true;
+    }
   })
 }
 
@@ -1250,7 +1222,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA2NDQ4MjgsImV4cCI6MTcwMDY0ODQyOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA2MzE4NDYsImlkcCI6IkZvcm1zIiwianRpIjoiQ0RGOTcwOEQxQ0QwRkE5MjIxQjA1OTRCQkY4MTE4OTgiLCJzaWQiOiJDQzlBNEY3QjlFQzRCMjEyNjJDQkZDNUY4RjI2NkNGMCIsImlhdCI6MTcwMDYzMTg1MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.DmOqDyrUDPN5MKycR65jLnMVR0FVrLtLWTbnuv4sjogTGOMvGUqacaFzwPtf3E2CXGgZtowkylG9iQYDZpZaXX0cnXxdY57S-IDmvI0qa2N-G7Duwbcksx7JFpd_ZdLFAFkiGF7BaZ0iV6i2NliZmiojJh96W-3hZ2_s4Ot7_I9HY4cJxTeAGrhtH5uMQAnOQQsa3fGEFNot0Ws6j-qKhk7NtPiTs3HDz9KHHdUrvvs_KonZBxjP4bnyOcoJ1PcJBE1hV-D7xZEmgh0SlNfPWZqkeaWQOixp_vQVUfKodQ6ZvA3ijwwH3XDK11zKD_DvNkvFhwwCsfls-v5nMYDkPQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3MTU2MjIsImV4cCI6MTcwMDcxOTIyMiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3MTEzNjYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk0NkU2MkJENzZGRTQyNEMzRkMyQ0JBN0NDMDNCNzEiLCJzaWQiOiI1NDQ0MEIxQTBGMDFDQzlDMUM0MzEzNDcyOTQ2NTU1OSIsImlhdCI6MTcwMDcxMTM2OSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.fBpspYYgzyLPCBCfwocuj0wugrVY4YFKqtM8-9T7CJnlzvx7tzuzAbxke4Vc8kTlkoJHBYDrSQP81OimqP1Gpi4CuccwRRGw8sqNsfu0qwvXfIfMFD11RqoYnX9TaYqiRlKICxwRWR0gqIiXjcVpMPr8eq2K6M4YVhplNntWKeFOouFumo5Gi-WakKpMJ5k110UIFF1U9CWlu7E8hDrkRcJAQ0KsU9awOQ266a64hcU5Q2dTWG8WwZ0m5IMoRR6Vj01ewapdXXdwbJAsJ0PITIwT4nwZMpDkyJAdrSFHgPnzVDVQO0H9QFGKn6GxALK-sr7qthTLGrutTGAd1O956A"
 
     // Create headers with the bearer token
     const headers = new Headers({
