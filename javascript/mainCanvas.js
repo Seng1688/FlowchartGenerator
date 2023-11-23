@@ -132,15 +132,51 @@ const ResizeTool = elementTools.Control.extend({
   setPosition: function (view, coordinates) {
 
     const model = view.model;
-      model.resize(
-        Math.max(coordinates.x - 10, 1),
-        Math.max(coordinates.y - 10, 1)
-      )
-    },
-  resetPosition: function (view) {
-    const model = view.model;
-    model instanceof shapes.standard.Rectangle ?  model.resize(140, 60) : model.resize(40, 40) ;
+    model.resize(
+      Math.max(coordinates.x, 1),
+      Math.max(coordinates.y, 1)
+    )
 
+    if (model instanceof ParallelRect) {
+
+      let size = model.attributes.branchSize;
+      let rows = model.attributes.rows;
+      let columns = model.attributes.columns;
+      let bodyW = model.size().width;
+      let bodyH = model.size().height;
+      let childWidth = (bodyW - (columns+1)*5 ) / columns;
+      let childHeight = (bodyH - 24 - (rows+1) *5 ) / rows ;
+      let offsetX = 5
+      let offsetY = 5;
+      let level = 1; // to calculate offsetY for each branch
+      let counter = 1; // to calculate offsetX for each branch
+
+      for (let i = 0; i < size; i++) {
+
+        // update level
+        if (i != 0 && i % 3 == 0) {
+          level++;
+        }
+
+        // update counter
+        if (counter == 4) {
+          counter = 1;
+        }
+
+        model.attr(`branch${i + 1}/width`, childWidth);
+        model.attr(`branch${i + 1}/height`, childHeight);
+        model.attr(`branch${i + 1}/refX`, counter * offsetX + (counter - 1) * childWidth);
+        model.attr(`branch${i + 1}/refY`, level * offsetY + (level - 1) * childHeight + 24);
+
+        counter++;
+      }
+
+    }
+
+  },
+  resetPosition: function (view) {
+    // const model = view.model;
+    // model instanceof shapes.standard.Rectangle ? model.resize(140, 60) : model.resize(40, 40);
   }
 });
 
@@ -410,7 +446,6 @@ function createParallelRect(rectData) {
 
   let fullStageName = rectData.currentStageName;
   let processedStageName = checkAndAddEllipsis(fullStageName, (rectData.branches.length > 3) ? 30 : rectData.branches.length * 12);
-
   var parallel = new ParallelRect({
     id: rectData.currentStageId.toString(),
     currentStageName: rectData.currentStageName,
@@ -422,8 +457,8 @@ function createParallelRect(rectData) {
       header: {
         title: fullStageName,
       }
-
     },
+    branchSize: rectData.branches.length,
   });
 
   let bodyW = parallel.attributes.size.width;
@@ -437,7 +472,7 @@ function createParallelRect(rectData) {
   let level = 1; // to calculate offsetY for each branch
   let counter = 1; // to calculate offsetX for each branch
 
-  for (let i = 0; i < rectData.branches.length; i++) {
+  for (let i = 0; i < parallel.attributes.branchSize; i++) {
 
     let fullBranchName = rectData.branches[i].branchName;
     let processedBranchName = checkAndAddEllipsis(fullBranchName, 10);
@@ -507,6 +542,9 @@ function createParallelRect(rectData) {
   parallel.attr("icon", {
     id: rectData.currentStageId,
   });
+
+  parallel.attributes.rows = level;
+  parallel.attributes.columns = parallel.attributes.branchSize > 3? 3 : parallel.attributes.branchSize
 
   return parallel;
 }
@@ -726,12 +764,12 @@ function addLinkTools(links, paper) {
     linkView.hideTools();
   });
 
-  paper.on("link:mouseover", (linkView,evt) => {
+  paper.on("link:mouseover", (linkView, evt) => {
     linkView.showTools();
     evt.stopPropagation();
   })
 
-  paper.on("link:mouseout", (linkView,evt) => {
+  paper.on("link:mouseout", (linkView, evt) => {
     linkView.hideTools();
     evt.stopPropagation();
   })
@@ -745,12 +783,13 @@ function addElementTools(elements, paper) {
     elementView.hideTools();
   });
 
-  paper.on("element:pointerclick", (elementView,evt) => {
+  paper.on("element:pointerclick", (elementView, evt) => {
     let isSelected = elementView.model.attributes.isSelected;
     if (isSelected) {
       elementView.hideTools();
       elementView.model.attributes.isSelected = false;
       evt.stopPropagation();
+
     }
     else {
       elementView.showTools();
@@ -1203,7 +1242,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3MTU2MjIsImV4cCI6MTcwMDcxOTIyMiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3MTEzNjYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk0NkU2MkJENzZGRTQyNEMzRkMyQ0JBN0NDMDNCNzEiLCJzaWQiOiI1NDQ0MEIxQTBGMDFDQzlDMUM0MzEzNDcyOTQ2NTU1OSIsImlhdCI6MTcwMDcxMTM2OSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.fBpspYYgzyLPCBCfwocuj0wugrVY4YFKqtM8-9T7CJnlzvx7tzuzAbxke4Vc8kTlkoJHBYDrSQP81OimqP1Gpi4CuccwRRGw8sqNsfu0qwvXfIfMFD11RqoYnX9TaYqiRlKICxwRWR0gqIiXjcVpMPr8eq2K6M4YVhplNntWKeFOouFumo5Gi-WakKpMJ5k110UIFF1U9CWlu7E8hDrkRcJAQ0KsU9awOQ266a64hcU5Q2dTWG8WwZ0m5IMoRR6Vj01ewapdXXdwbJAsJ0PITIwT4nwZMpDkyJAdrSFHgPnzVDVQO0H9QFGKn6GxALK-sr7qthTLGrutTGAd1O956A"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3MjQ5MjEsImV4cCI6MTcwMDcyODUyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3MTEzNjYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk0NkU2MkJENzZGRTQyNEMzRkMyQ0JBN0NDMDNCNzEiLCJzaWQiOiI1NDQ0MEIxQTBGMDFDQzlDMUM0MzEzNDcyOTQ2NTU1OSIsImlhdCI6MTcwMDcxMTM2OSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.e352hxpsocz5QQB5PVPFVvcldMKbRJzUj5gr9gTM0_QMEEU-3sPK41UV6tubYRBSI4F6XP4F4lgmzNV_MkQfe1FkASYieFbqJGZ6nGNFVoE8FUmvqGItDzvowV66ZCY9-5OszGbPnqvX-M_Vq6Yt5HztLSKmDVvpi8dGJMJnWkQsObCdUmLHwenN2uMlqYfzdHTd74J3uQyTN-IbuLeazAXVzCYIjfpcxETxNZW7un9-M9JCa2Mn1qENRJZoiBHym5JQtwMQyIIM02elLovsT_qerWe13qIQnQvoRzCJUBg5_BdSI8gpuwtYktt2wYgZ8OM_2aXCaY1kDQR7I1Ez9g"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1425,7 +1464,6 @@ function addPrevStageData(workflowStages) {
 }
 
 function addBackToPrevStageData() {
-  console.log(rectDataArray);
   // fill in the 'backToPrevStage' action
   let stages = rectDataArray.filter((data) => {
     return data.hasBackToPrev == true;
