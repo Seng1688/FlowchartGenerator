@@ -433,11 +433,11 @@ function createStandardRect(rectData, fillValue) {
         fill: fillValue,
         stroke: "black",
         strokeWidth: 1.5,
+        title: rectData.currentStageName,
       },
 
       label: {
         text: rectData.currentStageName,
-        title: rectData.currentStageName,
         fill: "black",
         fontSize: defaultFontSize,
         textWrap: {
@@ -520,6 +520,7 @@ function createParallelRect(rectData) {
       strokeWidth: 1,
       stroke: "black",
       fill: "white",
+      title: fullBranchName,
     });
     parallel.markup.push(branchMarkup);
 
@@ -538,7 +539,6 @@ function createParallelRect(rectData) {
       textAnchor: "middle",
       textVerticalAnchor: "middle",
       text: fullBranchName,
-      title: fullBranchName,
       refX: "50%",
       refY: "50%",
       fontSize: defaultFontSize,
@@ -1245,7 +1245,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3OTMyNzAsImV4cCI6MTcwMDc5Njg3MCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.YZMpU_DGK6LHR_PNQ3aYNv54i9bb3oYWomWNL1XDAwOAk_Bl-6ztNFA5aDASIm8nHqutqcdfDULbPwwGEMG6Aof0LT2xJcozpKKJ2z0fxgZJt4MDlyk2OCxkGOFiSFaDYgPcpRIreW0fA8tEMbpQ4Lg0ktl7fBLFmUW36XFqnUBZOb1dn2420JinqUM0sraTs7tkQV9EfFuGyyC8mHNeGzlb1Zd5T0VkAUKuSpO0FCMdAuIK327Y-349G0okpfN-X3YFodm8FhGO5RoYMNkJkF5D0RVf7SRxpkCtw6WdqOISkNtHlbptSAQnPrhFCwk-3y7Sq5DNu_FLalSYjJFYMQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3OTcwOTAsImV4cCI6MTcwMDgwMDY5MCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.A1iSUQ8sSLu7HcXnUTuFe8XMvvZaBqD6a_LiwH4Hql5KP7C_YaBjpUy_AH6rkjZ1s_oxSZBjzxkkmHIgKM2mnAsGU46ORUUj9M5xKoFKt_xmyaY-MJhHKsTtujuhrobISe1dP_XWslYOP1oz2m-exvzl_6Yozmql56wcRWr_GYxtyai-J55oybeYccVJ9SiGktxfGHCvZpaFN9EdGOPdqi8aY-DvHq8psDzk6wOEqfAyLvWkFlMxhfePes5-Xf_d3qe2q1XFcMSwPNsi24pKqtaeUhiiIA93rB3RNEA_4tyXHTcuX4Cj0kYBkSwzvrCtxxuf4XnsNCGCzg1sWB42pQ"
 
     // Create headers with the bearer token
     const headers = new Headers({
