@@ -429,11 +429,13 @@ function createStandardRect(rectData, fillValue) {
     size: { width: rectWidth, height: rectHeight },
 
     attrs: {
+      root: {
+        title: rectData.currentStageName,
+      },
       body: {
         fill: fillValue,
         stroke: "black",
         strokeWidth: 1.5,
-        title: rectData.currentStageName,
       },
 
       label: {
@@ -581,7 +583,7 @@ function createPolygon(dataArray, elementsArray) {
         position: { x: 250, y: 210 },
         attrs: {
           root: {
-            title: 'joint.shapes.standard.Polygon',
+            title: 'Decision',
           },
           body: {
             refPoints: '0,10 10,0 20,10 10,20',
