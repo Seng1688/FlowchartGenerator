@@ -3,6 +3,7 @@
 const { shapes, util, dia, mvc, elementTools } = joint;
 const rectWidth = 140;
 const rectHeight = 60;
+let defaultFontSize = 20;
 let totalWorkflows;
 let workflowNo = 1;
 let mainPaper;
@@ -214,6 +215,13 @@ var ParallelRect = dia.Element.define(
         y: "12", //middle of header
         textAnchor: "middle",
         textVerticalAnchor: "middle",
+        fontSize:defaultFontSize,
+        textWrap: {
+          width: 'calc(w - 90)', // Adjust the width as needed
+          padding: 10,
+          height: 28,
+          ellipsis: true 
+        },
       }
     },
   },
@@ -416,9 +424,6 @@ function createRectangles(dataArray, elementsArray) {
 
 function createStandardRect(rectData, fillValue) {
 
-  let fullStageName = rectData.currentStageName;
-  let processedStageName = checkAndAddEllipsis(fullStageName, 20);
-
   const Rect = new shapes.standard.Rectangle({
     id: rectData.currentStageId.toString(),
     size: { width: rectWidth, height: rectHeight },
@@ -431,9 +436,16 @@ function createStandardRect(rectData, fillValue) {
       },
 
       label: {
-        text: processedStageName,
-        title: fullStageName,
-        fill: "black"
+        text: rectData.currentStageName,
+        title: rectData.currentStageName,
+        fill: "black",
+        fontSize: defaultFontSize,
+        textWrap: {
+          width: 'calc(w - 50)', 
+          padding: 10,
+          height: '80%',
+          ellipsis: true 
+        },
       },
     },
     seqNo: rectData.seqNo,
@@ -445,14 +457,14 @@ function createParallelRect(rectData) {
 
 
   let fullStageName = rectData.currentStageName;
-  let processedStageName = checkAndAddEllipsis(fullStageName, (rectData.branches.length > 3) ? 30 : rectData.branches.length * 12);
+
   var parallel = new ParallelRect({
     id: rectData.currentStageId.toString(),
     currentStageName: rectData.currentStageName,
     size: { width: 100, height: 80 },
     attrs: {
       titleLabel: {
-        text: processedStageName,
+        text: fullStageName,
       },
       header: {
         title: fullStageName,
@@ -475,7 +487,6 @@ function createParallelRect(rectData) {
   for (let i = 0; i < parallel.attributes.branchSize; i++) {
 
     let fullBranchName = rectData.branches[i].branchName;
-    let processedBranchName = checkAndAddEllipsis(fullBranchName, 10);
 
     // bind parallelSet with label
     const parallelSet = rectData.parallelSets[i]
@@ -526,12 +537,19 @@ function createParallelRect(rectData) {
       event: 'element:branchLabel:pointerdown',
       textAnchor: "middle",
       textVerticalAnchor: "middle",
-      text: processedBranchName,
+      text: fullBranchName,
       title: fullBranchName,
       refX: "50%",
       refY: "50%",
+      fontSize: defaultFontSize,
       parallelSet: parallelSet,
       class: "branchLabel",
+      textWrap: {
+        width: 'calc(w - 20)', 
+        padding: 10,
+        height: '80%',
+        ellipsis: true 
+      },
     });
     parallel.markup.push(branchLabelMarkup);
 
@@ -596,7 +614,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
       attrs: {
         labelText: {
           fill: "#333",
-          fontSize: 12,
+          fontSize: defaultFontSize-4,
           fontFamily: "sans-serif",
           fontWeight: "bold",
           textAnchor: "middle",
@@ -664,17 +682,15 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
     };
 
 
-    let fullActionName = actionLabel;
-    let processedActionLabel = checkAndAddEllipsis(fullActionName, 15);
-
     link.labels([
       {
         attrs: {
           labelText: {
-            text: processedActionLabel,
-            title: fullActionName,
+            text: actionLabel,
+            title: actionLabel,
             z: 9,
             textAnchor,
+          
           },
         },
         position: labelPosition,
@@ -960,19 +976,6 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
   return fillValue;
 }
 
-function checkAndAddEllipsis(text, maxLength) {
-  if (text !== '') {
-    if (text.length > 20) {
-      var string = text.substring(0, maxLength) + "...";
-      return string;
-    }
-    else {
-      return text;
-    }
-  }
-
-}
-
 function insertLoading() {
   const holder = document.getElementById("mainPaper");
   // insert loading icon
@@ -1242,7 +1245,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3MjQ5MjEsImV4cCI6MTcwMDcyODUyMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3MTEzNjYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk0NkU2MkJENzZGRTQyNEMzRkMyQ0JBN0NDMDNCNzEiLCJzaWQiOiI1NDQ0MEIxQTBGMDFDQzlDMUM0MzEzNDcyOTQ2NTU1OSIsImlhdCI6MTcwMDcxMTM2OSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.e352hxpsocz5QQB5PVPFVvcldMKbRJzUj5gr9gTM0_QMEEU-3sPK41UV6tubYRBSI4F6XP4F4lgmzNV_MkQfe1FkASYieFbqJGZ6nGNFVoE8FUmvqGItDzvowV66ZCY9-5OszGbPnqvX-M_Vq6Yt5HztLSKmDVvpi8dGJMJnWkQsObCdUmLHwenN2uMlqYfzdHTd74J3uQyTN-IbuLeazAXVzCYIjfpcxETxNZW7un9-M9JCa2Mn1qENRJZoiBHym5JQtwMQyIIM02elLovsT_qerWe13qIQnQvoRzCJUBg5_BdSI8gpuwtYktt2wYgZ8OM_2aXCaY1kDQR7I1Ez9g"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3OTMyNzAsImV4cCI6MTcwMDc5Njg3MCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.YZMpU_DGK6LHR_PNQ3aYNv54i9bb3oYWomWNL1XDAwOAk_Bl-6ztNFA5aDASIm8nHqutqcdfDULbPwwGEMG6Aof0LT2xJcozpKKJ2z0fxgZJt4MDlyk2OCxkGOFiSFaDYgPcpRIreW0fA8tEMbpQ4Lg0ktl7fBLFmUW36XFqnUBZOb1dn2420JinqUM0sraTs7tkQV9EfFuGyyC8mHNeGzlb1Zd5T0VkAUKuSpO0FCMdAuIK327Y-349G0okpfN-X3YFodm8FhGO5RoYMNkJkF5D0RVf7SRxpkCtw6WdqOISkNtHlbptSAQnPrhFCwk-3y7Sq5DNu_FLalSYjJFYMQ"
 
     // Create headers with the bearer token
     const headers = new Headers({
