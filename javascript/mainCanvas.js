@@ -138,39 +138,42 @@ const ResizeTool = elementTools.Control.extend({
       Math.max(coordinates.y, 1)
     )
 
+
     if (model instanceof ParallelRect) {
 
-      let size = model.attributes.branchSize;
-      let rows = model.attributes.rows;
-      let columns = model.attributes.columns;
-      let bodyW = model.size().width;
-      let bodyH = model.size().height;
-      let childWidth = (bodyW - (columns+1)*5 ) / columns;
-      let childHeight = (bodyH - 24 - (rows+1) *5 ) / rows ;
-      let offsetX = 5
-      let offsetY = 5;
-      let level = 1; // to calculate offsetY for each branch
-      let counter = 1; // to calculate offsetX for each branch
+        let firstBranchNo = model.attributes.firstBranchNo;
+        let size = model.attributes.branchSize;
+        let rows = model.attributes.rows;
+        let columns = model.attributes.columns;
+        let bodyW = model.size().width;
+        let bodyH = model.size().height;
+        let childWidth = (bodyW - (columns + 1) * 5) / columns;
+        let childHeight = (bodyH - 24 - (rows + 1) * 5) / rows;
+        let offsetX = 5
+        let offsetY = 5;
+        let level = 1; // to calculate offsetY for each branch
+        let counter = 1; // to calculate offsetX for each branch
 
-      for (let i = 0; i < size; i++) {
+        for (let i = 0; i < size; i++) {
+          let branchNo = i + firstBranchNo;
 
-        // update level
-        if (i != 0 && i % 3 == 0) {
-          level++;
+          // update level
+          if (i != 0 && i % 3 == 0) {
+            level++;
+          }
+
+          // update counter
+          if (counter == 4) {
+            counter = 1;
+          }
+
+          model.attr(`branch${branchNo}/width`, childWidth);
+          model.attr(`branch${branchNo}/height`, childHeight);
+          model.attr(`branch${branchNo}/refX`, counter * offsetX + (counter - 1) * childWidth);
+          model.attr(`branch${branchNo}/refY`, level * offsetY + (level - 1) * childHeight + 24);
+
+          counter++;
         }
-
-        // update counter
-        if (counter == 4) {
-          counter = 1;
-        }
-
-        model.attr(`branch${i + 1}/width`, childWidth);
-        model.attr(`branch${i + 1}/height`, childHeight);
-        model.attr(`branch${i + 1}/refX`, counter * offsetX + (counter - 1) * childWidth);
-        model.attr(`branch${i + 1}/refY`, level * offsetY + (level - 1) * childHeight + 24);
-
-        counter++;
-      }
 
     }
 
@@ -215,12 +218,12 @@ var ParallelRect = dia.Element.define(
         y: "12", //middle of header
         textAnchor: "middle",
         textVerticalAnchor: "middle",
-        fontSize:defaultFontSize,
+        fontSize: defaultFontSize,
         textWrap: {
           width: 'calc(w - 90)', // Adjust the width as needed
           padding: 10,
           height: 28,
-          ellipsis: true 
+          ellipsis: true
         },
       }
     },
@@ -443,10 +446,10 @@ function createStandardRect(rectData, fillValue) {
         fill: "black",
         fontSize: defaultFontSize,
         textWrap: {
-          width: 'calc(w - 50)', 
+          width: 'calc(w - 50)',
           padding: 10,
           height: '80%',
-          ellipsis: true 
+          ellipsis: true
         },
       },
     },
@@ -473,6 +476,7 @@ function createParallelRect(rectData) {
       }
     },
     branchSize: rectData.branches.length,
+    firstBranchNo : branchCounter
   });
 
   let bodyW = parallel.attributes.size.width;
@@ -547,10 +551,10 @@ function createParallelRect(rectData) {
       parallelSet: parallelSet,
       class: "branchLabel",
       textWrap: {
-        width: 'calc(w - 20)', 
+        width: 'calc(w - 20)',
         padding: 10,
         height: '80%',
-        ellipsis: true 
+        ellipsis: true
       },
     });
     parallel.markup.push(branchLabelMarkup);
@@ -564,7 +568,7 @@ function createParallelRect(rectData) {
   });
 
   parallel.attributes.rows = level;
-  parallel.attributes.columns = parallel.attributes.branchSize > 3? 3 : parallel.attributes.branchSize
+  parallel.attributes.columns = parallel.attributes.branchSize > 3 ? 3 : parallel.attributes.branchSize
 
   return parallel;
 }
@@ -616,7 +620,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
       attrs: {
         labelText: {
           fill: "#333",
-          fontSize: defaultFontSize-4,
+          fontSize: defaultFontSize - 4,
           fontFamily: "sans-serif",
           fontWeight: "bold",
           textAnchor: "middle",
@@ -692,7 +696,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
             title: actionLabel,
             z: 9,
             textAnchor,
-          
+
           },
         },
         position: labelPosition,
@@ -1247,7 +1251,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA3OTcwOTAsImV4cCI6MTcwMDgwMDY5MCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.A1iSUQ8sSLu7HcXnUTuFe8XMvvZaBqD6a_LiwH4Hql5KP7C_YaBjpUy_AH6rkjZ1s_oxSZBjzxkkmHIgKM2mnAsGU46ORUUj9M5xKoFKt_xmyaY-MJhHKsTtujuhrobISe1dP_XWslYOP1oz2m-exvzl_6Yozmql56wcRWr_GYxtyai-J55oybeYccVJ9SiGktxfGHCvZpaFN9EdGOPdqi8aY-DvHq8psDzk6wOEqfAyLvWkFlMxhfePes5-Xf_d3qe2q1XFcMSwPNsi24pKqtaeUhiiIA93rB3RNEA_4tyXHTcuX4Cj0kYBkSwzvrCtxxuf4XnsNCGCzg1sWB42pQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA4MDQ5ODUsImV4cCI6MTcwMDgwODU4NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.mQQHwKOh3nKoIvly69fd_7xQtaOomy1SQ4y40P4LQpiOU9u1HYhlX503gewvkkHlwx9Ve9WtbHL237mx-lYWAy2thkDr-peEycFXUEY3vbdMIzuPT6x2Xh22eukAZNGzdSsypaF6iVfGeBng1MteVBWCNnBysfu_U6fV6htSczwbuZ5CIHoNTr93SX6xV8RoLTBwTqhLFWKVsKDMK-9e0zAy-5GRm-g08wzP86FhNLKbvS8EqgZICRbbchWt_uRVTl_QpFEWbT2Z5uwj4GvuBlMjOMfRNQpGx5j84CAI9T_NjxG7QIdjBjgRLKcBJBrYApLRyBCS25j95hS4UDQsKg"
 
     // Create headers with the bearer token
     const headers = new Headers({
