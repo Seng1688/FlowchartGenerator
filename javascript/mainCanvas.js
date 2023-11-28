@@ -32,14 +32,14 @@ var LayoutControls = mvc.View.extend({
 
     // add eventlinstener to the paper's elements
     this.listenTo(paper.model, "change", function (_, opt) {
-      let {width, height} = paper.getContentArea();
+      let { width, height } = paper.getContentArea();
 
       setTimeout(() => {
-        if (paper.getContentArea().width !== width || paper.getContentArea().height !== height){
-            autoResizePaper(paper);
-            }
+        if (paper.getContentArea().width !== width || paper.getContentArea().height !== height) {
+          autoResizePaper(paper);
+        }
       }, 200);
-  
+
     });
 
     setTimeout(() => {
@@ -81,7 +81,7 @@ var LayoutControls = mvc.View.extend({
       allowNewOrigin: "any",
       useModelGeometry: true,
     });
-    paper.scale(0.8);
+
     autoResizePaper(mainPaper);
     paper.unfreeze();
 
@@ -332,6 +332,7 @@ class EndNode extends joint.dia.Element {
 
 //** Graph Elements Creation Function **//
 function createPaper(holderId) {
+
   let paper = new dia.Paper({
     el: document.getElementById(holderId),
     gridSize: 15,
@@ -388,6 +389,19 @@ function createPaper(holderId) {
 
   });
 
+  paper.on("element:pointerclick", (elementView, evt) => {
+    const { isSelected } = elementView.model.attributes;
+    // console.log(isSelected);
+    isSelected === true ? elementView.hideTools() : elementView.showTools();
+    elementView.model.set('isSelected', !isSelected);
+    evt.stopPropagation();
+
+  })
+  // paper.on('cell:pointerclick',
+  //   function (elementView) {
+  //     console.log(elementView);
+  //   }
+  // );
 
   return paper;
 }
@@ -905,13 +919,7 @@ function addElementTools(elements, paper) {
     elementView.hideTools();
   });
 
-  paper.on("element:pointerclick", (elementView, evt) => {
-    const { isSelected } = elementView.model.attributes;
-    isSelected === true ? elementView.hideTools() : elementView.showTools();
-    elementView.model.set('isSelected', !isSelected);
-    evt.stopPropagation();
 
-  })
 }
 
 function createElementTools() {
@@ -1257,7 +1265,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExMzcyNjQsImV4cCI6MTcwMTE0MDg2NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExMzMzNTAsImlkcCI6IkZvcm1zIiwianRpIjoiNjgwNkMyNTRGRTlBOTlBNEMwNEFDREQyRUJFQjY2QzIiLCJzaWQiOiJCMEZBREYwRDhBQUE3QTIzRjVFREY1ODc5NTQxRTcyQyIsImlhdCI6MTcwMTEzMzM1Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.dazsVVRvOlcVFinplabuqC8QUpiNMwDkTF-iMxYberUEKPWU2GBH54Lou3IjoHb3_XKvG1mcV18KsVC_jrhwzGgf4JMUjLwD5PYe1JgWrY9JVOPuWngVWRt9cNyx--yDNpRjXIqlDJOHolEi8o3dxTlK67YDXlVr5N2KZqkrkfiBGgdoyrvVv1UMgFj0jfUZ_UUF98eXqV7suJD3amnNZO_qK81Wg2yKAcJPzSwkrNRv7D2aUAe6N9S0-7tKkO-8VRYlf1eyuM1oj7qbOk8Qr2lSf3akpQoNIZqgCmxEweD7trDj7-l2N92KztPJvYKMWsu-jLxwIrnxS9DClSNg7w"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExNTg2NzEsImV4cCI6MTcwMTE2MjI3MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExNTE4NTYsImlkcCI6IkZvcm1zIiwianRpIjoiMEMyQ0EwMDBGQUUwNzU4QTMyMTYxMzJBRkZCNTVCNzUiLCJzaWQiOiIwMzNFRUQ2MDQ1MzFEREIzRkZEQjQwOTA2QjkyNzI5MyIsImlhdCI6MTcwMTE1MTg2MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.b5kFvHLD1Y0ffx1YMdiK3yao5S9MMXUprmLCzVW08Qi7-wn0Jyp1lNAtuBqlxTI__xEY7p46ES-Js-YdtGpMSjnj5ywk_dhnGlBctgtpUG7sZyXZMzreYX-ur4BgQIPIy6jz7w2es54XOCY_ij_cOOObqAGo1GRmPpXkGxi0Wf17nnLkxohegYPtoxxpnWWZsXhcrjPv653YRM8ZVAOVyKm76QVMFnChxSrb6sVolh6M2JNOHFcud_Xbm6dhyKlveHAibUCAxO3t6L86QLF05-q6pQ5M5HhMLDAI0s_FzWqKUEjcxHpJ5UHSG43W5xvEgSlP-5s4Y2MXVXIPWS0Q1Q"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1510,8 +1518,10 @@ function addBackToPrevStageData() {
 }
 
 function init() {
-  mainPaper = createPaper("mainPaper");
-  mainGraph = mainPaper.model;
+  
+    mainPaper = createPaper("mainPaper");
+    mainGraph = mainPaper.model;
+
   cells = createCells(elements, links, rectDataArray);
   createLayoutControl('layoutControl', mainPaper, mainGraph, cells);
 }
@@ -1561,12 +1571,13 @@ loadButton.addEventListener("change", () => {
   var fr = new FileReader();
   fr.onload = function () {
     fileContent = fr.result;
-
+  
     mainGraph.fromJSON(JSON.parse(fileContent));
     links = mainGraph.getLinks();
     elements = mainGraph.getElements();
     cells = mainGraph.getCells();
     addLinkTools(links, mainPaper);
+    addElementTools(elements, mainPaper);
     buildParallelStageInfoButtonDetails();
     autoResizePaper(mainPaper);
   }
@@ -1606,7 +1617,7 @@ saveButton.addEventListener("click", () => {
 // the canvas's size will always follow the svg's height and width
 const downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", () => {
-  mainPaper.translate(50 , 50);
+  mainPaper.translate(10, 10);
   let fileType = $('#downloadOption').val();
   let paperW = $('#mainPaper').width();
   let paperH = $('#mainPaper').height();
@@ -1656,7 +1667,7 @@ downloadButton.addEventListener("click", () => {
 
 const aaa = document.getElementById("aaa");
 aaa.addEventListener("click", () => {
-  console.log(mainPaper.getContentArea());
+
 });
 
 function getCarWF() {
