@@ -53,6 +53,8 @@ var LayoutControls = mvc.View.extend({
     let graph = this.options.graph;
     let cells = this.options.cells;
 
+    deselectElements(graph.getElements());
+
     graph.resetCells(cells);
 
     // add link tools for each link
@@ -141,39 +143,39 @@ const ResizeTool = elementTools.Control.extend({
 
     if (model instanceof ParallelRect) {
 
-        let firstBranchNo = model.attributes.firstBranchNo;
-        let size = model.attributes.branchSize;
-        let rows = model.attributes.rows;
-        let columns = model.attributes.columns;
-        let bodyW = model.size().width;
-        let bodyH = model.size().height;
-        let childWidth = (bodyW - (columns + 1) * 5) / columns;
-        let childHeight = (bodyH - 24 - (rows + 1) * 5) / rows;
-        let offsetX = 5
-        let offsetY = 5;
-        let level = 1; // to calculate offsetY for each branch
-        let counter = 1; // to calculate offsetX for each branch
+      let firstBranchNo = model.attributes.firstBranchNo;
+      let size = model.attributes.branchSize;
+      let rows = model.attributes.rows;
+      let columns = model.attributes.columns;
+      let bodyW = model.size().width;
+      let bodyH = model.size().height;
+      let childWidth = (bodyW - (columns + 1) * 5) / columns;
+      let childHeight = (bodyH - 24 - (rows + 1) * 5) / rows;
+      let offsetX = 5
+      let offsetY = 5;
+      let level = 1; // to calculate offsetY for each branch
+      let counter = 1; // to calculate offsetX for each branch
 
-        for (let i = 0; i < size; i++) {
-          let branchNo = i + firstBranchNo;
+      for (let i = 0; i < size; i++) {
+        let branchNo = i + firstBranchNo;
 
-          // update level
-          if (i != 0 && i % 3 == 0) {
-            level++;
-          }
-
-          // update counter
-          if (counter == 4) {
-            counter = 1;
-          }
-
-          model.attr(`branch${branchNo}/width`, childWidth);
-          model.attr(`branch${branchNo}/height`, childHeight);
-          model.attr(`branch${branchNo}/refX`, counter * offsetX + (counter - 1) * childWidth);
-          model.attr(`branch${branchNo}/refY`, level * offsetY + (level - 1) * childHeight + 24);
-
-          counter++;
+        // update level
+        if (i != 0 && i % 3 == 0) {
+          level++;
         }
+
+        // update counter
+        if (counter == 4) {
+          counter = 1;
+        }
+
+        model.attr(`branch${branchNo}/width`, childWidth);
+        model.attr(`branch${branchNo}/height`, childHeight);
+        model.attr(`branch${branchNo}/refX`, counter * offsetX + (counter - 1) * childWidth);
+        model.attr(`branch${branchNo}/refY`, level * offsetY + (level - 1) * childHeight + 24);
+
+        counter++;
+      }
 
     }
 
@@ -476,7 +478,7 @@ function createParallelRect(rectData) {
       }
     },
     branchSize: rectData.branches.length,
-    firstBranchNo : branchCounter
+    firstBranchNo: branchCounter
   });
 
   let bodyW = parallel.attributes.size.width;
@@ -798,53 +800,6 @@ function addLinkTools(links, paper) {
 
 }
 
-function addElementTools(elements, paper) {
-  elements.forEach(element => {
-    let elementView = paper.findViewByModel(element);
-    elementView.addTools(createElementTools());
-    elementView.hideTools();
-  });
-
-  paper.on("element:pointerclick", (elementView, evt) => {
-    let isSelected = elementView.model.attributes.isSelected;
-    if (isSelected) {
-      elementView.hideTools();
-      elementView.model.attributes.isSelected = false;
-      evt.stopPropagation();
-
-    }
-    else {
-      elementView.showTools();
-      elementView.model.attributes.isSelected = true;
-      evt.stopPropagation();
-    }
-  })
-}
-
-function createElementTools() {
-
-
-  var boundaryTool = new joint.elementTools.Boundary({
-    focusOpacity: 0.5,
-    padding: 15,
-    useModelGeometry: true
-  });
-
-
-  let resizeTool = new ResizeTool({
-    padding: 15,
-    selector: "body"
-  });
-
-  var elementsView = new joint.dia.ToolsView({
-    name: 'element-tools',
-    tools: [boundaryTool, resizeTool]
-  });
-
-  return elementsView;
-
-}
-
 function createLinkTools() {
 
   // var InfoButton = joint.linkTools.Button.extend({
@@ -937,6 +892,53 @@ function createLinkTools() {
   });
 
   return toolsView;
+}
+
+function addElementTools(elements, paper) {
+  elements.forEach(element => {
+    let elementView = paper.findViewByModel(element);
+    elementView.addTools(createElementTools());
+    elementView.hideTools();
+  });
+
+  paper.on("element:pointerclick", (elementView, evt) => {
+    const { isSelected } = elementView.model.attributes;
+    isSelected === true ? elementView.hideTools() : elementView.showTools();
+    elementView.model.set('isSelected', !isSelected);
+    evt.stopPropagation();
+
+  })
+}
+
+function createElementTools() {
+
+
+  var boundaryTool = new joint.elementTools.Boundary({
+    focusOpacity: 0.5,
+    padding: 15,
+    useModelGeometry: true
+  });
+
+
+  let resizeTool = new ResizeTool({
+    padding: 15,
+    selector: "body"
+  });
+
+  var elementsView = new joint.dia.ToolsView({
+    name: 'element-tools',
+    tools: [boundaryTool, resizeTool]
+  });
+
+  return elementsView;
+
+}
+
+function deselectElements(elements) {
+  elements.forEach(element => {
+    let elementView = element.findView(mainPaper)
+    elementView.model.set('isSelected', false);
+  });
 }
 
 function createImage(w, h, imagePath, imageLabel) {
@@ -1251,7 +1253,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDA4MDQ5ODUsImV4cCI6MTcwMDgwODU4NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDA3OTMyNjcsImlkcCI6IkZvcm1zIiwianRpIjoiNEU3OUM3NTU1QTVEMzhDQ0M5MzYzNDE5QkE5QUNBNzEiLCJzaWQiOiIzQUY5OUU0NzRBOEJFNTEwM0M2NjEyMkNFNjQxODg3QyIsImlhdCI6MTcwMDc5MzI3MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.mQQHwKOh3nKoIvly69fd_7xQtaOomy1SQ4y40P4LQpiOU9u1HYhlX503gewvkkHlwx9Ve9WtbHL237mx-lYWAy2thkDr-peEycFXUEY3vbdMIzuPT6x2Xh22eukAZNGzdSsypaF6iVfGeBng1MteVBWCNnBysfu_U6fV6htSczwbuZ5CIHoNTr93SX6xV8RoLTBwTqhLFWKVsKDMK-9e0zAy-5GRm-g08wzP86FhNLKbvS8EqgZICRbbchWt_uRVTl_QpFEWbT2Z5uwj4GvuBlMjOMfRNQpGx5j84CAI9T_NjxG7QIdjBjgRLKcBJBrYApLRyBCS25j95hS4UDQsKg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExMzMzNTMsImV4cCI6MTcwMTEzNjk1MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExMzMzNTAsImlkcCI6IkZvcm1zIiwianRpIjoiNjgwNkMyNTRGRTlBOTlBNEMwNEFDREQyRUJFQjY2QzIiLCJzaWQiOiJCMEZBREYwRDhBQUE3QTIzRjVFREY1ODc5NTQxRTcyQyIsImlhdCI6MTcwMTEzMzM1Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.qQLTw4G3PVSu_8DmspW899usRvNP4QYjpQ8_KlsJiKJIdJSZC7jyJvvt6GwGQAp2Uo_Tf3eC3OkRqWilc8ZeW3wpbI8gKvhoaRrUE8tOT3p_VFYT50ZwFAgpPFGNPHlue-qvq0N2KRlh-MhX0wElMJg75rHIOzVerQt5XrpixDSOsSJe4GrSADCD47U9-RY-84o0HOsdB5HRlgZtmFH-kuFFzkkV3_ivoYApPVNX5HSwFRhXSDOHi4xD_1Zu9KB-5KfDhLEseGm5SKYMZgCRrJpjV9kjSQUN8oSByTx5YOSySe_dFrPcHFpQm3BFZXbMWHc-tU44qxtTM_0OB9kO9w"
 
     // Create headers with the bearer token
     const headers = new Headers({
