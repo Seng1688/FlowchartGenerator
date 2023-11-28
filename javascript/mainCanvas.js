@@ -32,8 +32,14 @@ var LayoutControls = mvc.View.extend({
 
     // add eventlinstener to the paper's elements
     this.listenTo(paper.model, "change", function (_, opt) {
-      if (paper.getContentArea().width !== paper.paperContentW || paper.getContentArea().height !== paper.paperContentH)
-        autoResizePaper(paper);
+      let {width, height} = paper.getContentArea();
+
+      setTimeout(() => {
+        if (paper.getContentArea().width !== width || paper.getContentArea().height !== height){
+            autoResizePaper(paper);
+            }
+      }, 200);
+  
     });
 
     setTimeout(() => {
@@ -56,7 +62,6 @@ var LayoutControls = mvc.View.extend({
     deselectElements(graph.getElements());
 
     graph.resetCells(cells);
-
     // add link tools for each link
     addLinkTools(graph.getLinks(), paper);
 
@@ -370,7 +375,6 @@ function createPaper(holderId) {
   );
 
   paper.on('blank:pointerup', function () {
-
     paper.dragStartPosition = false;
   });
 
@@ -1253,7 +1257,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExMzMzNTMsImV4cCI6MTcwMTEzNjk1MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExMzMzNTAsImlkcCI6IkZvcm1zIiwianRpIjoiNjgwNkMyNTRGRTlBOTlBNEMwNEFDREQyRUJFQjY2QzIiLCJzaWQiOiJCMEZBREYwRDhBQUE3QTIzRjVFREY1ODc5NTQxRTcyQyIsImlhdCI6MTcwMTEzMzM1Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.qQLTw4G3PVSu_8DmspW899usRvNP4QYjpQ8_KlsJiKJIdJSZC7jyJvvt6GwGQAp2Uo_Tf3eC3OkRqWilc8ZeW3wpbI8gKvhoaRrUE8tOT3p_VFYT50ZwFAgpPFGNPHlue-qvq0N2KRlh-MhX0wElMJg75rHIOzVerQt5XrpixDSOsSJe4GrSADCD47U9-RY-84o0HOsdB5HRlgZtmFH-kuFFzkkV3_ivoYApPVNX5HSwFRhXSDOHi4xD_1Zu9KB-5KfDhLEseGm5SKYMZgCRrJpjV9kjSQUN8oSByTx5YOSySe_dFrPcHFpQm3BFZXbMWHc-tU44qxtTM_0OB9kO9w"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExMzcyNjQsImV4cCI6MTcwMTE0MDg2NCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExMzMzNTAsImlkcCI6IkZvcm1zIiwianRpIjoiNjgwNkMyNTRGRTlBOTlBNEMwNEFDREQyRUJFQjY2QzIiLCJzaWQiOiJCMEZBREYwRDhBQUE3QTIzRjVFREY1ODc5NTQxRTcyQyIsImlhdCI6MTcwMTEzMzM1Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.dazsVVRvOlcVFinplabuqC8QUpiNMwDkTF-iMxYberUEKPWU2GBH54Lou3IjoHb3_XKvG1mcV18KsVC_jrhwzGgf4JMUjLwD5PYe1JgWrY9JVOPuWngVWRt9cNyx--yDNpRjXIqlDJOHolEi8o3dxTlK67YDXlVr5N2KZqkrkfiBGgdoyrvVv1UMgFj0jfUZ_UUF98eXqV7suJD3amnNZO_qK81Wg2yKAcJPzSwkrNRv7D2aUAe6N9S0-7tKkO-8VRYlf1eyuM1oj7qbOk8Qr2lSf3akpQoNIZqgCmxEweD7trDj7-l2N92KztPJvYKMWsu-jLxwIrnxS9DClSNg7w"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1533,8 +1537,8 @@ scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
   autoResizePaper(mainPaper);
-  // let svgElement = document.querySelector('div#mainPaper>svg');
-  // console.log(svgElement.width + '  ' + svgElement.height);
+  console.log(mainGraph.getElements());
+  // deselectElements(mainGraph.getElements())
 });
 
 const generateButton = document.getElementById("fetchDataButton");
@@ -1602,6 +1606,7 @@ saveButton.addEventListener("click", () => {
 // the canvas's size will always follow the svg's height and width
 const downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", () => {
+  mainPaper.translate(50 , 50);
   let fileType = $('#downloadOption').val();
   let paperW = $('#mainPaper').width();
   let paperH = $('#mainPaper').height();
@@ -1647,6 +1652,11 @@ downloadButton.addEventListener("click", () => {
     svgElement.setAttribute('height', '100%');
   }, 200);
 
+});
+
+const aaa = document.getElementById("aaa");
+aaa.addEventListener("click", () => {
+  console.log(mainPaper.getContentArea());
 });
 
 function getCarWF() {
