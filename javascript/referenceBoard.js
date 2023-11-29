@@ -12,8 +12,8 @@ function createReferenceBoard() {
     }
 
     //links
-    const links = ["black", "rgb(220, 199, 255)", "red"];
-    const dasharray = ["0", "10 2 1 2", "5,6"];
+    const links = ["black"];
+    const dasharray = ["0"];
     for (var j = 0; j < links.length; j++) {
         element = createRBlink(links[j], dasharray[j]);
         targetTableData = $(`table#links_table tr:eq(${j + 1}) td:eq(1)`)[0];
