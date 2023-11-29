@@ -16,6 +16,7 @@ let controls;
 let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' error
 let dragStartPosition; // drag paper event
 let message;
+let isRendering = false;
 
 
 
@@ -85,7 +86,7 @@ var LayoutControls = mvc.View.extend({
     autoResizePaper(mainPaper);
     paper.unfreeze();
 
-
+    isRendering = false;
   },
 
   getLayoutOptions: function () {
@@ -391,17 +392,11 @@ function createPaper(holderId) {
 
   paper.on("element:pointerclick", (elementView, evt) => {
     const { isSelected } = elementView.model.attributes;
-    // console.log(isSelected);
     isSelected === true ? elementView.hideTools() : elementView.showTools();
     elementView.model.set('isSelected', !isSelected);
     evt.stopPropagation();
 
   })
-  // paper.on('cell:pointerclick',
-  //   function (elementView) {
-  //     console.log(elementView);
-  //   }
-  // );
 
   return paper;
 }
@@ -1039,14 +1034,19 @@ function downloadPDF(canvas) {
   let ratio;
 
   // Calculate the width and height for the image to fit within the PDF page
-  if (cw > ch) {
-    ratio = cw / pdfWidth;
-  } else {
-    ratio = ch / pdfHeight;
-  }
+  // Calculate scaling factors for width and height
+  var widthScale = pdfWidth / cw;
+  var heightScale = pdfHeight / ch;
 
-  let imgWidth = cw / ratio;
-  let imgHeight = ch / ratio;
+  // Choose the smaller of the two scaling factors
+  var minScale = Math.min(widthScale, heightScale);
+
+  // Calculate the common ratio
+  var commonRatio = 1 / minScale
+
+  let imgWidth = cw / commonRatio;
+  let imgHeight = ch / commonRatio;
+
 
   pdf.addImage(canvas, 'PNG', 0, 0, imgWidth, imgHeight);
   pdf.save('my-document.pdf');
@@ -1256,60 +1256,62 @@ function addBranchLabelModal(paper) {
 
 //** Data Process Function **//
 // get raw JSON Data
-function callAPI() {
-  const formId = document.getElementById("formId").value;
-  const holder = document.getElementById("mainPaper");
-
-  if (formId !== '') {
-    // API endpoint URL
-    const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
-
-    // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDExNTg2NzEsImV4cCI6MTcwMTE2MjI3MSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDExNTE4NTYsImlkcCI6IkZvcm1zIiwianRpIjoiMEMyQ0EwMDBGQUUwNzU4QTMyMTYxMzJBRkZCNTVCNzUiLCJzaWQiOiIwMzNFRUQ2MDQ1MzFEREIzRkZEQjQwOTA2QjkyNzI5MyIsImlhdCI6MTcwMTE1MTg2MCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.b5kFvHLD1Y0ffx1YMdiK3yao5S9MMXUprmLCzVW08Qi7-wn0Jyp1lNAtuBqlxTI__xEY7p46ES-Js-YdtGpMSjnj5ywk_dhnGlBctgtpUG7sZyXZMzreYX-ur4BgQIPIy6jz7w2es54XOCY_ij_cOOObqAGo1GRmPpXkGxi0Wf17nnLkxohegYPtoxxpnWWZsXhcrjPv653YRM8ZVAOVyKm76QVMFnChxSrb6sVolh6M2JNOHFcud_Xbm6dhyKlveHAibUCAxO3t6L86QLF05-q6pQ5M5HhMLDAI0s_FzWqKUEjcxHpJ5UHSG43W5xvEgSlP-5s4Y2MXVXIPWS0Q1Q"
-
-    // Create headers with the bearer token
-    const headers = new Headers({
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json", // Adjust as needed
-    });
-
-    // Make a GET request to the API endpoint with the headers
-    fetch(apiUrl, {
-      method: "GET",
-      headers: headers,
-    })
-      .then((response) => {
-        // Check if the response status is OK (200)
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-        // Parse the JSON response
-        return response.json();
-      })
-      .then((data) => {
-        processJsonData(data);
-      })
-      .catch((error) => {
-        if (error.message.includes("401")) {
-          message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
-          insertErrorMessage(holder, message);
-        }
-        else {
-          message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
-          insertErrorMessage(holder, message);
-        }
-      });
-  }
-  else {
-    message = `Please Input a <b>Form ID</b>😊!!`;
-    insertErrorMessage(holder, message);
-  }
-
-}
-
 // function callAPI() {
-//   processJsonData(getCarWF());
+//   const formId = document.getElementById("formId").value;
+//   const holder = document.getElementById("mainPaper");
+
+//   if (formId !== '') {
+//     // API endpoint URL
+//     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
+
+//     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
+//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEyMjk2NTIsImV4cCI6MTcwMTIzMzI1MiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEyMjU3MTgsImlkcCI6IkZvcm1zIiwianRpIjoiRTA4NUU4N0ZGNEJENkIxOUM4RDEzNkYxOTIxOTEzNTgiLCJzaWQiOiIwMDJDRTNGQkQ4NTcxMEE2NUFCMjAxODYzNUY1Q0JCNiIsImlhdCI6MTcwMTIyOTY1Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.hh9uQLNHHqHzUCF197FQrbL7MnXMH2wyOK8UOcfPMTHouiq-EptUX7hPTCCtwyd8_FRazApk2b35wQn3438T8NbTd7IHhIyFRnBXT_bnjmWKRm7_s9NHGZ3pFjmSp8NzNax4osY77LE1yBxgNzcCJ96vyMuzA6pJmry8h2CN7D121LgLDUlxORgfFjx_XZo3NmRDkBhUdaQTAXXQf4uRbqZaEnzqm-8vCvuuGcq6ia0CWZOBiHufgDOLz2ZLYlUinxeLmJqBLRaYIBjrtu1iUgm7dWoZkrxqHfOR8hgv-D6a1JWU3Q02x6haE-zCHBXwY7LiqxQZQ82geVkz3RKTzA"
+
+//     // Create headers with the bearer token
+//     const headers = new Headers({
+//       Authorization: `Bearer ${authToken}`,
+//       "Content-Type": "application/json", // Adjust as needed
+//     });
+
+//     // Make a GET request to the API endpoint with the headers
+//     fetch(apiUrl, {
+//       method: "GET",
+//       headers: headers,
+//     })
+//       .then((response) => {
+//         // Check if the response status is OK (200)
+//         if (!response.ok) {
+//           throw new Error(`API request failed with status ${response.status}`);
+//         }
+//         // Parse the JSON response
+//         return response.json();
+//       })
+//       .then((data) => {
+//         processJsonData(data);
+//       })
+//       .catch((error) => {
+//         if (error.message.includes("401")) {
+//           message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
+//           isRendering = !isRendering
+//           insertErrorMessage(holder, message);
+//         }
+//         else {
+//           message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
+//           isRendering = !isRendering
+//           insertErrorMessage(holder, message);
+//         }
+//       });
+//   }
+//   else {
+//     message = `Please Input a <b>Form ID</b>😊!!`;
+//     insertErrorMessage(holder, message);
+//   }
+
 // }
+
+function callAPI() {
+  processJsonData(getCarWF());
+}
 
 
 // process and get only required data from raw JSON Data
@@ -1518,9 +1520,9 @@ function addBackToPrevStageData() {
 }
 
 function init() {
-  
-    mainPaper = createPaper("mainPaper");
-    mainGraph = mainPaper.model;
+
+  mainPaper = createPaper("mainPaper");
+  mainGraph = mainPaper.model;
 
   cells = createCells(elements, links, rectDataArray);
   createLayoutControl('layoutControl', mainPaper, mainGraph, cells);
@@ -1547,23 +1549,27 @@ scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
   autoResizePaper(mainPaper);
-  console.log(mainGraph.getElements());
-  // deselectElements(mainGraph.getElements())
 });
 
 const generateButton = document.getElementById("fetchDataButton");
 generateButton.addEventListener("click", () => {
+  if (isRendering === false) {
+    isRendering = true;
+    insertLoading();
 
-  insertLoading();
-
-  if (controls) {
-    resetAll();
+    if (controls) {
+      resetAll();
+    }
+    workflowNo = 1;
+    callAPI();
   }
-  workflowNo = 1;
-  callAPI();
+  else {
+    alert('The graph is currently rendering. Please wait.');
+  }
+
 });
-generateButton.click()
-  ;
+generateButton.click();
+
 const loadButton = document.getElementById("loadButton");
 loadButton.addEventListener("change", () => {
 
@@ -1571,7 +1577,7 @@ loadButton.addEventListener("change", () => {
   var fr = new FileReader();
   fr.onload = function () {
     fileContent = fr.result;
-  
+
     mainGraph.fromJSON(JSON.parse(fileContent));
     links = mainGraph.getLinks();
     elements = mainGraph.getElements();
@@ -1579,7 +1585,7 @@ loadButton.addEventListener("change", () => {
     addLinkTools(links, mainPaper);
     addElementTools(elements, mainPaper);
     buildParallelStageInfoButtonDetails();
-    autoResizePaper(mainPaper);
+
   }
   fr.readAsText(document.getElementById('loadButton').files[0]);
 
@@ -1617,16 +1623,22 @@ saveButton.addEventListener("click", () => {
 // the canvas's size will always follow the svg's height and width
 const downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", () => {
-  mainPaper.translate(10, 10);
+
+  mainPaper.scale(2);
+  mainPaper.translate(-20, -20);
+  autoResizePaper(mainPaper);
+
   let fileType = $('#downloadOption').val();
-  let paperW = $('#mainPaper').width();
-  let paperH = $('#mainPaper').height();
+  let scale = $('#scale').val();
+  let paperW = $('#mainPaper').width()
+  let paperH = $('#mainPaper').height()
   let svgElement = document.querySelector('div#mainPaper>svg');
   let whiteBgd = `<rect id="whiteBgd" width="${paperW}" height="${paperH}" style="fill:white;"> </rect>`;
 
   svgElement.insertAdjacentHTML('afterbegin', whiteBgd);
   svgElement.setAttribute('width', paperW);
   svgElement.setAttribute('height', paperH);
+
 
   var canvas = document.createElement('canvas');
   var context = canvas.getContext('2d');
@@ -1659,16 +1671,15 @@ downloadButton.addEventListener("click", () => {
     }
 
     document.getElementById("whiteBgd").remove();
+    mainPaper.scale(scale);
     svgElement.setAttribute('width', '100%');
     svgElement.setAttribute('height', '100%');
+    autoResizePaper(mainPaper);
+
   }, 200);
 
 });
 
-const aaa = document.getElementById("aaa");
-aaa.addEventListener("click", () => {
-
-});
 
 function getCarWF() {
   let str = {};
