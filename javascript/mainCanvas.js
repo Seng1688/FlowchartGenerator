@@ -1118,8 +1118,8 @@ function buildParallelStageInfoButtonDetails() {
   for (let i = 0; i < size; i++) {
     let stageId = parallelButtons[i].id;
 
-    parallelButtons[i].addEventListener('click', (evt) => {
-
+    parallelButtons[i].addEventListener('mouseover', (evt) => {
+      evt.stopPropagation();
       var divBlock = document.querySelector(".CompleteActionsDetailsBody");
       let paragraph = getParallelStageCompleteActionsDetails(stageId);
 
@@ -1127,7 +1127,7 @@ function buildParallelStageInfoButtonDetails() {
         divBlock = document.createElement("div");
         divBlock.classList.add('CompleteActionsDetailsBody');
         divBlock.style.top = (evt.y) + "px";
-        divBlock.style.left = (evt.x) + "px";
+        divBlock.style.left = (evt.x-20) + "px";
         divBlock.style.opacity = 0;
         divBlock.appendChild(paragraph);
         document.body.appendChild(divBlock); // This appends the div to the body element
@@ -1136,7 +1136,7 @@ function buildParallelStageInfoButtonDetails() {
         }, 100);
 
         // remove the div block when it is clicked
-        divBlock.addEventListener('click', (evt) => {
+        divBlock.addEventListener('mouseleave', (evt) => {
 
           var divBlock = document.querySelector(".CompleteActionsDetailsBody");
 
