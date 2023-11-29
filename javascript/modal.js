@@ -4,7 +4,6 @@ var modalGraph;
 var modalCells = [];
 var modalElements = [];
 var modalLinks = [];
-var modalControls;
 var modalTitleLabel;
 
 
@@ -20,10 +19,6 @@ modalTarget.addEventListener('show.bs.modal', function (event) {
     modalGraph = modalPaper.model;
     modalCells = createCells(modalElements, modalLinks, modalRectDataArray);
     createLayoutControl('modalLayoutControls', modalPaper,modalGraph,modalCells);
-
-    setTimeout(() => {
-        modalControls.layout();
-    }, 500);
 
 })
 

@@ -60,7 +60,7 @@ var LayoutControls = mvc.View.extend({
     let graph = this.options.graph;
     let cells = this.options.cells;
 
-    deselectElements(graph.getElements());
+    deselectElements(graph.getElements(), paper);
 
     graph.resetCells(cells);
     // add link tools for each link
@@ -83,7 +83,7 @@ var LayoutControls = mvc.View.extend({
       useModelGeometry: true,
     });
 
-    autoResizePaper(mainPaper);
+    autoResizePaper(paper);
     paper.unfreeze();
 
     isRendering = false;
@@ -941,9 +941,9 @@ function createElementTools() {
 
 }
 
-function deselectElements(elements) {
+function deselectElements(elements,paper) {
   elements.forEach(element => {
-    let elementView = element.findView(mainPaper)
+    let elementView = element.findView(paper)
     elementView.model.set('isSelected', false);
   });
 }
@@ -1265,7 +1265,7 @@ function addBranchLabelModal(paper) {
 //     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
 //     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEyMjk2NTIsImV4cCI6MTcwMTIzMzI1MiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEyMjU3MTgsImlkcCI6IkZvcm1zIiwianRpIjoiRTA4NUU4N0ZGNEJENkIxOUM4RDEzNkYxOTIxOTEzNTgiLCJzaWQiOiIwMDJDRTNGQkQ4NTcxMEE2NUFCMjAxODYzNUY1Q0JCNiIsImlhdCI6MTcwMTIyOTY1Miwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.hh9uQLNHHqHzUCF197FQrbL7MnXMH2wyOK8UOcfPMTHouiq-EptUX7hPTCCtwyd8_FRazApk2b35wQn3438T8NbTd7IHhIyFRnBXT_bnjmWKRm7_s9NHGZ3pFjmSp8NzNax4osY77LE1yBxgNzcCJ96vyMuzA6pJmry8h2CN7D121LgLDUlxORgfFjx_XZo3NmRDkBhUdaQTAXXQf4uRbqZaEnzqm-8vCvuuGcq6ia0CWZOBiHufgDOLz2ZLYlUinxeLmJqBLRaYIBjrtu1iUgm7dWoZkrxqHfOR8hgv-D6a1JWU3Q02x6haE-zCHBXwY7LiqxQZQ82geVkz3RKTzA"
+//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEyNDI5NjYsImV4cCI6MTcwMTI0NjU2NiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEyNDI5NjAsImlkcCI6IkZvcm1zIiwianRpIjoiNEE1OUNCMUQxNjIxRjIyRDMwOUQ3MDg0RUNENEE5ODYiLCJzaWQiOiI0RDgwODA5RDIxMDY1RTJCRDYzNDZCOTcwMjMzOERDNiIsImlhdCI6MTcwMTI0Mjk2Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.j-iNG9FeLxvP_TLIcRuiNV6vDtVmC1nzTHQezTejAnS5Bhyp-beIYymX68tIrIRbXXKTNb7dsGTSJAkbJt_ckLuMfOeB4TZ_rYQCEKiCplH59jfOi7Z5_NSWxOlLL442MfzfhnQJA3qOLAjfnkY6A6yKUVCVuMNSumxG4WjLS3azoUljHgvkPP4mu_ZYrCJOjPG9KG-02HfmRnBiSOYczIJO_aqiKMH6pUbEYdwvkR5_hq-phrW6ccdL7yFSmBNyjxfIZ_JWYIegs8WAAHJVlgF3k1JB8p2RoPZGC7U1RROqzmNpHkkCgr9BO1d8em6GEClNvb8fVfm4POMg-ouBRw"
 
 //     // Create headers with the bearer token
 //     const headers = new Headers({
@@ -1292,18 +1292,21 @@ function addBranchLabelModal(paper) {
 //       .catch((error) => {
 //         if (error.message.includes("401")) {
 //           message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
-//           isRendering = !isRendering
+//           isRendering = !isRendering;
 //           insertErrorMessage(holder, message);
 //         }
 //         else {
+
 //           message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
-//           isRendering = !isRendering
+//           isRendering = !isRendering ;
 //           insertErrorMessage(holder, message);
+         
 //         }
 //       });
 //   }
 //   else {
 //     message = `Please Input a <b>Form ID</b>😊!!`;
+//     isRendering = !isRendering ;
 //     insertErrorMessage(holder, message);
 //   }
 
@@ -1523,7 +1526,6 @@ function init() {
 
   mainPaper = createPaper("mainPaper");
   mainGraph = mainPaper.model;
-
   cells = createCells(elements, links, rectDataArray);
   createLayoutControl('layoutControl', mainPaper, mainGraph, cells);
 }
@@ -1585,6 +1587,7 @@ loadButton.addEventListener("change", () => {
     addLinkTools(links, mainPaper);
     addElementTools(elements, mainPaper);
     buildParallelStageInfoButtonDetails();
+    autoResizePaper(mainPaper);
 
   }
   fr.readAsText(document.getElementById('loadButton').files[0]);
