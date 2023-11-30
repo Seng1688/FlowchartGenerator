@@ -187,9 +187,7 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   border: 1px solid #cbcbcb;
 }
 
-#loading-icon {
-  position: absolute;
-}
+
 
 .alert{
   position:absolute;

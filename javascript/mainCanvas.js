@@ -1,5 +1,4 @@
 //** Global Variable **//
-// destructuring assignment
 const { shapes, util, dia, mvc, elementTools } = joint;
 const rectWidth = 140;
 const rectHeight = 60;
@@ -20,7 +19,6 @@ let isRendering = false;
 
 
 
-//** Definition **//
 // extend mvc view and add custom control
 var LayoutControls = mvc.View.extend({
   events: {
@@ -330,6 +328,10 @@ class EndNode extends joint.dia.Element {
     });
   }
 }
+
+
+
+
 
 //** Graph Elements Creation Function **//
 function createPaper(holderId) {
@@ -993,24 +995,14 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
 
 function insertLoading() {
   const holder = document.getElementById("mainPaper");
-  // insert loading icon
+  holder.style.width='100%';
+  holder.style.height='100%';
   holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
-  const loadingIcon = document.getElementById("loading-icon");
-  loadingIconWidth = parseInt(loadingIcon.style.width, 10);
-  let centerX;
-
-  if (holder.style.width) {
-    centerX = parseInt(holder.style.width, 10) / 2 - (loadingIconWidth / 2);
-  }
-  else {
-    centerX = holder.parentElement.clientWidth / 2 - (loadingIconWidth / 2) + (0.26 * holder.parentElement.clientWidth);
-    loadingIcon.style.top = (parseInt(loadingIcon.style.top, 10) + 230) + 'px';
-  }
-
-  loadingIcon.style.left = centerX + 'px';
 }
 
 function insertErrorMessage(divHolder, message) {
+  divHolder.style.width='100%';
+  divHolder.style.height='100%';
   let errorMessage = `<span class="fs-3">${message}</span>`;
   divHolder.innerHTML = errorMessage;
 }
@@ -1226,6 +1218,8 @@ function resetAll() {
   mainPaper = "";
   controls = "";
   totalWorkflows = 0;
+  message='';
+  isRendering = false;
   resetModal();
 
 }
@@ -1256,65 +1250,66 @@ function addBranchLabelModal(paper) {
 
 //** Data Process Function **//
 // get raw JSON Data
-// function callAPI() {
-//   const formId = document.getElementById("formId").value;
-//   const holder = document.getElementById("mainPaper");
-
-//   if (formId !== '') {
-//     // API endpoint URL
-//     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
-
-//     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-//     const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEyNDI5NjYsImV4cCI6MTcwMTI0NjU2NiwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEyNDI5NjAsImlkcCI6IkZvcm1zIiwianRpIjoiNEE1OUNCMUQxNjIxRjIyRDMwOUQ3MDg0RUNENEE5ODYiLCJzaWQiOiI0RDgwODA5RDIxMDY1RTJCRDYzNDZCOTcwMjMzOERDNiIsImlhdCI6MTcwMTI0Mjk2Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.j-iNG9FeLxvP_TLIcRuiNV6vDtVmC1nzTHQezTejAnS5Bhyp-beIYymX68tIrIRbXXKTNb7dsGTSJAkbJt_ckLuMfOeB4TZ_rYQCEKiCplH59jfOi7Z5_NSWxOlLL442MfzfhnQJA3qOLAjfnkY6A6yKUVCVuMNSumxG4WjLS3azoUljHgvkPP4mu_ZYrCJOjPG9KG-02HfmRnBiSOYczIJO_aqiKMH6pUbEYdwvkR5_hq-phrW6ccdL7yFSmBNyjxfIZ_JWYIegs8WAAHJVlgF3k1JB8p2RoPZGC7U1RROqzmNpHkkCgr9BO1d8em6GEClNvb8fVfm4POMg-ouBRw"
-
-//     // Create headers with the bearer token
-//     const headers = new Headers({
-//       Authorization: `Bearer ${authToken}`,
-//       "Content-Type": "application/json", // Adjust as needed
-//     });
-
-//     // Make a GET request to the API endpoint with the headers
-//     fetch(apiUrl, {
-//       method: "GET",
-//       headers: headers,
-//     })
-//       .then((response) => {
-//         // Check if the response status is OK (200)
-//         if (!response.ok) {
-//           throw new Error(`API request failed with status ${response.status}`);
-//         }
-//         // Parse the JSON response
-//         return response.json();
-//       })
-//       .then((data) => {
-//         processJsonData(data);
-//       })
-//       .catch((error) => {
-//         if (error.message.includes("401")) {
-//           message = error.message + `!! 😊 You do not have the necessary <b>permissions</b> to access this resource. `;
-//           isRendering = !isRendering;
-//           insertErrorMessage(holder, message);
-//         }
-//         else {
-
-//           message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
-//           isRendering = !isRendering ;
-//           insertErrorMessage(holder, message);
-         
-//         }
-//       });
-//   }
-//   else {
-//     message = `Please Input a <b>Form ID</b>😊!!`;
-//     isRendering = !isRendering ;
-//     insertErrorMessage(holder, message);
-//   }
-
-// }
-
 function callAPI() {
-  processJsonData(getCarWF());
+  const formId = document.getElementById("formId").value;
+  const holder = document.getElementById("mainPaper");
+
+  if (formId !== '') {
+    // API endpoint URL
+    const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
+
+    // Bearer token (replace 'YOUR_TOKEN' with your actual token)
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEzMTUzNzgsImV4cCI6MTcwMTMxODk3OCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEzMTE2NTAsImlkcCI6IkZvcm1zIiwianRpIjoiRTk0NzFGRDZCN0MwQzcyQjBERDBCM0VGN0E1QUM4RDYiLCJzaWQiOiI3MjMxMDU0Q0VBOTc5MEFBRjQ1NjU1OUY4RENCQjhGOCIsImlhdCI6MTcwMTMxMTY1NSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.UQU7tc-JZQ5kj8V89edIwT5hbnotLk3eEBNEcfGsF-BB9c8zvJN4rZGFs_oHtxHToZN_5x5d8OZ1kvaxEoGzyAHdEqnTWgOp8u4q_QJJJhaUpx2AqJyE4M9SIigzciqj8dVMbE5BXGef794elhVfSAzgd0s9zDwayZmjQspj-qazGGWqrY0BAJyW249ta4dE39GMW_OAHSIhUaOUFI9RGtBLMBTrybv7pcG9yoEpnjpMkmTHbYepq-WSdIprQzj3XzDcIr6HlxhDmQaDELUwUjdk102qWdQarsPEM8PWyNjuz3UZVdTiJ_lnjCb22aggskG8FilTNbpEm2wAWv-vzA"
+
+    // Create headers with the bearer token
+    const headers = new Headers({
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json", // Adjust as needed
+    });
+
+    // Make a GET request to the API endpoint with the headers
+    fetch(apiUrl, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        // Check if the response status is OK (200)
+        if (!response.ok) {
+          throw new Error("401😊!!, You do not have the necessary <b>permissions</b> to access this resource. ");
+        }
+        // Parse the JSON response
+        return response.json();
+      })
+      .then((data) => {
+        processJsonData(data);
+      })
+      .catch((error) => {
+        resetAll();
+
+        if (error.message.includes("401")) {
+          insertErrorMessage(holder, error.message);
+        }
+        else if (error.message.includes("SetValue")) {
+          insertErrorMessage(holder, error.message);
+        }
+        else {
+          message = `No Workflows is found on <b>Form ID: ${formId} 😊!!</b> `;
+          insertErrorMessage(holder, message);
+        }
+
+      });
+  }
+  else {
+    resetAll();
+    message = `Please Input a <b>Form ID</b>😊!!`;
+    insertErrorMessage(holder, message);
+  }
+
 }
+
+// function callAPI() {
+//   processJsonData(getCarWF());
+// }
 
 
 // process and get only required data from raw JSON Data
@@ -1434,6 +1429,9 @@ function addNextStageData(workflowStages) {
           actionName = workflowStages[i].actions[j].title.key;
           stageId = 'dummy';
           hasBackToPrev = true
+        }
+        else if (eventType === "SetValue") {
+          throw new Error(' <b>SetValue</b> action is currently unsupported by the prototype 😊!! ');
         }
       }
 
@@ -1557,6 +1555,7 @@ const generateButton = document.getElementById("fetchDataButton");
 generateButton.addEventListener("click", () => {
   if (isRendering === false) {
     isRendering = true;
+
     insertLoading();
 
     if (controls) {
@@ -1570,7 +1569,7 @@ generateButton.addEventListener("click", () => {
   }
 
 });
-generateButton.click();
+// generateButton.click();
 
 const loadButton = document.getElementById("loadButton");
 loadButton.addEventListener("change", () => {
