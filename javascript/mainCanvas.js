@@ -701,7 +701,7 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
     }
 
     const labelPosition = {
-      distance: isSourceDecision ? 0.35 : 0.4,
+      distance: isSourceDecision ? 0.35 : 0.35,
     };
 
 
@@ -1098,6 +1098,14 @@ function arrowheadAdjustment() {
 
 }
 
+function toggleControls(action){
+  let selectControls = $("#layoutControl input, #layoutControl select");
+
+    selectControls.each(function (index, element) {
+      $(element).prop("disabled", action==='close');
+    });
+
+}
 
 
 
@@ -1216,7 +1224,7 @@ function resetAll() {
   elements = [];
   links = [];
   mainPaper = "";
-  controls = "";
+  controls = null;
   totalWorkflows = 0;
   message='';
   isRendering = false;
@@ -1250,6 +1258,7 @@ function addBranchLabelModal(paper) {
 
 //** Data Process Function **//
 // get raw JSON Data
+
 function callAPI() {
   const formId = document.getElementById("formId").value;
   const holder = document.getElementById("mainPaper");
@@ -1259,7 +1268,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDEzMTUzNzgsImV4cCI6MTcwMTMxODk3OCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDEzMTE2NTAsImlkcCI6IkZvcm1zIiwianRpIjoiRTk0NzFGRDZCN0MwQzcyQjBERDBCM0VGN0E1QUM4RDYiLCJzaWQiOiI3MjMxMDU0Q0VBOTc5MEFBRjQ1NjU1OUY4RENCQjhGOCIsImlhdCI6MTcwMTMxMTY1NSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.UQU7tc-JZQ5kj8V89edIwT5hbnotLk3eEBNEcfGsF-BB9c8zvJN4rZGFs_oHtxHToZN_5x5d8OZ1kvaxEoGzyAHdEqnTWgOp8u4q_QJJJhaUpx2AqJyE4M9SIigzciqj8dVMbE5BXGef794elhVfSAzgd0s9zDwayZmjQspj-qazGGWqrY0BAJyW249ta4dE39GMW_OAHSIhUaOUFI9RGtBLMBTrybv7pcG9yoEpnjpMkmTHbYepq-WSdIprQzj3XzDcIr6HlxhDmQaDELUwUjdk102qWdQarsPEM8PWyNjuz3UZVdTiJ_lnjCb22aggskG8FilTNbpEm2wAWv-vzA"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDIxOTIzMzEsImV4cCI6MTcwMjE5NTkzMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDIxODY2MjEsImlkcCI6IkZvcm1zIiwianRpIjoiMEVEM0Q4MzhGQUVFODYwN0U1NzFGNTEwNzVEQjdFNjUiLCJzaWQiOiIxMzhGRjMwOTQxNjA5QTE4RjQ1MDc0QTgzNTU3MUE3NiIsImlhdCI6MTcwMjE4NjYyNSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.WdPMA-LCYMRnTpr9HrLY5D-jMo5dJTk0amrm2mu0e_OO1QPXzK-rVG4f3tsPl23MGNkrMMV5xQ40JAAVod_D1blXdPdTpoIiBUEvmKVq9qXDeFwIU69oiMCFthar7GEVlslU3YKg7PfjSYcdOo_G514OhGeLvpu2C3YeWeFDzdh_T651iH9ojk5_8rfs5bn7cCJdsXC7ouLvyCGAdJRRg06vVdB0bq6dNpwcW-mVekWwBwXPYTVvJldwXE9REERL3ziVPB3zgBARjS7Jp5au99WaGAX6rPeUEiSmIJqYMNeqFbGBaxB7yaZTGVLCjCF-1iGlx6s_tlESf81DwYHmbA"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1562,6 +1571,7 @@ generateButton.addEventListener("click", () => {
       resetAll();
     }
     workflowNo = 1;
+    toggleControls('open');
     callAPI();
   }
   else {
@@ -1591,7 +1601,7 @@ loadButton.addEventListener("change", () => {
   }
   fr.readAsText(document.getElementById('loadButton').files[0]);
 
-
+  toggleControls('close');
 
 });
 
@@ -1605,11 +1615,7 @@ saveButton.addEventListener("click", () => {
     $('.alert').css('top', '-50%');
   }, 2500);
 
-  //disable all the available controls
-  let selectControls = $("#layoutControl input, #layoutControl select");
-  selectControls.each(function (index, element) {
-    $(element).prop("disabled", true);
-  });
+  toggleControls('close');
 
   let string = JSON.stringify(mainGraph.toJSON());
   var blob = new Blob([string], {
