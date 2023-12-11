@@ -619,15 +619,21 @@ function createPolygon(dataArray, elementsArray) {
   });
 }
 
-function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, dy: sourceDy = 0 }, { targetSide, dx: targetDx = 0, dy: targetDy = 0 }, actionLabel = "") {
+function createLink(linksArray, source, target, actionLabel = null ) {
   const link = new shapes.standard.Link({
     source: {
       id: source,
-      anchor: { name: sourceSide, args: { dx: sourceDx, dy: sourceDy } },
+      anchor :{name: 'perpendicular' ,   
+       args: {
+        padding: 7
+    }}
     },
     target: {
       id: target,
-      anchor: { name: targetSide, args: { dx: targetDx, dy: targetDy } },
+      anchor :{name: 'perpendicular' ,
+      args: {
+        padding: 7
+    }}
     },
     defaultLabel: {
       markup: util.svg`
@@ -672,38 +678,6 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
   });
 
   if (actionLabel) {
-    //check if source is a decision polygon
-    let index = elements.findIndex(function (element) {
-      return element.attributes.type === "UMLDecision" && element.id === source;
-    });
-    let isSourceDecision = index == -1 ? false : true;
-
-    let textAnchor = "middle";
-    // Make label always stay near the source/target side
-    if (isSourceDecision) {
-      switch (sourceSide) {
-        case "left":
-          textAnchor = "end";
-          break;
-        case "right":
-          textAnchor = "start";
-          break;
-      }
-    } else {
-      switch (targetSide) {
-        case "left":
-          textAnchor = "end";
-          break;
-        case "right":
-          textAnchor = "start";
-          break;
-      }
-    }
-
-    const labelPosition = {
-      distance: isSourceDecision ? 0.35 : 0.35,
-    };
-
 
     link.labels([
       {
@@ -711,12 +685,12 @@ function createLink(linksArray, source, target, { sourceSide, dx: sourceDx = 0, 
           labelText: {
             text: actionLabel,
             title: actionLabel,
-            z: 9,
-            textAnchor,
+            z: 3,
+            textAnchor:'middle',
 
           },
         },
-        position: labelPosition,
+        position: {distance: 0.35},
       },
     ]);
   }
@@ -739,14 +713,13 @@ function createCells(elementsArray, linksArray, rectDataArray) {
   let index = rectDataArray.findIndex(function (rectData) {
     return rectData.seqNo === 1;
   });
-  createLink(linksArray, "startNode", rectDataArray[index].currentStageId, { sourceSide: "perpendicular" }, { targetSide: "perpendicular" });
+  createLink(linksArray, "startNode", rectDataArray[index].currentStageId);
 
   // create links for rectangles & endNode
   rectDataArray.forEach((rectData) => {
     let source = rectData.currentStageId;
     let target = "";
     let childSize = rectData.nextStages.length;
-    let stageType = rectData.stageType;
 
     // check if it has decision and handle it
     if (childSize > 1) {
@@ -754,7 +727,7 @@ function createCells(elementsArray, linksArray, rectDataArray) {
         return element.attributes.parentId === source;
       });
       let target = elementsArray[index].id;
-      createLink(linksArray, source, target, { sourceSide: "perpendicular" }, { targetSide: "perpendicular", targetDx: 0, targetDy: 50 }, "");
+      createLink(linksArray, source, target);
 
       //change the Original Parent to decision polygon after connect Parent to Polygon
       source = target;
@@ -763,11 +736,11 @@ function createCells(elementsArray, linksArray, rectDataArray) {
     for (let i = 0; i < childSize; i++) {
       target = rectData.nextStages[i].stageId;
       let actionLabel = rectData.nextStages[i].actionName;
-      createLink(linksArray, source, target, { sourceSide: "perpendicular" }, { targetSide: "perpendicular", targetDx: 0, targetDy: 0 }, actionLabel);
+      createLink(linksArray, source, target, actionLabel);
     }
 
     if (childSize == 0) {
-      createLink(linksArray, source, "endNode", { sourceSide: "perpendicular" }, { targetSide: "center" });
+      createLink(linksArray, source, "endNode");
     }
 
   });
@@ -1227,7 +1200,6 @@ function resetAll() {
   controls = null;
   totalWorkflows = 0;
   message='';
-  isRendering = false;
   resetModal();
 
 }
@@ -1268,7 +1240,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDIxOTIzMzEsImV4cCI6MTcwMjE5NTkzMSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDIxODY2MjEsImlkcCI6IkZvcm1zIiwianRpIjoiMEVEM0Q4MzhGQUVFODYwN0U1NzFGNTEwNzVEQjdFNjUiLCJzaWQiOiIxMzhGRjMwOTQxNjA5QTE4RjQ1MDc0QTgzNTU3MUE3NiIsImlhdCI6MTcwMjE4NjYyNSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.WdPMA-LCYMRnTpr9HrLY5D-jMo5dJTk0amrm2mu0e_OO1QPXzK-rVG4f3tsPl23MGNkrMMV5xQ40JAAVod_D1blXdPdTpoIiBUEvmKVq9qXDeFwIU69oiMCFthar7GEVlslU3YKg7PfjSYcdOo_G514OhGeLvpu2C3YeWeFDzdh_T651iH9ojk5_8rfs5bn7cCJdsXC7ouLvyCGAdJRRg06vVdB0bq6dNpwcW-mVekWwBwXPYTVvJldwXE9REERL3ziVPB3zgBARjS7Jp5au99WaGAX6rPeUEiSmIJqYMNeqFbGBaxB7yaZTGVLCjCF-1iGlx6s_tlESf81DwYHmbA"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDIyNzk1NjMsImV4cCI6MTcwMjI4MzE2MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDIyNzk1NTksImlkcCI6IkZvcm1zIiwianRpIjoiRjMwREVBMzJCOTJEMTI4QjU0NTY4RUQxQkU2M0ZGMUUiLCJzaWQiOiJEMTE2NDI1NjI4MTFFNTIyNzBGQTg5MTE0QzU2MEYxMiIsImlhdCI6MTcwMjI3OTU2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.mLhXnzHS56dLRLqyRtjGH_JzuNfYQXSabt1U8v3zGRh-fnnFzl6_hQltaRsFTnWazGpWTI8iWJ5htFuK6o8dnsNJo6sdrCSxfen-i5dTWJvyL8HO69F-gJd-Q4pOJNezwrxRWrRf0bDOqpHx1c8g462euEqZCWRl-C_9rLhEbn0Ug496f2f_WvJXJ2hNydTIlhGM9vR_0ARWgzOym7TtgHRSFLCYSKJNHpphnoQKEh_n5zKihXfCQp1l_9WZo3qK9uDEKIXIgvHPfdUN7gxbv95-phH2LcUDdL9X_QWvecL2LJYW8DWDddlyklBQBVC_Y7QMb74eqjVtFjaFGsdytg"
 
     // Create headers with the bearer token
     const headers = new Headers({
