@@ -44,31 +44,32 @@
     <!-- Main -->
     <div id="outer-container">
 
-        <div id="header-container mt-4">
-            <div class="row mb-2">
+        <div id="header-container">
+            <!-- <div class="row mb-2">
                 <div class="col-md-2 fw-bold">
                     <label id="">Coordination:</label>
                 </div>
                 <div class="col-md-3">
                     <label id="coordinator" class="fw-bolder">(x: 0 y: 0)</label>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    <input type="text" readonly class="form-control-plaintext fw-bold" value="Form ID:">
-                </div>
-                <div class="col-md-2">
-                    <input type="text" id="formId" class="form-control d-inline" value="">
+            </div> -->
+            <div class="row mb-1">
+           
+                <div class="col-md-3 d-flex ">
+                     <img src="picture/kube_logo.png" style="width:40px" alt=""> 
+                    <input type="text" readonly class="form-control-plaintext fw-bold " style ="font-size: 18px;" value="Form ID:">
+                    <input type="text" id="formId" class="form-control d-inline" value="841">
+                
                 </div>
                 <div class="col-md-4">
-                    <button id="fetchDataButton" type="button" class="btn btn-primary">Generate</button>
+                    <button id="fetchDataButton" type="button" class="btn btn-success">Generate</button>
                     <button id="saveButton" type="button" class="btn btn-warning">Save</button>
                     <input type="file" id="loadButton" hidden />
                     <label for="loadButton">Load</label>
                 </div>
 
-                <div class="col-md-4 text-md-end ">
-                    <button id="downloadButton" type="button" class="btn btn-danger text-md-end ">Download </button>
+                <div class="col-md-5 text-md-end ">
+                    <button id="downloadButton" type="button" class="btn btn-primary text-md-end ">Download </button>
                     <select id="downloadOption" class="form-select form-select-md" aria-label=".form-select-lg example">
                         <option selected value="png">PNG</option>
                         <option value="jpg">JPG</option>
@@ -133,8 +134,29 @@
 
 
         <div id="canvas-container">
-            <div class="row">
-                <div id="reference_board" class="col-md-3">
+            <div class="row"> 
+                <div id="canvas-control" class="row">
+                    <div class="col-md-6 ">
+                       <button id="referenceboardToggleBtn" type="button" class="btn" >X</button>
+                    </div>
+                    
+                    <div class="col-md-3 text-md-end">
+                        <label for="nodesep">Scale:</label>
+                        <input id="scale" type="range" min="0.1" max="2" step="0.1" value="0.5" />
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        <label for="workflowNo">Workflow No:</label>
+                        <select id="workflowNo"></select>
+                    </div>
+                    <!-- <div class="col-md-2 ">
+                        <label for="grid">Grid:</label>
+                        <input type="checkbox" id="gridCheckbox" checked name="gridCheckbox">
+                    </div> -->
+                </div>
+            </div>
+
+            <div class="row d-flex">
+                <div id="reference_board">
                     <table id="rects_table">
                         <tr>
                             <th>Stages</th>
@@ -200,36 +222,15 @@
                     </table>
                 </div>
 
-                <div class="row col-md-9 text-md-center">
 
-                    <div class="row col-md-12">
-                        <div id="canvas-control" class="row">
-                            <div class="col-md-6 ">
-                                <!-- empty-->
-                            </div>
-                            <div class="col-md-3">
-                                <label for="nodesep">Scale:</label>
-                                <input id="scale" type="range" min="0.1" max="2" step="0.1" value="0.8" />
-                            </div>
-                            <div class="col-md-3 ">
-                                <label for="workflowNo">Workflow No:</label>
-                                <select id="workflowNo"></select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="canvas" class="col-md-12 scrollable p-4 ">
-                        <div id="mainPaper" class="mx-auto">
-                            <span class="fs-3  align-middle"> Input <b>Form ID </b> and click on <b> "Generate"</b> Button to generate
-                                the Flowchart 😊 </span>
-                        </div>
-    
+                <div id="canvas" class="scrollable p-4 ">
+                    <div id="mainPaper" class="mx-auto">
+                        <span class="fs-3  align-middle"> Input <b>Form ID </b> and click on <b> "Generate"</b>
+                            Button to generate
+                            the Flowchart 😊 </span>
                     </div>
 
                 </div>
-
-
-
 
             </div>
         </div>
@@ -342,4 +343,4 @@
 <script defer src="javascript/mainCanvas.js"></script>
 <script defer src="javascript/modal.js"></script>
 <script defer src="javascript/referenceBoard.js"></script>
-<script defer src="javascript/coordinator.js"></script>
+<!-- <script defer src="javascript/coordinator.js"></script> -->

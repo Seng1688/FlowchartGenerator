@@ -1,6 +1,7 @@
 //** Global Variable **//
+
 const { shapes, util, dia, mvc, elementTools } = joint;
-const rectWidth = 140;
+const rectWidth = 200;
 const rectHeight = 60;
 let defaultFontSize = 20;
 let totalWorkflows;
@@ -16,7 +17,16 @@ let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' 
 let dragStartPosition; // drag paper event
 let message;
 let isRendering = false;
+// let grid = true;
+let referenceboard = true;
 
+const RouterOptions = {
+  name: 'orthogonal',
+  // args: {
+  //   step:15,
+  //   perpendicular: true, 
+  // }
+};
 
 
 // extend mvc view and add custom control
@@ -28,7 +38,7 @@ var LayoutControls = mvc.View.extend({
 
   init: function () {
     var paper = this.options.paper;
-
+    paper.scale(0.5);
     // add eventlinstener to the paper's elements
     this.listenTo(paper.model, "change", function (_, opt) {
       let { width, height } = paper.getContentArea();
@@ -201,6 +211,7 @@ var ParallelRect = dia.Element.define(
         strokeWidth: 1.5,
         stroke: "black",
         fill: "yellow",
+        rx:5
       },
       body: {
         width: "calc(w)",
@@ -209,7 +220,8 @@ var ParallelRect = dia.Element.define(
         stroke: "black",
         x: 0,
         y: 0,
-        fill: "lightyellow",
+        fill:  getColorBasedOnStageType('Parallel'),
+        rx:5
       },
       icon: {
         width: 16,
@@ -225,6 +237,7 @@ var ParallelRect = dia.Element.define(
         textAnchor: "middle",
         textVerticalAnchor: "middle",
         fontSize: defaultFontSize,
+                fontWeight: "bold",
         textWrap: {
           width: 'calc(w - 90)', // Adjust the width as needed
           padding: 10,
@@ -282,9 +295,10 @@ class InitialNode extends joint.dia.Element {
         },
         label: {
           fill: 'white',
-          fontSize: 12,
-          refX: '50%', // Center the label horizontally
-          refY: '50%', // Center the label vertically
+          text:'Start',
+          fontSize: 'calc(0.3 * w)',
+          refX: '19%', // Center the label horizontally
+          refY: '35%', // Center the label vertically
         },
       },
       ...attributes,
@@ -304,6 +318,10 @@ class EndNode extends joint.dia.Element {
           tagName: 'circle',
           selector: 'innerCircle',
         },
+        {
+          tagName: 'text',
+          selector: 'label',
+        },
       ],
       type: 'custom.EndNode',
       size: { width: 40, height: 40 },
@@ -321,7 +339,14 @@ class EndNode extends joint.dia.Element {
           stroke: null,
           cx: 'calc(0.5 * w)', // Center the circle horizontally
           cy: 'calc(0.5 * h)', // Center the circle vertically
-          r: 'calc(0.33 * w)', // Radius is one-third of the width
+          r: 'calc(0.4 * w)', // Radius is one-third of the width
+        },
+        label: {
+          fill: 'white',
+          text:'End',
+          fontSize: 'calc(0.3 * w)',
+          refX: '25%', // Center the label horizontally
+          refY: '35%', // Center the label vertically
         },
       },
       ...attributes,
@@ -348,7 +373,7 @@ function createPaper(holderId) {
       color: "white",
     },
     snapLabels: true,
-    defaultRouter: { name: "orthogonal" },
+    defaultRouter: RouterOptions,
     linkPinning: true,
     interactive: function (cellView) {
       if (cellView.model.get("isLocked")) {
@@ -455,13 +480,15 @@ function createStandardRect(rectData, fillValue) {
       body: {
         fill: fillValue,
         stroke: "black",
-        strokeWidth: 1.5,
+        strokeWidth: 2,
+        rx:5
       },
 
       label: {
         text: rectData.currentStageName,
         fill: "black",
         fontSize: defaultFontSize,
+        fontWeight: "bold",
         textWrap: {
           width: 'calc(w - 50)',
           padding: 10,
@@ -472,6 +499,7 @@ function createStandardRect(rectData, fillValue) {
     },
     seqNo: rectData.seqNo,
   });
+
   return Rect;
 }
 
@@ -619,21 +647,25 @@ function createPolygon(dataArray, elementsArray) {
   });
 }
 
-function createLink(linksArray, source, target, actionLabel = null ) {
+function createLink(linksArray, source, target, actionLabel = null) {
   const link = new shapes.standard.Link({
     source: {
       id: source,
-      anchor :{name: 'perpendicular' ,   
-       args: {
-        padding: 7
-    }}
+      anchor: {
+        name: 'perpendicular',
+        args: {
+          padding: 7
+        }
+      }
     },
     target: {
       id: target,
-      anchor :{name: 'perpendicular' ,
-      args: {
-        padding: 7
-    }}
+      anchor: {
+        name: 'perpendicular',
+        args: {
+          padding: 7
+        }
+      }
     },
     defaultLabel: {
       markup: util.svg`
@@ -672,7 +704,7 @@ function createLink(linksArray, source, target, actionLabel = null ) {
       },
     },
     connector: {
-      name: "jumpover",
+      name: "rounded",
     },
     smooth: false,
   });
@@ -686,11 +718,17 @@ function createLink(linksArray, source, target, actionLabel = null ) {
             text: actionLabel,
             title: actionLabel,
             z: 3,
-            textAnchor:'middle',
+            fill: 'white',
+            textAnchor: 'middle',
+            'font-size': '12'
 
           },
+          labelBody:{
+            fill:'black'
+          }
+
         },
-        position: {distance: 0.35},
+        position: { distance: 0.35 },
       },
     ]);
   }
@@ -916,7 +954,7 @@ function createElementTools() {
 
 }
 
-function deselectElements(elements,paper) {
+function deselectElements(elements, paper) {
   elements.forEach(element => {
     let elementView = element.findView(paper)
     elementView.model.set('isSelected', false);
@@ -942,20 +980,55 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
     case "Standard":
     case "RequestorSubmission":
       if (isEndStage == false) {
-        fillValue = "rgb(49, 197, 255)";
+        fillValue = 'rgb(138, 206, 255)'
+      //   {
+      //     type: 'radialGradient',
+      //     stops: [
+      //         { offset: '20%', color: 'rgb(138, 206, 255)' },
+      //         { offset: '100%', color: 'rgb(89, 172, 255)' }
+      //     ]
+      // };
       } else if (isEndStage === true && isApprovedStage === true) {
-        fillValue = "rgb(169, 255, 163)";
+        fillValue =  'rgb(169, 255, 163)'
+      //   {
+      //     type: 'radialGradient',
+      //     stops: [
+      //         { offset: '20%', color: 'rgb(199, 255, 200)' },
+      //         { offset: '100%', color: 'rgb(147, 255, 145)' }
+      //     ]
+      // };
       } else if (isEndStage === true && isApprovedStage === false) {
-        fillValue = "rgb(255, 94, 105)";
+        fillValue = 'rgb(255, 94, 105)'
+      //   {
+      //     type: 'radialGradient',
+      //     stops: [
+      //         { offset: '20%', color: "rgb(255, 138, 146)"},
+      //         { offset: '100%', color: "rgb(255, 94, 105)" }
+      //     ]
+      // };
       }
       break;
 
     case "ReturnToRequestor":
-      fillValue = "rgb(220, 199, 255)";
+      fillValue =  'rgb(220, 199, 255)'
+    //   {
+    //     type: 'radialGradient',
+    //     stops: [
+    //         { offset: '20%', color: "rgb(250, 232, 255)"},
+    //         { offset: '100%', color: "rgb(220, 199, 255)" }
+    //     ]
+    // }
       break;
 
     case "Parallel":
-      fillValue = "rgb(255, 242, 99)";
+      fillValue =  'rgb(244, 255, 181)'
+    //   {
+    //     type: 'radialGradient',
+    //     stops: [
+    //         { offset: '20%', color: "rgb(255, 255, 214)"},
+    //         { offset: '100%', color: "rgb(252, 255, 156)" }
+    //     ]
+    // };
       break;
 
     default:
@@ -968,14 +1041,14 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
 
 function insertLoading() {
   const holder = document.getElementById("mainPaper");
-  holder.style.width='100%';
-  holder.style.height='100%';
+  holder.style.width = '100%';
+  holder.style.height = '100%';
   holder.innerHTML = `<div> <img id="loading-icon" style=" width:280px; height:300px;top:180px" src="picture/loading.gif"> </div>`
 }
 
 function insertErrorMessage(divHolder, message) {
-  divHolder.style.width='100%';
-  divHolder.style.height='100%';
+  divHolder.style.width = '100%';
+  divHolder.style.height = '100%';
   let errorMessage = `<span class="fs-3">${message}</span>`;
   divHolder.innerHTML = errorMessage;
 }
@@ -1071,12 +1144,12 @@ function arrowheadAdjustment() {
 
 }
 
-function toggleControls(action){
+function toggleControls(action) {
   let selectControls = $("#layoutControl input, #layoutControl select");
 
-    selectControls.each(function (index, element) {
-      $(element).prop("disabled", action==='close');
-    });
+  selectControls.each(function (index, element) {
+    $(element).prop("disabled", action === 'close');
+  });
 
 }
 
@@ -1100,7 +1173,7 @@ function buildParallelStageInfoButtonDetails() {
         divBlock = document.createElement("div");
         divBlock.classList.add('CompleteActionsDetailsBody');
         divBlock.style.top = (evt.y) + "px";
-        divBlock.style.left = (evt.x-20) + "px";
+        divBlock.style.left = (evt.x - 20) + "px";
         divBlock.style.opacity = 0;
         divBlock.appendChild(paragraph);
         document.body.appendChild(divBlock); // This appends the div to the body element
@@ -1191,7 +1264,7 @@ function resetAll() {
   $(".ranksep").val(75);
   $(".edgesep").val(100);
   $(".nodesep").val(75);
-  $("#scale").val(0.8);
+  $("#scale").val(0.5);
 
   rectDataArray = [];
   elements = [];
@@ -1199,7 +1272,7 @@ function resetAll() {
   mainPaper = "";
   controls = null;
   totalWorkflows = 0;
-  message='';
+  message = '';
   resetModal();
 
 }
@@ -1240,7 +1313,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDIyNzk1NjMsImV4cCI6MTcwMjI4MzE2MywiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDIyNzk1NTksImlkcCI6IkZvcm1zIiwianRpIjoiRjMwREVBMzJCOTJEMTI4QjU0NTY4RUQxQkU2M0ZGMUUiLCJzaWQiOiJEMTE2NDI1NjI4MTFFNTIyNzBGQTg5MTE0QzU2MEYxMiIsImlhdCI6MTcwMjI3OTU2Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.mLhXnzHS56dLRLqyRtjGH_JzuNfYQXSabt1U8v3zGRh-fnnFzl6_hQltaRsFTnWazGpWTI8iWJ5htFuK6o8dnsNJo6sdrCSxfen-i5dTWJvyL8HO69F-gJd-Q4pOJNezwrxRWrRf0bDOqpHx1c8g462euEqZCWRl-C_9rLhEbn0Ug496f2f_WvJXJ2hNydTIlhGM9vR_0ARWgzOym7TtgHRSFLCYSKJNHpphnoQKEh_n5zKihXfCQp1l_9WZo3qK9uDEKIXIgvHPfdUN7gxbv95-phH2LcUDdL9X_QWvecL2LJYW8DWDddlyklBQBVC_Y7QMb74eqjVtFjaFGsdytg"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDMzOTg4MTgsImV4cCI6MTcwMzQwMjQxOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDMzOTg4MDYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk5NDgzNjdFNzIyNzNDRDI5ODNEQURFOTYyNkRCQjYiLCJzaWQiOiIxMDczRkExMjc1NDFBNzQ0ODMxNDdDMjVBQkIyRDMwQiIsImlhdCI6MTcwMzM5ODgxOCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.PKflK3iFQaEL18vxM9775R8sPRKp8-mk3Umh_Sxa8ecAMOachSwj99YBB9-lfulU4l-ht1S8cU5DZZ2H1DXdW6DPajIA6pvA0MKTwfu9AXbXEZ1Unh9h-zeM2FcZ9nTqoJfSB6iLpIPFWqS2YM1FBMTIa-odBmi06b3lbd7X2vmxFEga5TpeWpq6USwnEskymhsvSD-SCxL0cM5NQx6uFzzv_m4wZxDFCJiocQ54RMArn-FkZf_l2k9pS7PQHpKuCC0uPNYAc2cgI6RwyxZSA-3pfs6GSlJJIeJHBiQtbemLUYY4biSVTjrVKfFG8zzGjuDZ3vSeEd-iTqvy0hzmnQ"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1265,6 +1338,7 @@ function callAPI() {
         processJsonData(data);
       })
       .catch((error) => {
+        isRendering=false;
         resetAll();
 
         if (error.message.includes("401")) {
@@ -1281,6 +1355,7 @@ function callAPI() {
       });
   }
   else {
+    isRendering=false;
     resetAll();
     message = `Please Input a <b>Form ID</b>😊!!`;
     insertErrorMessage(holder, message);
@@ -1529,8 +1604,32 @@ const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
+  // if(!grid){
+  //   mainPaper.clearGrid();
+  // }
   autoResizePaper(mainPaper);
 });
+
+// const gridCheckbox = document.getElementById("gridCheckbox");
+// gridCheckbox.addEventListener("change", () => {
+//   if(grid){
+//     mainPaper.drawGrid(false);
+//     mainPaper.clearGrid();
+//     grid = !grid
+    
+//   }else{
+//     mainPaper.drawGrid(true);
+//     mainPaper.drawGrid({
+//       name: "mesh",
+//       color: "black",
+//       thickness: 0.2,
+//     }
+//     )
+//     grid = !grid
+//   }
+
+// });
+
 
 const generateButton = document.getElementById("fetchDataButton");
 generateButton.addEventListener("click", () => {
@@ -1551,7 +1650,7 @@ generateButton.addEventListener("click", () => {
   }
 
 });
-// generateButton.click();
+generateButton.click();
 
 const loadButton = document.getElementById("loadButton");
 loadButton.addEventListener("change", () => {
@@ -1658,6 +1757,26 @@ downloadButton.addEventListener("click", () => {
 
   }, 200);
 
+});
+
+const referenceboardToggleBtn = document.getElementById("referenceboardToggleBtn");
+referenceboardToggleBtn.addEventListener("click", () => {
+
+  if(referenceboard){
+   $('#reference_board').css('width', '0%');
+   $('#reference_board').css('padding', '0%');
+   $('#canvas').css('width', '100%');
+   $("#referenceboardToggleBtn").text("☰");
+   referenceboard = !referenceboard;
+  }
+  else{
+    $('#reference_board').css('width', '20%');
+    $('#reference_board').css('padding-right', 'calc(var(--bs-gutter-x) * .5)');
+    $('#reference_board').css('padding-left', 'calc(var(--bs-gutter-x) * .5)');
+    $("#referenceboardToggleBtn").text("X");
+    $('#canvas').css('width', '80%');
+    referenceboard = !referenceboard;
+  }
 });
 
 

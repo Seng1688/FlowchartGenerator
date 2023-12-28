@@ -4,7 +4,7 @@ function createReferenceBoard() {
     let targetTableData;
 
     //stages
-    const rectColors = ["rgb(49, 197, 255)", "rgb(220, 199, 255)", "yellow", "rgb(169, 255, 163)", "rgb(255, 94, 105)"];
+    const rectColors = ["rgb(138, 206, 255)", "rgb(220, 199, 255)", "yellow", "rgb(169, 255, 163)", "rgb(255, 94, 105)"];
     for (var i = 0; i < rectColors.length; i++) {
         element = createRBRect(50, 20, rectColors[i]);
         targetTableData = $(`table#rects_table tr:eq(${i + 1}) td:eq(1)`)[0];

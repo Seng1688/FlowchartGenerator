@@ -1,7 +1,7 @@
 body {
-  font-family: "Calibri", sans-serif;
-  font-size: 18px;
-  ;
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* zoom:90%; */
 }
 
 .row {
@@ -11,8 +11,9 @@ body {
 
 /* container */
 #outer-container {
-  padding: 5px 50px;
+  padding: 5px 0px;
 }
+
 
 #downloadOption{
   display:inline;
@@ -34,11 +35,10 @@ body {
 
 /* controls-container */
 #controls-container {
-  background: linear-gradient(to bottom, #ecebeb, #ffffff);
+  background: #293039;
   color: rgb(0, 0, 0);
-  border: 0.2px solid rgb(233, 233, 233);
   border-bottom: none;
-  padding: 10px;
+  padding:5px 20px;
 }
 
 #controls-container input {
@@ -47,6 +47,7 @@ body {
 
 #controls-container label {
   font-weight: bolder;
+  color:white;
 }
 
 #controls-container .row {
@@ -55,13 +56,10 @@ body {
 
 /* canvas-container */
 #canvas-container {
-  border: 0.2px solid rgb(233, 233, 233);
+  border-top: 0.2px solid rgb(233, 233, 233);
 }
 
 /* #canvas-control */
-#canvas-control input {
-  width: 70%;
-}
 
 #canvas-control select {
   width: 30%;
@@ -73,22 +71,37 @@ body {
 }
 
 #canvas-control {
-  background-color: rgb(178, 179, 181);
+  background: #48505b;
   vertical-align: middle;
   align-items: center;
-  padding:5px 0px;
 }
 
 /* canvas */
 #canvas {
   height: 800px;
   border: 0.2px solid rgb(233, 233, 233);
+  background-color: #ffffff ;
+  width:80%;
+  transition: 0.5s;
 }
 
 /* reference board */
+
+#referenceboardToggleBtn{
+  border:none;
+  color:orange !important;
+  font-weight: bolder;
+  }
+
+
 #reference_board {
   overflow: auto;
-  background: linear-gradient(to bottom, #f6f6f6, #e5e5e5);
+  background: #e2e2e7;
+  position: relative;
+  left: 0;
+  width:20%;
+  transition: 0.5s;
+  box-shadow: 0 4px 8px 0 rgba(116, 115, 115, 0.2);
 }
 
 #rects_table,
@@ -97,15 +110,18 @@ body {
   border: 0.5px solid #f6f6f6;
   margin: 35px 0px;
   width:100%;
+  box-shadow: 0 4px 8px 0 rgba(116, 115, 115, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
 
 }
 
 #rects_table th,
 #links_table th,
 #others_table th {
-  background: linear-gradient(to bottom, #dcddde, #f6f5f5);
+  background: #293039;
   border: 0.5px solid #cbcbcb;
   padding: 5px 16px;
+  color:white;
+  border-top-left-radius: 3px;
 }
 
 #rects_table td,
@@ -114,6 +130,7 @@ body {
   background-color: #ffffff;
   border: 0.5px solid #e5e4e4;
   padding: 5px 16px;
+  font-size: 10px;
 }
 
 td:nth-child(1) {
@@ -180,6 +197,15 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
   font-weight: bolder;
 }
 
+.modal-header{
+  background-color: rgb(64, 63, 63);
+}
+
+.modal-title{
+  color:white
+}
+
+
 /* others */
 .scrollable {
   white-space: nowrap;
@@ -207,7 +233,7 @@ g[data-type="custom.ParallelRectangle"] image[joint-selector="icon"] {
 }
 
 button{
-  color: white !important;;
+  color: white !important;
 }
 
 #loadButton +label{
@@ -222,6 +248,7 @@ button{
   cursor: pointer;
   height:38.67px;
 }
+
 
 /* Link Tools */
 path[data-tool-name="source-arrowhead"] {
