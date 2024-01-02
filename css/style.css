@@ -1,5 +1,6 @@
 body {
-  font-family: "Noto Sans", Helvetica, Arial, sans-serif;
+  /* font-family: "Noto Sans", Helvetica, Arial, sans-serif; */
+  font-family:"realist",sans-serif; ;
   font-size: 12px;
   /* zoom:90%; */
 }
@@ -80,7 +81,7 @@ body {
 #canvas {
   height: 800px;
   border: 0.2px solid rgb(233, 233, 233);
-  background-color: #ffffff ;
+  background-color: #f4f1f1 ;
   width:80%;
   transition: 0.5s;
 }

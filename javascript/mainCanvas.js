@@ -3,7 +3,8 @@
 const { shapes, util, dia, mvc, elementTools } = joint;
 const rectWidth = 200;
 const rectHeight = 60;
-let defaultFontSize = 20;
+let drawnFormId = null;
+let defaultFontSize = 16;
 let totalWorkflows;
 let workflowNo = 1;
 let mainPaper;
@@ -17,7 +18,9 @@ let branchCounter = 1; // to prevent 'json-dom-parser: selector must be unique' 
 let dragStartPosition; // drag paper event
 let message;
 let isRendering = false;
-// let grid = true;
+let rectTheme = 'color';
+let rectBorderColor = 'black';
+let grid = true;
 let referenceboard = true;
 
 const RouterOptions = {
@@ -209,19 +212,19 @@ var ParallelRect = dia.Element.define(
         width: "calc(w)",
         height: "calc(h -calc(h -24))", //always make header height 24
         strokeWidth: 1.5,
-        stroke: "black",
-        fill: "yellow",
-        rx:5
+        stroke: rectBorderColor,
+        fill:(rectTheme ==='color')? 'yellow': 'white',
+        rx: 5
       },
       body: {
         width: "calc(w)",
         height: "calc(h)",
         strokeWidth: 1.5,
-        stroke: "black",
+        stroke: rectBorderColor,
         x: 0,
         y: 0,
-        fill:  getColorBasedOnStageType('Parallel'),
-        rx:5
+        fill: getColorBasedOnStageType('Parallel'),
+        rx: 5
       },
       icon: {
         width: 16,
@@ -237,7 +240,7 @@ var ParallelRect = dia.Element.define(
         textAnchor: "middle",
         textVerticalAnchor: "middle",
         fontSize: defaultFontSize,
-                fontWeight: "bold",
+        fontWeight: "bold",
         textWrap: {
           width: 'calc(w - 90)', // Adjust the width as needed
           padding: 10,
@@ -278,6 +281,10 @@ class InitialNode extends joint.dia.Element {
           selector: 'body',
         },
         {
+          tagName: 'path',
+          selector: 'logo',
+        },
+        {
           tagName: 'text',
           selector: 'label',
         },
@@ -285,21 +292,45 @@ class InitialNode extends joint.dia.Element {
       type: 'custom.InitialNode',
       size: { width: 40, height: 40 },
       attrs: {
+
         body: {
-          fill: '#333',
-          stroke: 'black',
+          fill: '#0057FF',
+          stroke: 'none',
           strokeWidth: 2,
           cx: "calc(0.5 * w)",
           cy: "calc(0.5 * h)",
-          r: "calc(0.5 * w)",
+          r: "calc(0.6 * w)",
         },
-        label: {
+        logo: {
+          d: 'M 2 8 L 4.29 5.71 L 1.41 2.83 L 2.83 1.41 L 5.71 4.29 L 8 2 L 8 8 Z M -2 8 L -8 8 L -8 2 L -5.71 4.29 L -1 -0.41 L -1 -8 L 1 -8 L 1 0.41 L -4.29 5.71 Z',
+          refX: '50%', // Center the label horizontally
+          refY: '50%', // Center the label vertically
           fill: 'white',
-          text:'Start',
+        }
+        ,
+        label: {
+          fill: 'black',
+          text: 'Start',
           fontSize: 'calc(0.3 * w)',
           refX: '19%', // Center the label horizontally
-          refY: '35%', // Center the label vertically
+          refY: '-40%',
         },
+
+        // body: {
+        //   fill: '#333',
+        //   stroke: 'black',
+        //   strokeWidth: 2,
+        //   cx: "calc(0.5 * w)",
+        //   cy: "calc(0.5 * h)",
+        //   r: "calc(0.5 * w)",
+        // },
+        // label: {
+        //   fill: 'white',
+        //   text: 'Start',
+        //   fontSize: 'calc(0.3 * w)',
+        //   refX: '19%', // Center the label horizontally
+        //   refY: '35%', // Center the label vertically
+        // },
       },
       ...attributes,
     });
@@ -314,9 +345,13 @@ class EndNode extends joint.dia.Element {
           tagName: 'circle',
           selector: 'body',
         },
+        // {
+        //   tagName: 'circle',
+        //   selector: 'innerCircle',
+        // },
         {
-          tagName: 'circle',
-          selector: 'innerCircle',
+          tagName: 'path',
+          selector: 'logo',
         },
         {
           tagName: 'text',
@@ -327,27 +362,50 @@ class EndNode extends joint.dia.Element {
       size: { width: 40, height: 40 },
       attrs: {
         body: {
-          fill: 'transparent',
-          stroke: '#333',
+          fill: '#0057FF',
+          stroke: 'none',
           strokeWidth: 2,
-          cx: 'calc(0.5 * w)', // Center the circle horizontally
-          cy: 'calc(0.5 * h)', // Center the circle vertically
-          r: 'calc(0.5 * w)', // Radius is half of the width
+          cx: "calc(0.5 * w)",
+          cy: "calc(0.5 * h)",
+          r: "calc(0.6 * w)",
         },
-        innerCircle: {
-          fill: '#333',
-          stroke: null,
-          cx: 'calc(0.5 * w)', // Center the circle horizontally
-          cy: 'calc(0.5 * h)', // Center the circle vertically
-          r: 'calc(0.4 * w)', // Radius is one-third of the width
-        },
-        label: {
+        logo: {
+          d: 'M 5 -8.45 L 6.41 -7.04 L 3 -3.635 L 1.59 -5.04 Z M -4.5 3.95 L -1 3.95 L -1 -1.63 L -6.41 -7.04 L -5 -8.45 L 1 -2.45 L 1 3.95 L 4.5 3.95 L 0 8.45 Z',
+          refX: '50%', // Center the label horizontally
+          refY: '50%', // Center the label vertically
           fill: 'white',
-          text:'End',
+        }
+        ,
+        label: {
+          fill: 'black',
+          text: 'End',
           fontSize: 'calc(0.3 * w)',
-          refX: '25%', // Center the label horizontally
-          refY: '35%', // Center the label vertically
+          refX: '20%', // Center the label horizontally
+          refY: '120%', 
         },
+
+        // body: {
+        //   fill: 'transparent',
+        //   stroke: '#333',
+        //   strokeWidth: 2,
+        //   cx: 'calc(0.5 * w)', // Center the circle horizontally
+        //   cy: 'calc(0.5 * h)', // Center the circle vertically
+        //   r: 'calc(0.5 * w)', // Radius is half of the width
+        // },
+        // innerCircle: {
+        //   fill: '#333',
+        //   stroke: null,
+        //   cx: 'calc(0.5 * w)', // Center the circle horizontally
+        //   cy: 'calc(0.5 * h)', // Center the circle vertically
+        //   r: 'calc(0.4 * w)', // Radius is one-third of the width
+        // },
+        // label: {
+        //   fill: 'white',
+        //   text: 'End',
+        //   fontSize: 'calc(0.3 * w)',
+        //   refX: '25%', // Center the label horizontally
+        //   refY: '35%', // Center the label vertically
+        // },
       },
       ...attributes,
     });
@@ -363,14 +421,14 @@ function createPaper(holderId) {
 
   let paper = new dia.Paper({
     el: document.getElementById(holderId),
-    gridSize: 15,
+    gridSize: 20,
     drawGrid: {
       name: "mesh",
       color: "black",
       thickness: 0.2,
     },
     background: {
-      color: "white",
+      color: "#FFFCFF",
     },
     snapLabels: true,
     defaultRouter: RouterOptions,
@@ -414,6 +472,7 @@ function createPaper(holderId) {
         event.offsetX - paper.dragStartPosition.x,
         event.offsetY - paper.dragStartPosition.y);
     }
+     clearGridIfNotExists(); 
 
   });
 
@@ -479,9 +538,9 @@ function createStandardRect(rectData, fillValue) {
       },
       body: {
         fill: fillValue,
-        stroke: "black",
+        stroke:  rectBorderColor,
         strokeWidth: 2,
-        rx:5
+        rx: 5
       },
 
       label: {
@@ -518,6 +577,12 @@ function createParallelRect(rectData) {
       },
       header: {
         title: fullStageName,
+        fill: (rectTheme === 'color')? 'yellow' : 'white',
+        stroke: rectBorderColor
+      },
+      body:{
+        fill: (rectTheme === 'color')? getColorBasedOnStageType('Parallel') : 'white',
+        stroke: rectBorderColor
       }
     },
     branchSize: rectData.branches.length,
@@ -569,7 +634,7 @@ function createParallelRect(rectData) {
       refX: counter * offsetX + (counter - 1) * childWidth,
       refY: level * offsetY + (level - 1) * childHeight + 24, //24 = header height
       strokeWidth: 1,
-      stroke: "black",
+      stroke: rectBorderColor,
       fill: "white",
       title: fullBranchName,
     });
@@ -699,6 +764,15 @@ function createLink(linksArray, source, target, actionLabel = null) {
 
     attrs: {
       line: {
+        sourceMarker: { // hour hand
+          'type': 'circle',
+          'r': 5,
+          'cx': 2,
+          'fill': 'white',
+          'stroke': 'black',
+          'stroke-width': 2
+
+        },
         stroke: 'black',
         'stroke-width': 2,
       },
@@ -723,8 +797,8 @@ function createLink(linksArray, source, target, actionLabel = null) {
             'font-size': '12'
 
           },
-          labelBody:{
-            fill:'black'
+          labelBody: {
+            fill: 'black'
           }
 
         },
@@ -980,55 +1054,55 @@ function getColorBasedOnStageType(stageType, isEndStage, isApprovedStage) {
     case "Standard":
     case "RequestorSubmission":
       if (isEndStage == false) {
-        fillValue = 'rgb(138, 206, 255)'
-      //   {
-      //     type: 'radialGradient',
-      //     stops: [
-      //         { offset: '20%', color: 'rgb(138, 206, 255)' },
-      //         { offset: '100%', color: 'rgb(89, 172, 255)' }
-      //     ]
-      // };
+        fillValue = (rectTheme==='color')? 'rgb(138, 206, 255': 'white'
+        //   {
+        //     type: 'radialGradient',
+        //     stops: [
+        //         { offset: '20%', color: 'rgb(138, 206, 255)' },
+        //         { offset: '100%', color: 'rgb(89, 172, 255)' }
+        //     ]
+        // };
       } else if (isEndStage === true && isApprovedStage === true) {
-        fillValue =  'rgb(169, 255, 163)'
-      //   {
-      //     type: 'radialGradient',
-      //     stops: [
-      //         { offset: '20%', color: 'rgb(199, 255, 200)' },
-      //         { offset: '100%', color: 'rgb(147, 255, 145)' }
-      //     ]
-      // };
+        fillValue = (rectTheme==='color')?   'rgb(169, 255, 163)':'white'
+        //   {
+        //     type: 'radialGradient',
+        //     stops: [
+        //         { offset: '20%', color: 'rgb(199, 255, 200)' },
+        //         { offset: '100%', color: 'rgb(147, 255, 145)' }
+        //     ]
+        // };
       } else if (isEndStage === true && isApprovedStage === false) {
-        fillValue = 'rgb(255, 94, 105)'
-      //   {
-      //     type: 'radialGradient',
-      //     stops: [
-      //         { offset: '20%', color: "rgb(255, 138, 146)"},
-      //         { offset: '100%', color: "rgb(255, 94, 105)" }
-      //     ]
-      // };
+        fillValue = (rectTheme==='color')? 'rgb(255, 94, 105)': 'white'
+        //   {
+        //     type: 'radialGradient',
+        //     stops: [
+        //         { offset: '20%', color: "rgb(255, 138, 146)"},
+        //         { offset: '100%', color: "rgb(255, 94, 105)" }
+        //     ]
+        // };
       }
       break;
 
     case "ReturnToRequestor":
-      fillValue =  'rgb(220, 199, 255)'
-    //   {
-    //     type: 'radialGradient',
-    //     stops: [
-    //         { offset: '20%', color: "rgb(250, 232, 255)"},
-    //         { offset: '100%', color: "rgb(220, 199, 255)" }
-    //     ]
-    // }
+      fillValue = (rectTheme==='color')? 'rgb(220, 199, 255)' :'white'
+      //   {
+      //     type: 'radialGradient',
+      //     stops: [
+      //         { offset: '20%', color: "rgb(250, 232, 255)"},
+      //         { offset: '100%', color: "rgb(220, 199, 255)" }
+      //     ]
+      // }
       break;
 
     case "Parallel":
-      fillValue =  'rgb(244, 255, 181)'
-    //   {
-    //     type: 'radialGradient',
-    //     stops: [
-    //         { offset: '20%', color: "rgb(255, 255, 214)"},
-    //         { offset: '100%', color: "rgb(252, 255, 156)" }
-    //     ]
-    // };
+      fillValue = (rectTheme==='color')? 'rgb(244, 255, 181)' : 'white'
+      //   {
+      //     type: 'radialGradient',
+      //     stops: [
+      //         { offset: '20%', color: "rgb(255, 255, 214)"},
+      //         { offset: '100%', color: "rgb(252, 255, 156)" }
+      //     ]
+      // };
       break;
 
     default:
@@ -1059,6 +1133,12 @@ function autoResizePaper(paper) {
     allowNewOrigin: "any",
     useModelGeometry: true,
   });
+
+  if(mainPaper){
+      clearGridIfNotExists();
+  }
+
+ 
 }
 
 function downloadPDF(canvas) {
@@ -1151,6 +1231,12 @@ function toggleControls(action) {
     $(element).prop("disabled", action === 'close');
   });
 
+}
+
+function clearGridIfNotExists() {
+  if (!grid) {
+     mainPaper.clearGrid();
+  }
 }
 
 
@@ -1265,7 +1351,7 @@ function resetAll() {
   $(".edgesep").val(100);
   $(".nodesep").val(75);
   $("#scale").val(0.5);
-
+  $("#paperColor").val('#ffffff');
   rectDataArray = [];
   elements = [];
   links = [];
@@ -1304,8 +1390,16 @@ function addBranchLabelModal(paper) {
 //** Data Process Function **//
 // get raw JSON Data
 
-function callAPI() {
-  const formId = document.getElementById("formId").value;
+function callAPI(currentformId) {
+  var formId
+  if(!currentformId){
+       formId = document.getElementById("formId").value;
+      drawnFormId = formId;
+  }
+  else{
+    formId = currentformId;
+  }
+
   const holder = document.getElementById("mainPaper");
 
   if (formId !== '') {
@@ -1313,7 +1407,7 @@ function callAPI() {
     const apiUrl = "https://qa1.kube365.com/api/workflows/" + formId; // Replace with your API URL
 
     // Bearer token (replace 'YOUR_TOKEN' with your actual token)
-    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDMzOTg4MTgsImV4cCI6MTcwMzQwMjQxOCwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDMzOTg4MDYsImlkcCI6IkZvcm1zIiwianRpIjoiNjk5NDgzNjdFNzIyNzNDRDI5ODNEQURFOTYyNkRCQjYiLCJzaWQiOiIxMDczRkExMjc1NDFBNzQ0ODMxNDdDMjVBQkIyRDMwQiIsImlhdCI6MTcwMzM5ODgxOCwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.PKflK3iFQaEL18vxM9775R8sPRKp8-mk3Umh_Sxa8ecAMOachSwj99YBB9-lfulU4l-ht1S8cU5DZZ2H1DXdW6DPajIA6pvA0MKTwfu9AXbXEZ1Unh9h-zeM2FcZ9nTqoJfSB6iLpIPFWqS2YM1FBMTIa-odBmi06b3lbd7X2vmxFEga5TpeWpq6USwnEskymhsvSD-SCxL0cM5NQx6uFzzv_m4wZxDFCJiocQ54RMArn-FkZf_l2k9pS7PQHpKuCC0uPNYAc2cgI6RwyxZSA-3pfs6GSlJJIeJHBiQtbemLUYY4biSVTjrVKfFG8zzGjuDZ3vSeEd-iTqvy0hzmnQ"
+    const authToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkYzNkI2NDUzQUQ1OEQwQTM0MTRBOTgxMDhGOEE3NkNBIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MDQxODM0NjUsImV4cCI6MTcwNDE4NzA2NSwiaXNzIjoiaHR0cHM6Ly9xYWxvZ2luLmt1YmUzNjUuY29tIiwiYXVkIjpbIkt1YmUuMzY1LkFwaSIsIkt1YmUuMzY1LkFkbWluLkFwaSJdLCJjbGllbnRfaWQiOiJLdWJlLjM2NS43ZWU3YzE0OC1jMTQ0LTQ2ZWMtYmNhOS1iNzczYWZiYzZmNDUuVUkiLCJzdWIiOiJ5b25nc2VuZy5jaGlhQGlzYXRlYy5jb20iLCJhdXRoX3RpbWUiOjE3MDQxNzQxMzcsImlkcCI6IkZvcm1zIiwianRpIjoiMzBBMkU5NjNFNEY1MEZBRDFCRUVBQUVDMTBENzhGN0MiLCJzaWQiOiI1REJGMTAwMzNDMjk1RDRGQUY5QTNFQjI5MzA3NTgyQiIsImlhdCI6MTcwNDE3NDE0MSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImt1YmUuMzY1LnNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbImV4dGVybmFsIl19.S5tcdLqdrWF2pSqoeUe7yavHf22xGxQFA6Dk75_at5UEvSrYNRpU_qhr0pxhdWoBvnEpo-0-QiNTNEOJ02Pkc8Gk5omrHgRXLTPoimBmWNu0VZviA4Gj0hwL9kuVIUW3r6tmZAago_nFf8AbqAhlyW3pIvK32wc0IcCI_n8sC13kP7OweDPnlHJrmJuZa_v-Z7HbAooW5DohnPAW2MjfKDmnOpYXXabpMqcF0bzQoK4N-4QarDwzsZ7YlQcZ2v2ucqilqzLpmPWVsG-VSbE-OHbUfUMrc9LuybYJo8HCOlHMybXbOVL79mdfTrI4ORQmt9t7Tv8EzmmhZWcoYdfMTg"
 
     // Create headers with the bearer token
     const headers = new Headers({
@@ -1338,7 +1432,7 @@ function callAPI() {
         processJsonData(data);
       })
       .catch((error) => {
-        isRendering=false;
+        isRendering = false;
         resetAll();
 
         if (error.message.includes("401")) {
@@ -1355,7 +1449,7 @@ function callAPI() {
       });
   }
   else {
-    isRendering=false;
+    isRendering = false;
     resetAll();
     message = `Please Input a <b>Form ID</b>😊!!`;
     insertErrorMessage(holder, message);
@@ -1597,39 +1691,36 @@ workflowNoButton.addEventListener("change", () => {
   }
   // change the global workflowNo to desired workflow no
   workflowNo = value;
-  callAPI();
+  callAPI(null);
 });
 
 const scaleDragger = document.getElementById("scale");
 scaleDragger.addEventListener("input", () => {
   const value = $("#scale").val();
   mainPaper.scale(value);
-  // if(!grid){
-  //   mainPaper.clearGrid();
-  // }
+
   autoResizePaper(mainPaper);
 });
 
-// const gridCheckbox = document.getElementById("gridCheckbox");
-// gridCheckbox.addEventListener("change", () => {
-//   if(grid){
-//     mainPaper.drawGrid(false);
-//     mainPaper.clearGrid();
-//     grid = !grid
-    
-//   }else{
-//     mainPaper.drawGrid(true);
-//     mainPaper.drawGrid({
-//       name: "mesh",
-//       color: "black",
-//       thickness: 0.2,
-//     }
-//     )
-//     grid = !grid
-//   }
+const gridCheckbox = document.getElementById("gridCheckbox");
+gridCheckbox.addEventListener("change", () => {
+  if(grid){
+    mainPaper.drawGrid(false);
+    mainPaper.clearGrid();
+    grid = !grid
 
-// });
+  }else{
+    mainPaper.drawGrid(true);
+    mainPaper.drawGrid({
+      name: "mesh",
+      color: "black",
+      thickness: 0.2,
+    }
+    )
+    grid = !grid
+  }
 
+});
 
 const generateButton = document.getElementById("fetchDataButton");
 generateButton.addEventListener("click", () => {
@@ -1643,7 +1734,7 @@ generateButton.addEventListener("click", () => {
     }
     workflowNo = 1;
     toggleControls('open');
-    callAPI();
+    callAPI(null);
   }
   else {
     alert('The graph is currently rendering. Please wait.');
@@ -1712,9 +1803,9 @@ downloadButton.addEventListener("click", () => {
   let paperW = $('#mainPaper').width()
   let paperH = $('#mainPaper').height()
   let svgElement = document.querySelector('div#mainPaper>svg');
-  let whiteBgd = `<rect id="whiteBgd" width="${paperW}" height="${paperH}" style="fill:white;"> </rect>`;
+  let bgColor = `<rect id="bgColor" width="${paperW}" height="${paperH}" style="fill:${ $("#paperColor").val()};"> </rect>`;
 
-  svgElement.insertAdjacentHTML('afterbegin', whiteBgd);
+  svgElement.insertAdjacentHTML('afterbegin', bgColor);
   svgElement.setAttribute('width', paperW);
   svgElement.setAttribute('height', paperH);
 
@@ -1749,7 +1840,7 @@ downloadButton.addEventListener("click", () => {
         break;
     }
 
-    document.getElementById("whiteBgd").remove();
+    document.getElementById("bgColor").remove();
     mainPaper.scale(scale);
     svgElement.setAttribute('width', '100%');
     svgElement.setAttribute('height', '100%');
@@ -1759,17 +1850,39 @@ downloadButton.addEventListener("click", () => {
 
 });
 
+const paperColor = document.getElementById("paperColor");
+paperColor.addEventListener("input", () => {
+  let colorValue = paperColor.value;
+  mainPaper.options.background.color = colorValue;
+  mainPaper.drawBackground(  {
+    color: colorValue,
+ });
+
+});
+
+const theme = document.getElementById("theme");
+theme.addEventListener("change", () => {
+  rectTheme = theme.value;
+  if(rectTheme === 'color'){
+    rectBorderColor = 'black';
+  }
+  else{
+    rectBorderColor = 'rgb(212,212,212)';
+  }
+  changeTheme(drawnFormId); 
+});
+
 const referenceboardToggleBtn = document.getElementById("referenceboardToggleBtn");
 referenceboardToggleBtn.addEventListener("click", () => {
 
-  if(referenceboard){
-   $('#reference_board').css('width', '0%');
-   $('#reference_board').css('padding', '0%');
-   $('#canvas').css('width', '100%');
-   $("#referenceboardToggleBtn").text("☰");
-   referenceboard = !referenceboard;
+  if (referenceboard) {
+    $('#reference_board').css('width', '0%');
+    $('#reference_board').css('padding', '0%');
+    $('#canvas').css('width', '100%');
+    $("#referenceboardToggleBtn").text("☰");
+    referenceboard = !referenceboard;
   }
-  else{
+  else {
     $('#reference_board').css('width', '20%');
     $('#reference_board').css('padding-right', 'calc(var(--bs-gutter-x) * .5)');
     $('#reference_board').css('padding-left', 'calc(var(--bs-gutter-x) * .5)');
@@ -1778,6 +1891,25 @@ referenceboardToggleBtn.addEventListener("click", () => {
     referenceboard = !referenceboard;
   }
 });
+
+function changeTheme(){
+  if(drawnFormId){
+
+    if (isRendering === false) {
+      isRendering = true;
+  
+      insertLoading();
+  
+      if (controls) {
+        resetAll();
+      }
+      callAPI(drawnFormId);
+    }
+    else {
+      alert('The graph is currently rendering. Please wait.');
+    }
+  }
+}
 
 
 function getCarWF() {

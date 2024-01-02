@@ -84,7 +84,8 @@
         <div id="controls-container">
             <div class="row" id="layoutControl">
                 <div class="row mt-2">
-                    <div class="col-md-4">
+
+                    <div class="col-md-3 text-md-start">
                         <label for="ranker">Ranker :</label>
 
                         <select class="ranker">
@@ -93,7 +94,7 @@
                             <option value="longest-path">Longer-path</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 text-md-start">
                         <label for="rankdir">Rank Direction:</label>
                         <select class="rankdir">
                             <option value="TB" selected>TB</option>
@@ -102,7 +103,7 @@
                             <option value="LR">LR</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2 text-md-start">
                         <label for="align">Align:</label>
                         <select class="align">
                             <option value="UL" selected>UL</option>
@@ -111,18 +112,26 @@
                             <option value="DR">DR</option>
                         </select>
                     </div>
+                    <div class="col-md-2 text-md-end">
+                        <label for="theme">Theme:</label>
+                        <select id="theme">
+                            <option value="color" selected>Color</option>
+                            <option value="grayscale">Grayscale</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="row mt-2">
-                    <div class="col-md-4">
+
+                    <div class="col-md-3 text-md-start">
                         <label for="ranksep">RankSep:</label>
                         <input class="ranksep" type="range" min="1" max="200" value="75" />
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 text-md-start">
                         <label for="edgesep">EdgeSep:</label>
                         <input class="edgesep" type="range" min="1" max="300" value="100" />
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4 text-md-start">
                         <label for="nodesep">NodeSep:</label>
                         <input class="nodesep" type="range" min="1" max="300" value="75" />
                     </div>
@@ -134,24 +143,28 @@
 
 
         <div id="canvas-container">
-            <div class="row"> 
-                <div id="canvas-control" class="row">
-                    <div class="col-md-6 ">
+            <div class="row "> 
+                <div id="canvas-control" class=" row">
+                    <div class="col-md-3 ">
                        <button id="referenceboardToggleBtn" type="button" class="btn" >X</button>
                     </div>
                     
-                    <div class="col-md-3 text-md-end">
+                    <div class="col-md-2 text-md-center ">
                         <label for="nodesep">Scale:</label>
                         <input id="scale" type="range" min="0.1" max="2" step="0.1" value="0.5" />
                     </div>
-                    <div class="col-md-3 text-md-end">
+                    <div class="col-md-2 text-md-center">
                         <label for="workflowNo">Workflow No:</label>
                         <select id="workflowNo"></select>
                     </div>
-                    <!-- <div class="col-md-2 ">
+                    <div class="col-md-1 text-md-center ">
                         <label for="grid">Grid:</label>
                         <input type="checkbox" id="gridCheckbox" checked name="gridCheckbox">
-                    </div> -->
+                    </div>
+                    <div class="col-md-2 text-md-center ">
+                        <label for="paperColor">Paper Color:</label>
+                        <input type="color" value="#ffffff" id="paperColor" name="paperColor" style="height:18px;">
+                    </div>
                 </div>
             </div>
 
